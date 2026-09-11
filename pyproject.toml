@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sentinela"
+version = "0.1.0"
+description = "Detecção e quantificação de desmatamento em imagens de satélite por processamento digital de imagens"
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "numpy>=1.26",
+    "pillow>=10.0",
+]
+
+[project.optional-dependencies]
+# Interface de demonstração
+app = [
+    "streamlit>=1.30",
+    "matplotlib>=3.8",
+]
+# Etapa de modelagem (item 3.b do enunciado)
+modelo = [
+    "scikit-learn>=1.4",
+]
+# Leitura de GeoTIFF com metadado geográfico — dependência nativa (GDAL),
+# opcional: sem ela o sistema funciona com PNG/JPEG, apenas sem conversão para hectares
+geo = [
+    "rasterio>=1.3",
+]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+sentinela = "sentinela.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-v --strict-markers"

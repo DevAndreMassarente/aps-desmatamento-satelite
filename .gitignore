@@ -1,0 +1,50 @@
+# Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Testes e ferramentas
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Ambiente
+.env
+*.key
+*.pem
+credenciais*.json
+
+# Dados — ver docs/decisions/002-dados-nao-versionados.md
+data/raw/*
+data/interim/*
+data/processed/*
+!data/**/.gitkeep
+!data/raw/FONTES.md
+
+# Modelos treinados (regeneráveis a partir do código)
+*.joblib
+*.pkl
+modelos/*.pth
+
+# Saídas da aplicação
+saidas/
+*.log
+
+# Editores e SO
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
+
+# Streamlit
+.streamlit/secrets.toml

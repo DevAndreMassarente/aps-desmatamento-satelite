@@ -1,0 +1,26 @@
+# Dependências do projeto.
+#
+# Instalação completa:
+#     python3 -m venv .venv && source .venv/bin/activate
+#     pip install -e ".[app,modelo,dev]"
+#
+# Este arquivo existe como alternativa direta ao pyproject.toml.
+
+# --- Núcleo (obrigatório) ---
+numpy>=1.26          # base numérica do PDI; os filtros são implementados sobre ela
+pillow>=10.0         # I/O de imagem apenas — NUNCA PIL.ImageFilter (ver AGENTS.md §5)
+
+# --- Interface e gráficos ---
+streamlit>=1.30
+matplotlib>=3.8
+
+# --- Etapa de modelagem ---
+scikit-learn>=1.4
+
+# --- Testes ---
+pytest>=8.0
+
+# --- Opcional: GeoTIFF com metadado geográfico ---
+# Requer GDAL nativo. Se falhar a instalação, o sistema continua funcionando
+# com PNG/JPEG, perdendo apenas a conversão de pixels para hectares.
+# rasterio>=1.3

@@ -1,0 +1,16 @@
+* text=auto eol=lf
+
+*.py     text diff=python
+*.md     text
+*.toml   text
+*.cfg    text
+*.txt    text
+
+*.pdf    binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.tif    binary
+*.tiff   binary
+*.joblib binary
+*.pkl    binary
