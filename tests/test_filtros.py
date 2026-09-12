@@ -293,3 +293,31 @@ class TestSeparabilidadeDoGaussiano:
     def test_sigma_nao_positivo_e_recusado(self):
         with pytest.raises(ErroImagem, match="sigma"):
             filtros.kernel_gaussiano_1d(5, sigma=0)
+
+
+class TestSeparabilidadeDaMedia:
+    """``1/k²`` em toda a matriz é o produto externo de dois vetores de ``1/k``."""
+
+    def test_os_dois_caminhos_dao_o_mesmo_resultado(self):
+        gerador = np.random.default_rng(7)
+        imagem = gerador.random((50, 50)).astype(np.float32)
+
+        for tamanho in (3, 5, 9):
+            direto = filtros.media(imagem, tamanho=tamanho, separavel=False)
+            separado = filtros.media(imagem, tamanho=tamanho, separavel=True)
+            assert separado == pytest.approx(direto, abs=1e-5), tamanho
+
+    def test_equivalencia_nos_quatro_modos_de_borda(self):
+        gerador = np.random.default_rng(8)
+        imagem = gerador.random((30, 30)).astype(np.float32)
+
+        for modo in ("reflete", "replica", "zero", "circular"):
+            direto = filtros.media(imagem, tamanho=7, modo_borda=modo, separavel=False)
+            separado = filtros.media(imagem, tamanho=7, modo_borda=modo, separavel=True)
+            assert separado == pytest.approx(direto, abs=1e-5), modo
+
+    def test_tamanho_par_e_recusado_nos_dois_caminhos(self):
+        imagem = np.zeros((10, 10), dtype=np.float32)
+        for separavel in (True, False):
+            with pytest.raises(ErroImagem, match="ímpar"):
+                filtros.media(imagem, tamanho=4, separavel=separavel)

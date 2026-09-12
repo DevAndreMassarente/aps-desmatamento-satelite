@@ -224,7 +224,7 @@ interseção é conferida.
 | Arquivo | Testes | Cobre |
 |---------|-------:|-------|
 | `test_segmentacao.py` | 53 | rotulagem, regiões, mudança bi-temporal |
-| `test_filtros.py` | 41 | núcleos, suavização, bordas, separabilidade |
+| `test_filtros.py` | 44 | núcleos, suavização, bordas, separabilidade |
 | `test_cor.py` | 38 | espaços de cor e índices espectrais |
 | `test_pipeline.py` | 36 | orquestração, validação, amostras |
 | `test_nucleo.py` | 30 | convolução, bordas, histograma |
@@ -234,7 +234,7 @@ interseção é conferida.
 | `test_integracao.py` | 10 | cadeia completa contra verdade de terreno |
 | `test_app.py` | 9 | interface |
 | `test_cli.py` | 9 | linha de comando e apêndice |
-| **Total** | **288** | |
+| **Total** | **291** | |
 
 Reprodução:
 
@@ -349,7 +349,7 @@ detecção do erro veio de medição, não de inspeção visual.
 
 | O que foi demonstrado | Como |
 |-----------------------|------|
-| Os filtros são do grupo e estão corretos | 288 testes contra propriedades analíticas |
+| Os filtros são do grupo e estão corretos | 291 testes contra propriedades analíticas |
 | A cadeia quantifica corretamente | erro de 0,0% contra verdade de terreno construída |
 | O sistema reconhece quando não sabe | recusa acionada em cena homogênea e em imagem real |
 | A preparação de dados alimenta um modelo | conjunto rotulado, divisão espacial, classificador treinado |

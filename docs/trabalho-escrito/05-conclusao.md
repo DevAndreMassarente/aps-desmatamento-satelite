@@ -94,8 +94,8 @@ acurácia 1,0 com revocação 0,0.
 4. **Validar os descritores de textura em imagem real**, onde a hipótese de que dossel
    fechado é mais irregular que pastagem pode de fato ser medida.
 
-5. **Estender a separabilidade aos demais filtros** — o filtro de média também é separável,
-   pelo mesmo argumento de produto.
+5. **Paralelizar a mediana**, o único filtro de suavização que não admite forma separável
+   — estatística de ordem não se decompõe em passes de uma dimensão.
 
 ## Considerações finais
 

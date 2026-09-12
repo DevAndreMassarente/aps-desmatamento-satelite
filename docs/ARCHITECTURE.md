@@ -31,7 +31,7 @@ requisito de rastreabilidade (R005–R009) sem custo arquitetural nenhum.
     │                                             │
 ┌───▼──────────────────────┐         ┌────────────▼───────────────┐
 │ sentinela/dataio/        │         │ sentinela/modelo/          │
-│ AQUISIÇÃO                │         │ MODELO   (a implementar)   │
+│ AQUISIÇÃO                │         │ MODELO                     │
 │ imagem.py  leitura/escrita│        │ features + classificador   │
 │ geo.py     GeoTIFF (opc.) │        │ (scikit-learn)             │
 │ sintetico.py  demonstração│        │                            │

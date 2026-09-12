@@ -109,9 +109,29 @@ def kernel_gaussiano_1d(tamanho: int = 5, sigma: float | None = None) -> np.ndar
 # --------------------------------------------------------------------------------------
 
 
-def media(imagem: np.ndarray, tamanho: int = 3, modo_borda: str = "reflete") -> np.ndarray:
-    """Filtro de média (passa-baixa). Suaviza, mas borra bordas igualmente."""
-    return correlacionar(imagem, kernel_media(tamanho), modo_borda)
+def media(
+    imagem: np.ndarray,
+    tamanho: int = 3,
+    modo_borda: str = "reflete",
+    separavel: bool = True,
+) -> np.ndarray:
+    """Filtro de média (passa-baixa). Suaviza, mas borra bordas igualmente.
+
+    O núcleo de média também é **separável**, por um argumento ainda mais simples que o
+    do gaussiano: uma matriz ``k × k`` com todos os pesos iguais a ``1/k²`` é o produto
+    externo de dois vetores com todos os pesos iguais a ``1/k``. Com ``separavel=True``
+    (padrão) aplica dois passes de uma dimensão; ``separavel=False`` usa o núcleo 2D e
+    existe para a verificação por teste.
+    """
+    if not separavel:
+        return correlacionar(imagem, kernel_media(tamanho), modo_borda)
+
+    if tamanho < 1 or tamanho % 2 == 0:
+        raise ErroImagem(f"tamanho deve ser ímpar e positivo, recebido {tamanho}")
+
+    linha = np.full((1, tamanho), 1.0 / tamanho, dtype=np.float32)
+    horizontal = correlacionar(imagem, linha, modo_borda)
+    return correlacionar(horizontal, linha.T, modo_borda)
 
 
 def gaussiano(

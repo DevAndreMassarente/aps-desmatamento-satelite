@@ -67,7 +67,8 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
 - **Apêndice de código-fonte gerado por comando** (`sentinela apendice`), atendendo
   o Capítulo 7 do enunciado. Gerado e não copiado, para não divergir do código
   entregue: 16 arquivos, 3.782 linhas.
-- Suíte de testes: **288 passando**, incluindo os caminhos de erro, um teste de fumaça da
+- **Média separável**: mesmo tratamento do gaussiano, até 11,3× em janela 21×21.
+- Suíte de testes: **291 passando**, incluindo os caminhos de erro, um teste de fumaça da
   interface e a verificação por força bruta de que treino e teste não compartilham pixel.
 - Verificado que `pdi/` não importa `cv2`, `skimage`, `scipy` nem `PIL`, e não depende de
   nenhuma camada superior — a restrição central do enunciado continua de pé.
@@ -117,9 +118,9 @@ Em ordem de prioridade:
 - `rasterio` continua **não instalado** (dependência nativa GDAL). O sistema degrada para
   PNG/JPEG: a resolução espacial passa a ser informada à mão na interface ou por
   `--metros-por-pixel`. Instalar só se as cenas reais vierem em GeoTIFF.
-- A convolução **genérica** continua `O(H·W·k²)`. O gaussiano já usa a forma separável.
-  Média e caixa também são separáveis e ainda não foram convertidas. O pipeline completo
-  roda em ~730 ms numa cena de 440×440.
+- A convolução **genérica** continua `O(H·W·k²)`. Gaussiano e média já usam a forma
+  separável. A mediana não é separável e segue `O(H·W·k²)` por natureza. O pipeline
+  completo roda em ~730 ms numa cena de 440×440.
 - **As features de textura não separam as classes na cena sintética**, porque o gerador
   aplica o mesmo desvio de ruído às duas. Elas continuam no vetor porque devem separar em
   imagem real — hipótese da literatura, ainda não medida. Não apresentar como validadas.

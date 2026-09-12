@@ -173,11 +173,11 @@ Registrado como decisão em [`decisions/001-filtros-proprios.md`](./decisions/00
 
 | # | Entregável | Onde | Status |
 |---|-----------|------|--------|
-| D1 | Trabalho escrito (ABNT, 8 capítulos) | `docs/` + postagem no site UNIP | NOT_STARTED |
-| D2 | Programa (aplicação Python) | `src/` | IN_PROGRESS |
-| D3 | Apresentação (10–15 min) | `docs/` | NOT_STARTED |
-| D4 | Ficha de APS preenchida | `docs/` | NOT_STARTED |
-| D5 | Código-fonte como Apêndice do trabalho | gerado a partir de `src/` | NOT_STARTED |
+| D1 | Trabalho escrito (ABNT, 8 capítulos) | `docs/trabalho-escrito/` + postagem no site UNIP | IN_PROGRESS — caps. 1 a 5 em rascunho completo; 22 referências pendentes; documento ABNT final não montado |
+| D2 | Programa (aplicação Python) | `src/` | IN_PROGRESS — cinco etapas implementadas; quantificação em imagem real bloqueada pela resolução |
+| D3 | Apresentação (10–15 min) | `docs/apresentacao/` | NOT_STARTED |
+| D4 | Ficha de APS preenchida | `docs/` | NOT_STARTED — bloqueado por Q7 |
+| D5 | Código-fonte como Apêndice do trabalho | `docs/trabalho-escrito/07-apendice.md`, gerado por `sentinela apendice` | IMPLEMENTED |
 
 ### Etapas intermediárias (`CONFIRMED` — p.5)
 
