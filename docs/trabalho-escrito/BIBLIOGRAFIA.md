@@ -35,6 +35,15 @@ afirmação com fonte genérica.
 | B8 | NDVI — definição e faixa de valores típicos por cobertura | Literatura de sensoriamento remoto | `NEEDS_SOURCE` |
 | B9 | NDMI — definição e aplicação a umidade de dossel | Literatura de sensoriamento remoto | `NEEDS_SOURCE` |
 | B10 | Problema do pixel misto e o efeito da resolução espacial | Literatura de sensoriamento remoto | `NEEDS_SOURCE` |
+| B14 | Dependência do espalhamento atmosférico com o comprimento de onda (Rayleigh e Mie) | Livro-texto de sensoriamento remoto | `NEEDS_SOURCE` |
+| B15 | ExG e VARI — proposição original de cada um | Literatura de sensoriamento remoto | `NEEDS_SOURCE` |
+| B16 | Coeficientes de luminância da conversão RGB → cinza | Recomendação técnica que os define | `NEEDS_SOURCE` |
+| B17 | Morfologia matemática — operadores e idempotência de abertura/fechamento | Mesma fonte de B6 | `NEEDS_SOURCE` |
+| B18 | Rotulagem de componentes conexos por união-busca | Literatura de algoritmos ou de PDI | `NEEDS_SOURCE` |
+| B19 | Floresta aleatória — formulação e importância de variáveis | Artigo original | `NEEDS_SOURCE` |
+| B20 | Precisão, revocação e F1 — definição formal | Literatura de aprendizado de máquina | `NEEDS_SOURCE` |
+| B21 | Limiarização com histerese | Literatura de detecção de bordas | `NEEDS_SOURCE` |
+| B22 | Limiar adaptativo local | Mesma fonte de B6 | `NEEDS_SOURCE` |
 
 ### Capítulo 3 — Proposta
 

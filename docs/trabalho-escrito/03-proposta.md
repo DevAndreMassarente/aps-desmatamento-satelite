@@ -192,27 +192,117 @@ resolução da entrada, não o método.
 
 ## 3.b. Modelagem
 
-`[RASCUNHO — a ser completado antes da entrega final. Implementação em
-src/sentinela/modelo/, com 25 testes.]`
+### O processo de modelagem proposto
 
-Pontos a desenvolver, todos já implementados e verificáveis:
+```text
+máscara de segmentação (etapa 3.a)
+        ↓
+varredura em janelas + rotulagem pela cobertura
+        ↓
+descarte dos recortes ambíguos
+        ↓
+extração de 15 descritores por recorte, todos com filtros do grupo
+        ↓
+divisão treino/teste POR BLOCOS da imagem
+        ↓
+equilíbrio das classes por subamostragem
+        ↓
+treino da floresta aleatória
+        ↓
+avaliação com precisão, revocação, F1 e matriz de confusão
+```
 
-- **O papel do PDI como preparação de dados.** A máscara de segmentação fornece o rótulo
-  de cada recorte; é assim que o processamento de imagens alimenta o modelo, conforme a
-  redação do objetivo no enunciado.
-- **Descritores.** Quinze medidas por recorte — estatísticas por banda, índices
-  espectrais, textura, borda e percentis de brilho — todas calculadas com os filtros do
-  próprio grupo.
-- **Escolha do algoritmo.** Floresta aleatória, pela explicabilidade: o modelo informa
-  quais descritores pesaram na decisão.
-- **Rotulagem.** Recortes ambíguos, que cobrem parte de floresta e parte de corte, são
-  **descartados** em vez de arredondados para a classe majoritária. Rotular a borda de um
-  corte ensinaria o classificador a responder pela vizinhança em vez de pelo conteúdo.
-- **Divisão treino/teste espacial.** Como os recortes se sobrepõem, o sorteio é feito por
-  **blocos** da imagem, não por recorte. A ausência de pixels compartilhados entre treino
-  e teste é verificada por enumeração.
-- **Métricas.** Precisão, revocação, F1 e matriz de confusão nomeando os dois tipos de
-  erro. A acurácia é relatada mas acompanhada de ressalva quando o conjunto é
-  desbalanceado.
-- **Limitação declarada.** O desempenho medido até agora vem de cena sintética, onde a
-  separação foi construída, e **não valida o modelo**.
+### Rotulagem: o descarte da zona ambígua
+
+Cada recorte recebe a classe da região que cobre. A regra tem três faixas, não duas:
+
+| Cobertura de desmatamento no recorte | Rótulo |
+|--------------------------------------|--------|
+| ≥ 60% | desmatado |
+| ≤ 5% | intacto |
+| entre 5% e 60% | **descartado** |
+
+Arredondar o recorte ambíguo para a classe majoritária seria o caminho natural, e está
+errado. Um recorte que pega metade de floresta e metade de corte não tem, no seu próprio
+conteúdo, informação que justifique qualquer um dos dois rótulos. Rotulá-lo pela maioria
+ensina o classificador a responder pela **vizinhança** em vez de pelo conteúdo — e o erro
+só aparece depois, quando a matriz de confusão mostra que o modelo erra sistematicamente
+nas bordas.
+
+O custo é declarado: os recortes descartados são contados e reportados.
+
+### Descritores escolhidos
+
+Quinze medidas por recorte, agrupadas por aquilo que capturam:
+
+| Grupo | Medidas | O que captura |
+|-------|---------|---------------|
+| Refletância | média e desvio de cada banda | nível e variabilidade espectral |
+| Vegetação | média e desvio do ExG, média do VARI | quão verde |
+| Textura | média e máximo do desvio padrão local | irregularidade do dossel |
+| Borda | média da magnitude do gradiente | presença de transições |
+| Brilho | percentis 10, 50 e 90 | forma da distribuição, não só o centro |
+
+Os percentis entram porque a média sozinha não distingue um recorte uniformemente
+intermediário de um que mistura extremos — e essa é exatamente a diferença entre pastagem
+homogênea e uma borda floresta/corte.
+
+**Todos os quinze são calculados com `pdi.cor` e `pdi.filtros`**, os módulos implementados
+pelo grupo. A textura vem de `desvio_padrao_local`; a borda, da magnitude do gradiente de
+Sobel. Nenhum descritor vem pronto de biblioteca.
+
+### Algoritmo: floresta aleatória
+
+Escolhido pela **explicabilidade**, não pelo desempenho máximo.
+
+A floresta aleatória é um conjunto de árvores de decisão treinadas sobre subconjuntos
+aleatórios dos dados e das variáveis, cuja decisão final é a agregação das decisões
+individuais. A propriedade que interessa aqui é a medida de importância de variáveis: o
+modelo informa quanto cada descritor contribuiu para as decisões.
+
+Isso permite responder à arguição apontando para uma medida concreta, calculada por um
+filtro cujo código está no apêndice. Uma rede convolucional daria acurácia superior e
+nenhuma resposta a essa pergunta — e o enunciado avalia a defesa oral do trabalho.
+
+O classificador é configurado com balanceamento de classes por peso, complementando a
+subamostragem.
+
+### Avaliação
+
+A divisão treino/teste é feita por **blocos espaciais**, pela razão desenvolvida em 2.e.v:
+os recortes se sobrepõem, e um sorteio individual colocaria o mesmo terreno nos dois
+conjuntos. A propriedade de isolamento é verificada por enumeração dos pixels de cada
+conjunto.
+
+A avaliação reporta precisão, revocação, F1 e matriz de confusão com os dois tipos de erro
+nomeados. E emite **ressalvas automáticas** quando a métrica é frágil:
+
+| Situação | Ressalva emitida |
+|----------|------------------|
+| Conjunto de teste com menos de 20 amostras | a métrica é instável |
+| Conjunto com uma classe só | a acurácia não distingue modelo útil de modelo constante |
+| Equilíbrio abaixo de 0,3 | ler revocação e F1, não acurácia |
+| Desempenho perfeito | em imagem real isso praticamente não acontece; não apresentar como validação |
+
+A última ressalva foi acrescentada depois que a avaliação sobre a cena sintética atingiu F1
+igual a 1,000. O número é esperado — a separação foi construída pelo gerador — e sem a
+ressalva ele seria facilmente apresentado como resultado.
+
+### Resultado e sua limitação
+
+Sobre a cena sintética, com divisão espacial e conjunto equilibrado, o classificador atinge
+precisão, revocação e F1 iguais a 1,000. A distribuição de importância dos descritores é
+plana: média do canal verde (0,163), percentil 90 do brilho (0,150), e empate entre média
+do canal azul e média do ExG (0,140 cada).
+
+**Este resultado não valida o modelo.** Ele demonstra que a cadeia de preparação de dados
+funciona de ponta a ponta — da segmentação ao conjunto rotulado ao classificador treinado.
+O desempenho em imagem real é desconhecido, e permanece desconhecido enquanto a etapa de
+PDI não produzir uma máscara confiável sobre imagem real, o que depende da resolução
+discutida em 3.a.
+
+Uma limitação adicional está declarada: os descritores de **textura não separam as classes
+na cena sintética**, porque o gerador aplica o mesmo ruído às duas. Permanecem no vetor
+porque a literatura sustenta que dossel fechado é mais irregular que pastagem — mas isso é
+hipótese, ainda não medida por este trabalho. Há teste fixando esse comportamento, para
+impedir que sejam apresentados como validados.

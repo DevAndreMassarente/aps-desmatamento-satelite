@@ -23,8 +23,8 @@ formatação ABNT exigida; aqui ficam o texto e a rastreabilidade.
 | Cap. | Conteúdo | Arquivo | Estado |
 |------|----------|---------|--------|
 | 1 | Introdução: a) problema, b) contexto, c) objetivos | `01-introducao.md` | Rascunho completo |
-| 2 | Referencial teórico: d) descrição formal, e) conceitos (aquisição, manipulação, filtragem, segmentação, modelo) | `02-referencial-teorico.md` | Filtragem completa; 2.e.i, ii, iv e v em esboço |
-| 3 | Proposta: a) PDI, b) modelagem | `03-proposta.md` | PDI completo; modelagem em rascunho |
+| 2 | Referencial teórico: d) descrição formal, e) conceitos (aquisição, manipulação, filtragem, segmentação, modelo) | `02-referencial-teorico.md` | Rascunho completo |
+| 3 | Proposta: a) PDI, b) modelagem | `03-proposta.md` | Rascunho completo |
 | 4 | Desenvolvimento: a) implantação, b) ferramentas, c) testes, d) resultados | `04-desenvolvimento.md` | Rascunho completo |
 | 5 | Conclusão | `05-conclusao.md` | Rascunho completo |
 | 6 | Bibliografia | `BIBLIOGRAFIA.md` | Lista de pendências |
@@ -35,9 +35,8 @@ formatação ABNT exigida; aqui ficam o texto e a rastreabilidade.
 
 | Pendência | Bloqueio |
 |-----------|----------|
-| Seções 2.e.i, 2.e.ii, 2.e.iv e 2.e.v | Nenhum — o conteúdo existe no repositório, falta redigir |
-| Seção 3.b (modelagem) | Nenhum — idem |
-| 13 referências bibliográficas | Precisam ser localizadas e conferidas |
+| Revisão do texto pelo grupo | Nenhum — mas é obrigatória antes da entrega |
+| 22 referências bibliográficas | Precisam ser localizadas e conferidas |
 | Capítulo 8 — Ficha de APS | Q7: integrantes não definidos |
 | Capa, folha de rosto, sumário | Q7 |
 | Formatação ABNT no documento final | Q4: margens superior e inferior desconhecidas |
