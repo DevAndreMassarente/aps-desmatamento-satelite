@@ -22,23 +22,23 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | ID | Requisito | Tipo | Fonte | Implementação | Evidência/Teste | Status |
 |----|-----------|------|-------|---------------|-----------------|--------|
-| R001 | Cap. 1.a — Descrição do Problema: definição clara e relevância ambiental | MUST | PDF p.3, item 1.a | — | — | NOT_STARTED |
-| R002 | Cap. 1.b — Contexto: importância da resolução, impacto ecológico, implicações sociais | MUST | PDF p.3, item 1.b | — | — | NOT_STARTED |
-| R003 | Cap. 1.c — Objetivos principais da solução proposta | MUST | PDF p.3, item 1.c | — | — | NOT_STARTED |
-| R004 | Cap. 2 — Descrição **formal** do problema computacional | MUST | PDF p.3, item 2.d | — | — | NOT_STARTED |
+| R001 | Cap. 1.a — Descrição do Problema: definição clara e relevância ambiental | MUST | PDF p.3, item 1.a | `docs/trabalho-escrito/01-introducao.md` §1.a | rascunho completo | IN_PROGRESS |
+| R002 | Cap. 1.b — Contexto: importância da resolução, impacto ecológico, implicações sociais | MUST | PDF p.3, item 1.b | `docs/trabalho-escrito/01-introducao.md` §1.b | rascunho completo | IN_PROGRESS |
+| R003 | Cap. 1.c — Objetivos principais da solução proposta | MUST | PDF p.3, item 1.c | `docs/trabalho-escrito/01-introducao.md` §1.c | rascunho completo | IN_PROGRESS |
+| R004 | Cap. 2 — Descrição **formal** do problema computacional | MUST | PDF p.3, item 2.d | `docs/trabalho-escrito/02-referencial-teorico.md` §2.d | rascunho completo | IN_PROGRESS |
 | R005 | Cap. 2 — Conceito de **Aquisição** | MUST | PDF p.3, item 2.e.i | `sentinela/dataio/` | `tests/test_dataio.py` | IN_PROGRESS |
 | R006 | Cap. 2 — Conceito de **Manipulação das imagens** | MUST | PDF p.3, item 2.e.ii | `sentinela/pdi/cor.py` | `tests/test_cor.py` | IN_PROGRESS |
-| R007 | Cap. 2 — Conceito de **Filtragem** | MUST | PDF p.3, item 2.e.iii | `sentinela/pdi/filtros.py` | `tests/test_filtros.py` | IN_PROGRESS |
+| R007 | Cap. 2 — Conceito de **Filtragem** | MUST | PDF p.3, item 2.e.iii | `pdi/filtros.py` + `02-referencial-teorico.md` §2.e.iii | `tests/test_filtros.py` — seção escrita | IN_PROGRESS |
 | R008 | Cap. 2 — Conceito de **Segmentação** | MUST | PDF p.3, item 2.e.iv | `sentinela/pdi/{limiar,morfologia,segmentacao}.py` | `tests/test_segmentacao.py` | IN_PROGRESS |
 | R009 | Cap. 2 — Proposta **teórica** do modelo adequado de visão computacional | MUST | PDF p.3, item 2.e.v | `docs/` | — | NOT_STARTED |
-| R010 | Cap. 3.a — Proposta de PDI: escolha de filtros que apoiem a solução | MUST | PDF p.3, item 3.a | `sentinela/pipeline/` | — | NOT_STARTED |
+| R010 | Cap. 3.a — Proposta de PDI: escolha de filtros que apoiem a solução | MUST | PDF p.3, item 3.a | `docs/trabalho-escrito/03-proposta.md` §3.a | `docs/evidence/results/` | IN_PROGRESS |
 | R011 | Cap. 3.b — Proposta de modelagem + escolha de algoritmos de inteligência | MUST | PDF p.3, item 3.b | `sentinela/modelo/` | `docs/decisions/004-divisao-espacial.md` | IN_PROGRESS |
 | R012 | Cap. 4.a — Descrever como os métodos foram implantados | MUST | PDF p.3, item 4.a | — | — | NOT_STARTED |
 | R013 | Cap. 4.b — Listar as ferramentas utilizadas | MUST | PDF p.3, item 4.b | — | — | NOT_STARTED |
 | R014 | Cap. 4.c — Descrever como foram feitos os testes | MUST | PDF p.3, item 4.c | `tests/` | — | NOT_STARTED |
 | R015 | Cap. 4.d — Mostrar os resultados obtidos | MUST | PDF p.3, item 4.d | `docs/evidence/results/` | — | NOT_STARTED |
 | R016 | Cap. 5 — Conclusão | MUST | PDF p.3, item 5 | — | — | NOT_STARTED |
-| R017 | Cap. 6 — Bibliografia (fontes reais, ABNT) | MUST | PDF p.3, item 6 | — | — | NOT_STARTED |
+| R017 | Cap. 6 — Bibliografia (fontes reais, ABNT) | MUST | PDF p.3, item 6 | `docs/trabalho-escrito/BIBLIOGRAFIA.md` | 13 pendências mapeadas, nenhuma inventada | IN_PROGRESS |
 | R018 | Cap. 7 — Apêndice com o código-fonte do programa | MUST | PDF p.3, item 7 | gerado de `src/` | — | NOT_STARTED |
 | R019 | Cap. 8 — Ficha de Atividades Práticas Supervisionadas | MUST | PDF p.4, item 8 | — | — | NOT_STARTED |
 
@@ -76,7 +76,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | ID | Requisito | Tipo | Fonte | Implementação | Evidência/Teste | Status |
 |----|-----------|------|-------|---------------|-----------------|--------|
-| R040 | Fase Intermediária I (Qualificação): Cap. 1 + itens de **filtragem** dos caps. 2 e 3 — concluída **antes** do desenvolvimento prático. Entrega na aula anterior à P1 | MUST | PDF p.5, item 1 | R001–R003, R007, R010 | — | NOT_STARTED |
+| R040 | Fase Intermediária I (Qualificação): Cap. 1 + itens de **filtragem** dos caps. 2 e 3 — concluída **antes** do desenvolvimento prático. Entrega na aula anterior à P1 | MUST | PDF p.5, item 1 | Cap. 1 + filtragem dos caps. 2 e 3 | `docs/trabalho-escrito/` | IN_PROGRESS |
 | R041 | Fase Intermediária II (Defesa): finalização do plano de projeto + **protótipo**. Entrega na aula anterior à P2 | MUST | PDF p.5, item 2 | — | — | NOT_STARTED |
 
 ## E. Apresentação (30% da nota — ver Q1)
@@ -112,27 +112,27 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | Status | Qtd |
 |--------|-----|
-| NOT_STARTED | 32 |
-| IN_PROGRESS | 14 |
+| NOT_STARTED | 25 |
+| IN_PROGRESS | 21 |
 | IMPLEMENTED | 2 |
 | VERIFIED | 2 |
 | BLOCKED (perguntas) | 8 |
 
-> **R032 está `IMPLEMENTED`, não `VERIFIED`.** Os filtros do grupo foram aplicados a
-> imagens reais de satélite (MODIS/Terra sobre São Félix do Xingu, 2002 e 2024) e a
-> evidência está em `docs/evidence/results/`. Mas o resultado foi uma **recusa**: a
-> 253 m/pixel o índice de vegetação não é bimodal, e o critério de confiabilidade
-> impediu a quantificação. Quantificação validada depende de imagem de 10 a 30 m —
-> ver `docs/decisions/005-resolucao-espacial.md`.
+> **Fase Intermediária I (R040) tem rascunho completo.** O enunciado exige, na aula
+> anterior à P1, o Capítulo 1 mais os itens de **filtragem** dos Capítulos 2 e 3. Os três
+> estão escritos em `docs/trabalho-escrito/`. Segue `IN_PROGRESS` porque o grupo precisa
+> revisar e assumir o texto, e porque 13 referências bibliográficas continuam pendentes —
+> **nenhuma foi inventada**, todas estão marcadas.
 
-> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 253
+> **R032 está `IMPLEMENTED`, não `VERIFIED`.** Os filtros do grupo foram aplicados a
+> imagens reais e a evidência está em `docs/evidence/results/`. Mas o resultado foi uma
+> **recusa**: a 253 m/pixel o índice não é bimodal. Quantificação validada depende de
+> imagem de 10 a 30 m — `docs/decisions/005-resolucao-espacial.md`.
+
+> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 271
 > testes contra casos analíticos.
 
-> Os requisitos que dependem de demonstração quantitativa — R033, R034, R035, R037, R039,
-> R044, R050 — seguem `IN_PROGRESS`. O programa roda, tem teste e já processou imagem
-> real; o que falta é o resultado numérico defensável, travado pela resolução.
-
-> **Q5 continua em aberto.** Até haver resposta, o projeto segue a leitura conservadora do
-> `AGENTS.md` §14: o modelo foi implementado de fato, em `sentinela/modelo/`.
+> **Q5 continua em aberto.** O projeto segue a leitura conservadora do `AGENTS.md` §14: o
+> modelo foi implementado de fato.
 
 **Total de requisitos rastreados:** 50 (R001–R050) + 8 perguntas em aberto.

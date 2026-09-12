@@ -196,6 +196,12 @@ não é verificar.
 ## 12. Integridade acadêmica
 
 - Nunca inventar resultado, métrica, teste, screenshot ou referência bibliográfica.
+- O trabalho escrito fica em `docs/trabalho-escrito/`. Toda lacuna de fonte é marcada
+  com `[NEEDS_SOURCE: ...]` dizendo o que buscar e onde. Marcador pendente é aceitável
+  em rascunho; citação inventada, nunca. Pendências em `BIBLIOGRAFIA.md`.
+- **Atenção à escala ao citar o índice**: internamente o pipeline mapeia `[-1,1]` para
+  `[0,1]` antes de limiarizar, o que reduz qualquer diferença à metade. No texto
+  acadêmico, usar a escala nativa do índice e dizer qual é.
 - Toda métrica no trabalho escrito deve ser reproduzível a partir do código do repositório.
 - Screenshots devem vir da versão entregue, não de uma versão anterior.
 - Não usar linguagem acadêmica acima do que o grupo consegue defender.

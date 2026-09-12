@@ -198,6 +198,7 @@ região.
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Componentes, fluxo, decisões arquiteturais |
 | [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md) | Estado atual, próximos passos, bloqueios |
 | [`docs/decisions/`](docs/decisions/) | Registros de decisão arquitetural |
+| [`docs/trabalho-escrito/`](docs/trabalho-escrito/) | Rascunhos dos capítulos e pendências de bibliografia |
 | [`docs/enunciado/`](docs/enunciado/) | Documento oficial e transcrição |
 | [`AGENTS.md`](AGENTS.md) | Regras do projeto para agentes de IA |
 
@@ -217,7 +218,7 @@ imagens reais.
 | Modelo de visão computacional | Implementado — floresta aleatória, 25 testes |
 | Aplicação em imagens reais de satélite | Executado — MODIS/Terra, São Félix do Xingu (PA), 2002 e 2024 |
 | **Quantificação validada em imagem real** | **Bloqueada pela resolução — exige 10 a 30 m/pixel** |
-| Trabalho escrito | Não iniciado |
+| Trabalho escrito | Capítulo 1 e seções de filtragem dos caps. 2 e 3 em rascunho |
 
 ### O resultado em imagem real foi uma recusa
 

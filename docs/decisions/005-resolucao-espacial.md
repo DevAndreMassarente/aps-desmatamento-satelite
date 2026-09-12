@@ -33,9 +33,14 @@ A 253 m/pixel, numa frente de desmatamento, **quase todo pixel é mistura**: flo
 pastagem, regeneração e estrada dentro do mesmo pixel. O índice de vegetação de um pixel
 misto cai entre as duas classes puras, e o histograma sai contínuo em vez de bimodal.
 
-Os dois histogramas ficaram unimodais e sobrepostos, com a mediana de 2024 apenas 0,06
-abaixo da de 2002 no NDVI (0,11 no NDMI). O sinal existe e tem a direção certa — houve
-perda de vegetação — mas não há um vale no histograma onde cortar.
+Os dois histogramas ficaram unimodais e sobrepostos. O sinal existe e tem a direção certa:
+na escala nativa do índice, `[-1, 1]`, a mediana cai de +0,944 para +0,794 no NDVI (0,150)
+e de +0,799 para +0,504 no NDMI (0,295). Mas a queda é da **distribuição inteira** — não
+há vale no histograma onde cortar.
+
+> Atenção à escala ao reproduzir estes números: internamente o pipeline mapeia o índice
+> para `[0, 1]` por `(x+1)/2` antes de limiarizar, o que reduz qualquer diferença à
+> metade. As quedas acima estão na escala nativa do índice.
 
 Não é limitação do código. É a razão pela qual o PRODES, do INPE, mapeia desmatamento com
 Landsat a 20–30 m e não com MODIS.

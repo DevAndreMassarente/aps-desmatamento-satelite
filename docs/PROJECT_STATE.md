@@ -1,6 +1,6 @@
 # Project State
 
-_Atualizado em marcos, não a cada alteração. Última atualização: primeira execução em imagem real._
+_Atualizado em marcos, não a cada alteração. Última atualização: rascunho da Fase Intermediária I._
 
 ## Current Phase
 
@@ -53,6 +53,12 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
   entre as datas.
 - **NDMI implementado** (`pdi.cor.ndmi`), exposto na CLI (`--metodo ndmi`) e na
   interface; a cena sintética ganhou banda SWIR para que ele seja demonstrável.
+- **Trabalho escrito iniciado** (`docs/trabalho-escrito/`): Capítulo 1 completo, e as
+  seções de **filtragem** dos Capítulos 2 e 3 — exatamente o que a Fase Intermediária I
+  exige. Nenhuma referência inventada: 13 pendências mapeadas em `BIBLIOGRAFIA.md`.
+- Erro de escala corrigido na documentação: a queda do índice entre as datas tinha sido
+  reportada na escala interna `[0,1]` do pipeline (0,06 e 0,11) em vez da escala nativa
+  `[-1,1]` do índice (0,150 e 0,295). Corrigido em três documentos.
 - Suíte de testes: **271 passando**, incluindo os caminhos de erro, um teste de fumaça da
   interface e a verificação por força bruta de que treino e teste não compartilham pixel.
 - Verificado que `pdi/` não importa `cv2`, `skimage`, `scipy` nem `PIL`, e não depende de
@@ -75,7 +81,10 @@ Em ordem de prioridade:
 3. Recalibrar `DISTINGUIBILIDADE_MINIMA` por procedimento honesto (B5): medir a
    distribuição da métrica em pares de floresta intacta e em pares com desmatamento
    validado pelo PRODES. **Não** ajustar o número para fazer uma cena específica passar.
-5. Escrever Capítulo 1 + a parte de filtragem dos Capítulos 2 e 3 (**Fase Intermediária I**).
+5. **Revisar o rascunho do trabalho escrito em grupo** e resolver as 13 pendências de
+   bibliografia. O texto existe, mas precisa ser assumido por quem vai defendê-lo.
+6. Escrever os Capítulos 4 (desenvolvimento) e 5 (conclusão), e gerar o apêndice de
+   código-fonte a partir de `src/`.
 6. Reavaliar as features de textura em imagem real — na cena sintética elas não
    separam as classes, porque o gerador aplica o mesmo ruído às duas (limitação
    declarada em `modelo/caracteristicas.py`).
@@ -86,7 +95,7 @@ Em ordem de prioridade:
 |---|----------|---------|
 | B1 | Integrantes do grupo não definidos (Q7) | Ficha de APS e capa |
 | B2 | Escopo do modelo indefinido (Q5) | Mitigado: `modelo/` foi implementado pela leitura conservadora do `AGENTS.md` §14 |
-| B3 | Datas de P1/P2 desconhecidas (Q3) | Sem cronograma real |
+| B3 | Datas de P1/P2 desconhecidas (Q3) | Sem cronograma real — e a Fase Intermediária I tem prazo amarrado à P1 |
 | B4 | ~~Nenhuma imagem real baixada~~ — **resolvido**: par MODIS baixado e processado | — |
 | B6 | **Resolução de 250 m insuficiente**: o índice não é bimodal e a detecção é recusada | Trava a quantificação. Exige Sentinel-2/Landsat, que exigem cadastro |
 | B5 | `DISTINGUIBILIDADE_MINIMA` calibrada só em cena sintética | Confirmado em imagem real. Recalibrar por procedimento honesto, nunca ajustando para uma cena passar |
