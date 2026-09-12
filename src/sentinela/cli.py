@@ -100,6 +100,48 @@ def _relatar(resultado, gravados: list[Path] | None = None) -> None:
         print(f"\n{len(gravados)} arquivos gravados em {gravados[0].parent}")
 
 
+def _treinar_e_relatar(conjunto, *, proporcao_teste: float, semente: int) -> int:
+    """Treina o classificador sobre as amostras e imprime a avaliação.
+
+    Separado dos comandos porque `detectar` e `demo` relatam da mesma forma.
+    """
+    from .modelo import ErroModelo, treinar_e_avaliar
+
+    print(f"\nAmostras             : {conjunto.resumo()}")
+
+    try:
+        classificador, avaliacao = treinar_e_avaliar(
+            conjunto, proporcao_teste=proporcao_teste, semente=semente
+        )
+    except ErroModelo as erro:
+        print(f"\nModelo não treinado: {erro}", file=sys.stderr)
+        return 1
+
+    resumo = avaliacao.resumo()
+    matriz = resumo["matriz_confusao"]
+
+    print("\n--- Classificador (floresta aleatória) ---")
+    print(f"Amostras de teste    : {resumo['amostras_de_teste']}")
+    print(f"Acurácia             : {resumo['acuracia']:.4f}")
+    print(f"Precisão             : {resumo['precisao']:.4f}")
+    print(f"Revocação            : {resumo['revocacao']:.4f}")
+    print(f"F1                   : {resumo['f1']:.4f}")
+    print("\nMatriz de confusão:")
+    print(f"  intacto correto      {matriz['intacto_correto']:>5}")
+    print(f"  desmatamento correto {matriz['desmatamento_correto']:>5}")
+    print(f"  falso alarme         {matriz['falso_alarme']:>5}")
+    print(f"  desmatamento perdido {matriz['desmatamento_perdido']:>5}")
+
+    print("\nFeatures mais influentes:")
+    for nome, peso in classificador.importancia_das_features()[:5]:
+        print(f"  {nome:<20} {peso:.4f}")
+
+    for aviso in avaliacao.avisos:
+        print(f"\n  AVISO: {aviso}")
+
+    return 0
+
+
 def comando_app(args: argparse.Namespace) -> int:
     """Sobe a interface Streamlit no navegador."""
     from .app import CAMINHO_APP
@@ -149,6 +191,13 @@ def comando_detectar(args: argparse.Namespace) -> int:
         gravados = _gravar_saidas(Path(args.saida), imagens, resultado)
 
     _relatar(resultado, gravados)
+
+    if args.modelo:
+        conjunto = extrair_amostras(rgb_depois, resultado.perda, lado=args.lado)
+        return _treinar_e_relatar(
+            conjunto, proporcao_teste=args.proporcao_teste, semente=args.semente
+        )
+
     return 0
 
 
@@ -184,10 +233,16 @@ def comando_demo(args: argparse.Namespace) -> int:
         print(f"Erro da detecção    : {erro:.1f}%")
 
     conjunto = extrair_amostras(par["rgb_depois"], resultado.perda)
-    print(f"\nAmostras para o modelo: {conjunto.resumo()}")
-    print(f"Após equilibrar       : {equilibrar(conjunto).resumo()}")
 
-    return 0
+    if not args.modelo:
+        print(f"\nAmostras para o modelo: {conjunto.resumo()}")
+        print(f"Após equilibrar       : {equilibrar(conjunto).resumo()}")
+        print("\nUse --modelo para treinar e avaliar o classificador.")
+        return 0
+
+    return _treinar_e_relatar(
+        conjunto, proporcao_teste=args.proporcao_teste, semente=args.semente
+    )
 
 
 def construir_parser() -> argparse.ArgumentParser:
@@ -213,6 +268,13 @@ def construir_parser() -> argparse.ArgumentParser:
     detectar.add_argument("--area-minima", dest="area_minima", type=int, default=25)
     detectar.add_argument("--metros-por-pixel", dest="metros_por_pixel", type=float,
                           help="sobrepõe o metadado geográfico do arquivo")
+    detectar.add_argument("--modelo", action="store_true",
+                          help="treina e avalia o classificador sobre as amostras")
+    detectar.add_argument("--lado", type=int, default=16,
+                          help="lado do recorte das amostras, em pixels")
+    detectar.add_argument("--proporcao-teste", dest="proporcao_teste", type=float,
+                          default=0.3)
+    detectar.add_argument("--semente", type=int, default=0)
     detectar.set_defaults(funcao=comando_detectar)
 
     demo = subcomandos.add_parser("demo", help="roda a cena sintética de demonstração")
@@ -222,6 +284,10 @@ def construir_parser() -> argparse.ArgumentParser:
                       help="lado da área desmatada; 0 gera floresta intacta")
     demo.add_argument("--metros-por-pixel", dest="metros_por_pixel", type=float,
                       default=10.0)
+    demo.add_argument("--modelo", action="store_true",
+                      help="treina e avalia o classificador sobre as amostras")
+    demo.add_argument("--proporcao-teste", dest="proporcao_teste", type=float, default=0.3)
+    demo.add_argument("--semente", type=int, default=0)
     demo.set_defaults(funcao=comando_demo)
 
     return parser

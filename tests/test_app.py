@@ -34,8 +34,8 @@ class TestInterface:
     def test_executa_sem_excecao(self, app):
         assert not app.exception, [str(e.value) for e in app.exception]
 
-    def test_apresenta_as_tres_secoes(self, app):
-        assert len(app.tabs) == 3
+    def test_apresenta_as_quatro_secoes(self, app):
+        assert len(app.tabs) == 4
 
     def test_mostra_a_area_detectada(self, app):
         metricas = {m.label: m.value for m in app.metric}
@@ -59,6 +59,20 @@ class TestInterface:
         rotulos = {m.label for m in app.metric}
         assert "Área desmatada" not in rotulos
         assert "Em hectares" not in rotulos
+
+    def test_o_modelo_e_treinado_ou_explica_por_que_nao(self, app):
+        """Na cena padrão o classificador roda; se a cena for pequena, avisa."""
+        rotulos = {m.label for m in app.metric}
+        avisos = " ".join(w.value for w in app.warning)
+
+        assert "F1" in rotulos or "Modelo não treinado" in avisos
+
+    def test_desempenho_perfeito_vem_acompanhado_de_ressalva(self, app):
+        """Nunca exibir 1.000 sem dizer que a cena é sintética."""
+        metricas = {m.label: m.value for m in app.metric}
+        if metricas.get("F1") == "1.000":
+            avisos = " ".join(w.value for w in app.warning)
+            assert "perfeito" in avisos
 
     def test_upload_sem_arquivo_orienta_em_vez_de_quebrar(self, app):
         app.sidebar.radio[0].set_value("Enviar imagens").run()

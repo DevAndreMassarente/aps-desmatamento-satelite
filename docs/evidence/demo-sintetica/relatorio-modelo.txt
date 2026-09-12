@@ -1,0 +1,44 @@
+CENA SINTÉTICA — demonstração do programa.
+Não é imagem de satélite e não pode ser apresentada como evidência real
+(AGENTS.md §11). A validação sobre imagem real é o requisito R032.
+
+
+Índice de vegetação : NDVI
+Limiar de Otsu      : 0.7559 (único para as duas datas)
+Distinguibilidade   : 21.250
+
+Área desmatada      : 6400 pixels
+                      64.000 hectares
+Regiões detectadas  : 1
+Fração da cena      : 16.00%
+
+10 arquivos gravados em docs/evidence/demo-sintetica
+
+Verdade de terreno  : 6400 pixels
+Erro da detecção    : 0.0%
+
+Amostras             : {'total': 528, 'intacto': 432, 'desmatado': 96, 'equilibrio': 0.222, 'descartados_ambiguos': 48, 'formato_do_recorte': (16, 16, 3)}
+
+--- Classificador (floresta aleatória) ---
+Amostras de teste    : 124
+Acurácia             : 1.0000
+Precisão             : 1.0000
+Revocação            : 1.0000
+F1                   : 1.0000
+
+Matriz de confusão:
+  intacto correto        100
+  desmatamento correto    24
+  falso alarme             0
+  desmatamento perdido     0
+
+Features mais influentes:
+  media_verde          0.1629
+  brilho_p90           0.1500
+  media_azul           0.1400
+  media_exg            0.1400
+  brilho_p10           0.1200
+
+  AVISO: desempenho perfeito — em imagem real isso praticamente não acontece. Em cena sintética é esperado, porque a separação radiométrica entre as classes foi construída. Não apresente este número como validação do modelo sem repetir a medição em imagem real
+
+  AVISO: conjunto de teste desbalanceado (equilíbrio 0.24) — leia a revocação e o F1, não a acurácia

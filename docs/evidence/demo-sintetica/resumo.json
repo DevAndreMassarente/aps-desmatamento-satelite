@@ -2,11 +2,11 @@
   "confiavel": true,
   "metodo_indice": "ndvi",
   "limiar": 0.7559,
-  "distinguibilidade": 14.193,
-  "separabilidade_otsu": 0.9724,
-  "area_pixels": 900,
-  "area_hectares": 9.0,
-  "proporcao_da_cena": 0.0625,
+  "distinguibilidade": 21.25,
+  "separabilidade_otsu": 0.989,
+  "area_pixels": 6400,
+  "area_hectares": 64.0,
+  "proporcao_da_cena": 0.16,
   "regioes_detectadas": 1,
   "alerta_de_registro": false
 }

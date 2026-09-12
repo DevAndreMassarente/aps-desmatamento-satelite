@@ -73,11 +73,13 @@ src/sentinela/
 ├── pipeline/         orquestração das etapas
 │   ├── deteccao.py       encadeia as cinco etapas e guarda os intermediários
 │   └── amostras.py       recortes rotulados para o modelo
-├── modelo/           features e classificador          (a implementar — depende de Q5)
+├── modelo/           etapa de visão computacional
+│   ├── caracteristicas.py  15 descritores por recorte, todos vindos de pdi/
+│   └── classificador.py    floresta aleatória + divisão espacial por blocos
 ├── app/principal.py  interface Streamlit
 └── cli.py            linha de comando
 
-tests/                214 testes contra casos analíticos
+tests/                241 testes contra casos analíticos
 docs/                 enunciado, especificação, requisitos, arquitetura, decisões, evidências
 data/                 imagens (não versionadas — ver docs/decisions/002)
 ```
@@ -120,6 +122,9 @@ regiões e os recortes rotulados que alimentariam o modelo.
 # demonstração com cena sintética, gravando as imagens de cada etapa
 sentinela demo --saida docs/evidence/demo-sintetica
 
+# incluindo o treino e a avaliação do classificador
+sentinela demo --tamanho 200 --area 80 --modelo
+
 # par de imagens reais
 sentinela detectar --antes data/raw/2020.png --depois data/raw/2024.png \
                    --nir-antes data/raw/2020_nir.png --nir-depois data/raw/2024_nir.png \
@@ -129,6 +134,17 @@ sentinela detectar --antes data/raw/2020.png --depois data/raw/2024.png \
 A linha de comando existe porque evidência para o trabalho escrito precisa ser
 reproduzível por comando: resultado que só aparece depois de alguém clicar numa tela não
 é reproduzível.
+
+### Sobre a métrica do modelo
+
+Em cena sintética o classificador atinge F1 = 1,0. **Isso não valida o modelo** — a
+separação entre as classes foi construída pelo gerador. O número prova que o encanamento
+funciona; o próprio programa emite esse aviso junto da métrica.
+
+A divisão entre treino e teste é feita **por blocos da imagem**, nunca sorteando
+recortes: como a varredura usa passo menor que o lado, recortes vizinhos compartilham
+pixels, e um sorteio individual mediria memorização
+([decisão 004](docs/decisions/004-divisao-espacial.md)).
 
 ### Pela biblioteca
 
@@ -181,13 +197,13 @@ imagens reais.
 | Etapa | Situação |
 |-------|----------|
 | Estrutura e documentação | Concluído |
-| Núcleo de PDI (filtros próprios) | Implementado, 214 testes passando |
+| Núcleo de PDI (filtros próprios) | Implementado, 241 testes passando |
 | Aquisição e I/O de imagem | Implementado |
 | Pipeline de orquestração | Implementado |
 | Interface Streamlit e linha de comando | Implementado |
 | Extração de amostras para o modelo | Implementado |
+| Modelo de visão computacional | Implementado — floresta aleatória, 25 testes |
 | **Aplicação em imagens reais de satélite** | **Não iniciado — bloqueio principal (R032)** |
-| Modelo de visão computacional | Não iniciado — depende da pergunta Q5 |
 | Trabalho escrito | Não iniciado |
 
 A única evidência existente hoje vem de **cena sintética**

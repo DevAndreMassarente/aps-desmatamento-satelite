@@ -32,7 +32,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 | R008 | Cap. 2 — Conceito de **Segmentação** | MUST | PDF p.3, item 2.e.iv | `sentinela/pdi/{limiar,morfologia,segmentacao}.py` | `tests/test_segmentacao.py` | IN_PROGRESS |
 | R009 | Cap. 2 — Proposta **teórica** do modelo adequado de visão computacional | MUST | PDF p.3, item 2.e.v | `docs/` | — | NOT_STARTED |
 | R010 | Cap. 3.a — Proposta de PDI: escolha de filtros que apoiem a solução | MUST | PDF p.3, item 3.a | `sentinela/pipeline/` | — | NOT_STARTED |
-| R011 | Cap. 3.b — Proposta de modelagem + escolha de algoritmos de inteligência | MUST | PDF p.3, item 3.b | `sentinela/modelo/` | — | NOT_STARTED |
+| R011 | Cap. 3.b — Proposta de modelagem + escolha de algoritmos de inteligência | MUST | PDF p.3, item 3.b | `sentinela/modelo/` | `docs/decisions/004-divisao-espacial.md` | IN_PROGRESS |
 | R012 | Cap. 4.a — Descrever como os métodos foram implantados | MUST | PDF p.3, item 4.a | — | — | NOT_STARTED |
 | R013 | Cap. 4.b — Listar as ferramentas utilizadas | MUST | PDF p.3, item 4.b | — | — | NOT_STARTED |
 | R014 | Cap. 4.c — Descrever como foram feitos os testes | MUST | PDF p.3, item 4.c | `tests/` | — | NOT_STARTED |
@@ -60,17 +60,17 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | ID | Requisito | Tipo | Fonte | Implementação | Evidência/Teste | Status |
 |----|-----------|------|-------|---------------|-----------------|--------|
-| R029 | Sistema que implementa as soluções propostas no item 3 da seção I | MUST | PDF p.4, item II.1 | `src/sentinela/` + `cli.py` | `tests/` — 214 testes | IN_PROGRESS |
+| R029 | Sistema que implementa as soluções propostas no item 3 da seção I | MUST | PDF p.4, item II.1 | `src/sentinela/` + `cli.py` | `tests/` — 241 testes | IN_PROGRESS |
 | R030 | **Filtros desenvolvidos pelo próprio grupo** (não usar prontos de biblioteca) | MUST | PDF p.3, item 3.a | `sentinela/pdi/` | `tests/test_filtros.py`, `test_nucleo.py` — 154 testes | VERIFIED |
 | R031 | Filtros preferencialmente em linguagem Python | SHOULD | PDF p.3, item 3.a | Python 3.12 | — | IMPLEMENTED |
 | R032 | Filtros aplicados em **imagens reais** do problema escolhido | MUST | PDF p.3, item 3.a | `data/raw/` | `docs/evidence/results/` | NOT_STARTED |
 | R033 | Resultado dos filtros apresentado **e analisado** | MUST | PDF p.3, item 3.a | `sentinela/app/principal.py` | `docs/evidence/demo-sintetica/` (sintética) | IN_PROGRESS |
-| R034 | PDI usado como **preparação de dados** para alimentar modelo de visão computacional | MUST | PDF p.2 (Objetivo) | `sentinela/pipeline/amostras.py` | `tests/test_pipeline.py::TestAmostras` | IN_PROGRESS |
-| R035 | Processo de modelagem + algoritmos de inteligência adequados para imagens | MUST | PDF p.3, item 3.b | `sentinela/modelo/` | — | NOT_STARTED |
+| R034 | PDI usado como **preparação de dados** para alimentar modelo de visão computacional | MUST | PDF p.2 (Objetivo) | `pipeline/amostras.py` → `modelo/` | `tests/test_pipeline.py`, `test_modelo.py` | IN_PROGRESS |
+| R035 | Processo de modelagem + algoritmos de inteligência adequados para imagens | MUST | PDF p.3, item 3.b | `modelo/caracteristicas.py`, `modelo/classificador.py` | `tests/test_modelo.py` — 25 testes | IN_PROGRESS |
 | R036 | **Tratamento de erros** — citado como fator de impacto direto na nota | SHOULD | PDF p.4, item II.2 | `dataio/imagem.py`, `pipeline/deteccao.py` | `test_dataio.py`, `TestValidacaoDeEntrada` — 18 casos | VERIFIED |
 | R037 | Nível de refinamento e funcionalidade do sistema | SHOULD | PDF p.4, item II.2 | `sentinela/app/`, `sentinela/cli.py` | `tests/test_app.py` | IN_PROGRESS |
 | R038 | Funções extras implementadas | MAY | PDF p.4, item II.2 | — | — | NOT_STARTED |
-| R039 | Complexidade da técnica escolhida | SHOULD | PDF p.4, item II.2 | `sentinela/modelo/` | — | NOT_STARTED |
+| R039 | Complexidade da técnica escolhida | SHOULD | PDF p.4, item II.2 | floresta aleatória + divisão espacial por blocos | `docs/decisions/004-divisao-espacial.md` | IN_PROGRESS |
 
 ## D. Etapas intermediárias
 
@@ -112,19 +112,25 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | Status | Qtd |
 |--------|-----|
-| NOT_STARTED | 36 |
-| IN_PROGRESS | 11 |
+| NOT_STARTED | 33 |
+| IN_PROGRESS | 14 |
 | IMPLEMENTED | 1 |
 | VERIFIED | 2 |
 | BLOCKED (perguntas) | 8 |
 
-> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 214
+> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 241
 > testes contra casos analíticos. A aplicação em **imagens reais** (R032) é requisito
 > separado e continua `NOT_STARTED` — é hoje o bloqueio mais relevante do programa.
 
-> R033, R034, R037, R044 e R050 estão `IN_PROGRESS`, não `VERIFIED`: o código existe e
-> tem teste, mas a evidência disponível vem de **cena sintética**
+> Os requisitos do programa que dependem de demonstração — R033, R034, R035, R037, R039,
+> R044, R050 — estão `IN_PROGRESS`, não `VERIFIED`: o código existe e tem teste, mas a
+> única evidência disponível vem de **cena sintética**
 > (`docs/evidence/demo-sintetica/`), que por `AGENTS.md` §11 não pode sustentar requisito
 > acadêmico. Eles só avançam depois de R032.
+
+> **Q5 continua em aberto.** Até haver resposta do professor, o projeto segue a leitura
+> conservadora do `AGENTS.md` §14 e implementa o modelo de fato — feito em
+> `sentinela/modelo/`. Se a resposta for "basta a proposta teórica", o trabalho já está
+> coberto; o contrário custaria uma fase inteira.
 
 **Total de requisitos rastreados:** 50 (R001–R050) + 8 perguntas em aberto.

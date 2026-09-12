@@ -1,12 +1,13 @@
 # Project State
 
-_Atualizado em marcos, não a cada alteração. Última atualização: programa executável._
+_Atualizado em marcos, não a cada alteração. Última atualização: etapa de modelo._
 
 ## Current Phase
 
-**Programa executável.** A cadeia completa roda de ponta a ponta — interface no
-navegador, linha de comando e extração de amostras rotuladas. O que falta no programa
-não é código: são **imagens reais** (R032).
+**Cinco etapas implementadas.** A cadeia roda de ponta a ponta, incluindo o
+classificador: aquisição → manipulação → filtragem → segmentação → modelo. Nenhum módulo
+do `src/` continua vazio. O que falta no programa não é código: são **imagens reais**
+(R032).
 
 Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado manda concluir
 **antes** do desenvolvimento prático pesado, em paralelo com a aquisição das cenas.
@@ -32,8 +33,14 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
   hectares, tabela de regiões e amostras para o modelo.
 - **`cli.py`** — `sentinela app`, `sentinela detectar` e `sentinela demo`. A geração de
   evidência passa a ser reproduzível por comando, não por cliques numa tela.
-- Suíte de testes: **214 passando**, incluindo os caminhos de erro e um teste de fumaça
-  da interface.
+- **`modelo/`** — `caracteristicas.py` extrai 15 descritores por recorte, todos vindos
+  do núcleo de PDI do grupo; `classificador.py` treina uma floresta aleatória e relata
+  precisão, revocação, F1 e matriz de confusão com os avisos que o número sozinho esconde.
+- Divisão treino/teste **por blocos espaciais**, não por sorteio de recorte
+  (`docs/decisions/004-divisao-espacial.md`). Os recortes se sobrepõem; sortear
+  individualmente mediria memorização, não generalização.
+- Suíte de testes: **241 passando**, incluindo os caminhos de erro, um teste de fumaça da
+  interface e a verificação por força bruta de que treino e teste não compartilham pixel.
 - Verificado que `pdi/` não importa `cv2`, `skimage`, `scipy` nem `PIL`, e não depende de
   nenhuma camada superior — a restrição central do enunciado continua de pé.
 - Graphify preparado e validado sob Security Gate.
@@ -56,15 +63,16 @@ Em ordem de prioridade:
 4. Reavaliar `DISTINGUIBILIDADE_MINIMA` em cena real — hoje está calibrada só em
    sintética (B5).
 5. Escrever Capítulo 1 + a parte de filtragem dos Capítulos 2 e 3 (**Fase Intermediária I**).
-6. Implementar a etapa de modelo em `modelo/`, consumindo o conjunto de
-   `pipeline.extrair_amostras`. Depende de Q5.
+6. Reavaliar as features de textura em imagem real — na cena sintética elas não
+   separam as classes, porque o gerador aplica o mesmo ruído às duas (limitação
+   declarada em `modelo/caracteristicas.py`).
 
 ## Blockers
 
 | # | Bloqueio | Impacto |
 |---|----------|---------|
 | B1 | Integrantes do grupo não definidos (Q7) | Ficha de APS e capa |
-| B2 | Escopo do modelo indefinido (Q5) | Dimensiona a etapa de `modelo/` |
+| B2 | Escopo do modelo indefinido (Q5) | Mitigado: `modelo/` foi implementado pela leitura conservadora do `AGENTS.md` §14 |
 | B3 | Datas de P1/P2 desconhecidas (Q3) | Sem cronograma real |
 | B4 | **Nenhuma imagem real baixada** | Segura R032 e mais cinco requisitos atrás dele |
 | B5 | `DISTINGUIBILIDADE_MINIMA` calibrada só em cena sintética | Precisa ser reavaliada em imagem real antes de ir para o trabalho escrito |
@@ -79,6 +87,12 @@ Em ordem de prioridade:
   `--metros-por-pixel`. Instalar só se as cenas reais vierem em GeoTIFF.
 - A convolução é `O(H·W·k²)` com laço sobre o kernel. Suficiente para os recortes usados
   na demonstração; pode ficar lenta em cena Sentinel-2 completa.
+- **As features de textura não separam as classes na cena sintética**, porque o gerador
+  aplica o mesmo desvio de ruído às duas. Elas continuam no vetor porque devem separar em
+  imagem real — hipótese da literatura, ainda não medida. Não apresentar como validadas.
+- **F1 = 1,0 na cena sintética não valida o modelo.** A separação radiométrica foi
+  construída; o número prova que o encanamento funciona, não que o classificador serve.
+  O próprio código emite esse aviso.
 
 ## Important Decisions
 
@@ -93,6 +107,8 @@ Em ordem de prioridade:
 | D7 | Graphify como contexto de código local, nunca versionado | `AGENTS.md` §17 |
 | D8 | Detecção não confiável **não reporta área** — `resumo()` devolve `None` em vez de um número inventado | `pipeline/deteccao.py` |
 | D9 | Recortes ambíguos são descartados na rotulagem, não arredondados para a classe majoritária | `pipeline/amostras.py` |
+| D10 | Divisão treino/teste por blocos espaciais, nunca por sorteio de recorte | `docs/decisions/004-divisao-espacial.md` |
+| D11 | Floresta aleatória em vez de rede convolucional, pela explicabilidade na banca | `modelo/classificador.py` |
 
 ## Graphify
 

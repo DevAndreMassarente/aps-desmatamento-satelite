@@ -77,7 +77,8 @@ recebe e devolve arrays NumPy puros. Isso é o que torna cada filtro testável i
 | `pipeline/deteccao.py` | Encadear as etapas, registrar cada saída intermediária | Não implementa algoritmo |
 | `pipeline/amostras.py` | Recortar e rotular amostras para o modelo | Não treina |
 | `cli.py` | Expor o pipeline por comando, gravar evidência reproduzível | Não implementa algoritmo |
-| `modelo/` | Extrair features dos patches, treinar e aplicar classificador | Não faz PDI |
+| `modelo/caracteristicas.py` | Descrever cada recorte com medidas vindas de `pdi/` | Não implementa filtro |
+| `modelo/classificador.py` | Dividir espacialmente, treinar, avaliar, relatar importância | Não faz PDI |
 | `app/` | Apresentar, receber parâmetros, exibir comparações | Não contém lógica de domínio |
 
 ---
@@ -120,9 +121,13 @@ etapas 1 a 4 numa chamada e devolve um `ResultadoDeteccao` com todos os intermed
                                    recortes ambíguos são descartados, não arredondados
    → pipeline.equilibrar()         subamostra a classe majoritária
 
-6. MODELO   (a implementar — depende de Q5)
-   → modelo.features()             estatísticas de cor, textura e índice por recorte
-   → modelo.treinar() / prever()   classificador
+6. MODELO
+   → modelo.extrair_caracteristicas()  15 descritores por recorte, calculados com
+                                       pdi.cor e pdi.filtros — nada vem pronto
+   → modelo.dividir_espacialmente()    treino/teste por BLOCOS da imagem; sortear
+                                       recortes vazaria pixel de um lado para o outro
+   → modelo.treinar_e_avaliar()        floresta aleatória + precisão, revocação, F1,
+                                       matriz de confusão e avisos sobre a métrica
 ```
 
 ### Saídas

@@ -374,6 +374,96 @@ def aba_amostras(imagens: dict, resultado) -> None:
         )
 
 
+def aba_modelo(imagens: dict, resultado) -> None:
+    """Etapa 5 — classificador treinado sobre as amostras rotuladas."""
+    from sentinela.modelo import ErroModelo, treinar_e_avaliar
+
+    st.caption(
+        "Floresta aleatória treinada sobre os recortes rotulados. As **features saem do "
+        "núcleo de PDI do grupo** (`pdi.filtros.desvio_padrao_local`, "
+        "`pdi.cor.exg`, ...); o scikit-learn entra só no algoritmo de aprendizado, que o "
+        "enunciado permite."
+    )
+
+    col1, col2, col3 = st.columns(3)
+    lado = col1.slider("Lado do recorte", 8, 32, 16, step=8, key="modelo_lado")
+    proporcao = col2.slider("Fração para teste", 0.1, 0.5, 0.3, step=0.1)
+    semente = col3.number_input("Semente do sorteio de blocos", 0, 999, 0)
+
+    try:
+        conjunto = extrair_amostras(
+            imagens["rgb_depois"], resultado.perda, lado=lado, passo=lado // 2
+        )
+    except ErroImagem as erro:
+        st.error(f"Não foi possível extrair amostras: {erro}", icon="🚫")
+        return
+
+    st.info(
+        "**Treino e teste são separados por blocos da imagem, não por sorteio de "
+        "recorte.** Os recortes se sobrepõem: sortear individualmente colocaria o mesmo "
+        "pedaço de terreno nos dois lados e a acurácia medida seria vazamento. Recortes "
+        "que cruzam fronteira de bloco são descartados.",
+        icon="🧭",
+    )
+
+    try:
+        classificador, avaliacao = treinar_e_avaliar(
+            conjunto, proporcao_teste=proporcao, semente=int(semente)
+        )
+    except ErroModelo as erro:
+        st.warning(f"**Modelo não treinado.** {erro}", icon="⚠️")
+        return
+
+    resumo = avaliacao.resumo()
+    colunas = st.columns(4)
+    colunas[0].metric("Acurácia", f"{resumo['acuracia']:.3f}")
+    colunas[1].metric("Precisão", f"{resumo['precisao']:.3f}")
+    colunas[2].metric(
+        "Revocação", f"{resumo['revocacao']:.3f}",
+        help="Fração do desmatamento real que o modelo encontrou.",
+    )
+    colunas[3].metric("F1", f"{resumo['f1']:.3f}")
+
+    for aviso in avaliacao.avisos:
+        st.warning(aviso, icon="⚠️")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("**Matriz de confusão**")
+        matriz = resumo["matriz_confusao"]
+        st.dataframe(
+            [
+                {"Resultado": "Intacto classificado como intacto",
+                 "Amostras": matriz["intacto_correto"]},
+                {"Resultado": "Desmatamento encontrado",
+                 "Amostras": matriz["desmatamento_correto"]},
+                {"Resultado": "Falso alarme", "Amostras": matriz["falso_alarme"]},
+                {"Resultado": "Desmatamento perdido",
+                 "Amostras": matriz["desmatamento_perdido"]},
+            ],
+            width="stretch",
+            hide_index=True,
+        )
+        st.caption(
+            f"{resumo['amostras_de_teste']} amostras de teste, de blocos que o modelo "
+            "não viu no treino."
+        )
+
+    with col2:
+        st.markdown("**O que pesou na decisão**")
+        importancias = classificador.importancia_das_features()
+        st.dataframe(
+            [{"Feature": nome, "Peso": round(peso, 4)} for nome, peso in importancias[:8]],
+            width="stretch",
+            hide_index=True,
+        )
+        st.caption(
+            "É o que permite responder *por que o modelo classificou assim* na "
+            "apresentação."
+        )
+
+
 def principal() -> None:
     st.title("Sentinela — detecção e quantificação de desmatamento")
     st.caption(
@@ -414,8 +504,8 @@ def principal() -> None:
 
     painel_resultado(resultado, opcoes)
 
-    etapas, deteccao, amostras = st.tabs(
-        ["Etapas do processamento", "Detecção", "Amostras para o modelo"]
+    etapas, deteccao, amostras, classificacao = st.tabs(
+        ["Etapas do processamento", "Detecção", "Amostras para o modelo", "Modelo"]
     )
     with etapas:
         aba_etapas(imagens, resultado, opcoes)
@@ -423,6 +513,8 @@ def principal() -> None:
         aba_deteccao(imagens, resultado)
     with amostras:
         aba_amostras(imagens, resultado)
+    with classificacao:
+        aba_modelo(imagens, resultado)
 
 
 if __name__ == "__main__":

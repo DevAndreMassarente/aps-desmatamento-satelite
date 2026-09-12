@@ -84,11 +84,15 @@ ou apenas chamado de outro lugar? Se for chamado, está errado.
 |-----------|------|----------|
 | `Pillow` | `dataio/` | Abrir e salvar PNG/JPEG — **I/O apenas** |
 | `rasterio` | `dataio/` | Ler GeoTIFF e metadado geográfico — opcional |
-| `scikit-learn` | `modelo/` | Classificador da etapa de modelagem |
+| `scikit-learn` | `modelo/` | Classificador da etapa de modelagem — **só o algoritmo de aprendizado**; as features saem de `pdi/` |
 | `matplotlib` | `app/`, scripts | Histogramas e gráficos |
 | `streamlit` | `app/` | Interface |
 
 Raciocínio completo em `docs/decisions/001-filtros-proprios.md`.
+
+As 15 features de `modelo/caracteristicas.py` são calculadas com `pdi.cor` e
+`pdi.filtros`. Se o professor perguntar de onde vem a textura, a resposta é
+`pdi.filtros.desvio_padrao_local`, e o algoritmo está no repositório.
 
 ---
 
@@ -158,7 +162,7 @@ imagem bimodal sintética cai entre os dois modos.
 Ao implementar um filtro novo, escrever o teste **junto**. Um filtro sem teste não pode ser
 marcado `VERIFIED` na matriz de requisitos.
 
-A suíte tem **214 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
+A suíte tem **241 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
 automaticamente quando o extra `app` não está instalado.
 
 ---
@@ -242,13 +246,16 @@ delas, registrar a suposição explicitamente.
 | # | Item | Quando resolver |
 |---|------|-----------------|
 | T1 | **Nenhuma imagem real baixada** — o pipeline nunca rodou em dado verdadeiro. Segura R032 e cinco requisitos atrás dele | Antes da Fase Intermediária I |
-| T3 | Etapa de modelo (`modelo/`) ainda não implementada — o conjunto de amostras já é produzido por `pipeline/amostras.py` e está esperando um consumidor | Depende de Q5 |
+| T7 | Features de textura não são separáveis na cena sintética (mesmo ruído nas duas classes); só podem ser validadas em imagem real | Junto com T1 |
 | T4 | Convolução é `O(H·W·k²)` com laço sobre o kernel — suficiente para recortes, pode ficar lenta em cena Sentinel-2 completa | Só se a demonstração exigir |
 | T5 | `DISTINGUIBILIDADE_MINIMA = 4.0` foi calibrada em cena sintética. Em imagem real o ruído de dossel é maior e o valor pode precisar de ajuste | Junto com T1 |
 | T6 | `rasterio` não está instalado; sem ele a resolução espacial é informada à mão | Só se as cenas vierem em GeoTIFF |
 
 > **T2 (interface Streamlit) foi resolvido.** `app/principal.py` está implementado e
 > coberto por teste de fumaça em `tests/test_app.py`.
+>
+> **T3 (etapa de modelo) foi resolvido.** `modelo/` está implementado pela leitura
+> conservadora do §14, com 25 testes. Q5 continua em aberto, mas deixou de bloquear.
 
 ---
 
@@ -262,7 +269,7 @@ esta seção é autossuficiente, com os caminhos e comandos já validados neste 
 
 | Campo | Valor |
 |-------|-------|
-| Estado | `STALE` — `dataio/`, `pipeline/`, `app/` e `cli.py` entraram depois da extração |
+| Estado | `STALE` — `dataio/`, `pipeline/`, `modelo/`, `app/` e `cli.py` entraram depois da extração |
 | Grafo | `graphify-out/graph.json` — 433 nós, 726 arestas |
 | Origem dos nós | 433/433 `ast` — zero LLM (`input_tokens=0`, `output_tokens=0`) |
 | Ferramenta | `/home/vader/.local/share/uv/tools/graphifyy/bin/graphify` — `graphify 0.9.51` |
