@@ -33,11 +33,11 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 | R009 | Cap. 2 — Proposta **teórica** do modelo adequado de visão computacional | MUST | PDF p.3, item 2.e.v | `docs/` | — | NOT_STARTED |
 | R010 | Cap. 3.a — Proposta de PDI: escolha de filtros que apoiem a solução | MUST | PDF p.3, item 3.a | `docs/trabalho-escrito/03-proposta.md` §3.a | `docs/evidence/results/` | IN_PROGRESS |
 | R011 | Cap. 3.b — Proposta de modelagem + escolha de algoritmos de inteligência | MUST | PDF p.3, item 3.b | `sentinela/modelo/` | `docs/decisions/004-divisao-espacial.md` | IN_PROGRESS |
-| R012 | Cap. 4.a — Descrever como os métodos foram implantados | MUST | PDF p.3, item 4.a | — | — | NOT_STARTED |
-| R013 | Cap. 4.b — Listar as ferramentas utilizadas | MUST | PDF p.3, item 4.b | — | — | NOT_STARTED |
-| R014 | Cap. 4.c — Descrever como foram feitos os testes | MUST | PDF p.3, item 4.c | `tests/` | — | NOT_STARTED |
-| R015 | Cap. 4.d — Mostrar os resultados obtidos | MUST | PDF p.3, item 4.d | `docs/evidence/results/` | — | NOT_STARTED |
-| R016 | Cap. 5 — Conclusão | MUST | PDF p.3, item 5 | — | — | NOT_STARTED |
+| R012 | Cap. 4.a — Descrever como os métodos foram implantados | MUST | PDF p.3, item 4.a | `docs/trabalho-escrito/04-desenvolvimento.md` §4.a | rascunho completo | IN_PROGRESS |
+| R013 | Cap. 4.b — Listar as ferramentas utilizadas | MUST | PDF p.3, item 4.b | `docs/trabalho-escrito/04-desenvolvimento.md` §4.b | versões conferidas no ambiente | IN_PROGRESS |
+| R014 | Cap. 4.c — Descrever como foram feitos os testes | MUST | PDF p.3, item 4.c | `docs/trabalho-escrito/04-desenvolvimento.md` §4.c | `tests/` — 288 testes | IN_PROGRESS |
+| R015 | Cap. 4.d — Mostrar os resultados obtidos | MUST | PDF p.3, item 4.d | `docs/trabalho-escrito/04-desenvolvimento.md` §4.d | `docs/evidence/` | IN_PROGRESS |
+| R016 | Cap. 5 — Conclusão | MUST | PDF p.3, item 5 | `docs/trabalho-escrito/05-conclusao.md` | rascunho completo | IN_PROGRESS |
 | R017 | Cap. 6 — Bibliografia (fontes reais, ABNT) | MUST | PDF p.3, item 6 | `docs/trabalho-escrito/BIBLIOGRAFIA.md` | 13 pendências mapeadas, nenhuma inventada | IN_PROGRESS |
 | R018 | Cap. 7 — Apêndice com o código-fonte do programa | MUST | PDF p.3, item 7 | `sentinela apendice` → `07-apendice.md` | `tests/test_cli.py` | IMPLEMENTED |
 | R019 | Cap. 8 — Ficha de Atividades Práticas Supervisionadas | MUST | PDF p.4, item 8 | — | — | NOT_STARTED |
@@ -51,7 +51,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 | R022 | Margem direita 2,5 cm e esquerda 2,5 cm | MUST | PDF p.4, item III.5 | — | — | NOT_STARTED |
 | R023 | Páginas em formato A4 | MUST | PDF p.4, item III.5 | — | — | NOT_STARTED |
 | R024 | Seguir formato de trabalho acadêmico (normas ABNT) | MUST | PDF p.4, item III.5 | — | — | NOT_STARTED |
-| R025 | Contemplar todos os tópicos do item I do enunciado | MUST | PDF p.4, item III.5 | R001–R019 | — | NOT_STARTED |
+| R025 | Contemplar todos os tópicos do item I do enunciado | MUST | PDF p.4, item III.5 | `docs/trabalho-escrito/` — caps. 1 a 5 e 7 | `docs/trabalho-escrito/README.md` | IN_PROGRESS |
 | R026 | Entregar junto com a ficha padrão de APS, cronologicamente preenchida | MUST | PDF p.4, item III.6 | — | — | NOT_STARTED |
 | R027 | **Postar versão final em `trabalhosacademicos.unip.br/entrega/`** — a não postagem implica reprovação automática | MUST | PDF p.4, item III.8 | — | — | NOT_STARTED |
 | R028 | Desenvolver o trabalho **em etapas** | MUST | PDF p.4, item III.7 | R040, R041 | — | IN_PROGRESS |
@@ -112,11 +112,15 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | Status | Qtd |
 |--------|-----|
-| NOT_STARTED | 24 |
-| IN_PROGRESS | 21 |
+| NOT_STARTED | 18 |
+| IN_PROGRESS | 27 |
 | IMPLEMENTED | 3 |
 | VERIFIED | 2 |
 | BLOCKED (perguntas) | 8 |
+
+> **Os Capítulos 1 a 5 e o 7 têm rascunho.** Faltam as seções 2.e.i, 2.e.ii, 2.e.iv,
+> 2.e.v e 3.b — sem bloqueio, o conteúdo existe no repositório. O Capítulo 8 depende
+> de Q7.
 
 > **Fase Intermediária I (R040) tem rascunho completo.** O enunciado exige, na aula
 > anterior à P1, o Capítulo 1 mais os itens de **filtragem** dos Capítulos 2 e 3. Os três

@@ -1,6 +1,6 @@
 # Project State
 
-_Atualizado em marcos, não a cada alteração. Última atualização: rascunho da Fase Intermediária I._
+_Atualizado em marcos, não a cada alteração. Última atualização: capítulos 1 a 5 e 7 do trabalho escrito._
 
 ## Current Phase
 
@@ -53,9 +53,10 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
   entre as datas.
 - **NDMI implementado** (`pdi.cor.ndmi`), exposto na CLI (`--metodo ndmi`) e na
   interface; a cena sintética ganhou banda SWIR para que ele seja demonstrável.
-- **Trabalho escrito iniciado** (`docs/trabalho-escrito/`): Capítulo 1 completo, e as
-  seções de **filtragem** dos Capítulos 2 e 3 — exatamente o que a Fase Intermediária I
-  exige. Nenhuma referência inventada: 13 pendências mapeadas em `BIBLIOGRAFIA.md`.
+- **Trabalho escrito** (`docs/trabalho-escrito/`): Capítulos 1, 3.a, 4 e 5 com rascunho
+  completo, Capítulo 2 com a parte de filtragem completa, Capítulo 7 gerado por comando.
+  A Fase Intermediária I está coberta. Nenhuma referência inventada: 13 pendências
+  mapeadas em `BIBLIOGRAFIA.md`.
 - Erro de escala corrigido na documentação: a queda do índice entre as datas tinha sido
   reportada na escala interna `[0,1]` do pipeline (0,06 e 0,11) em vez da escala nativa
   `[-1,1]` do índice (0,150 e 0,295). Corrigido em três documentos.
@@ -90,8 +91,9 @@ Em ordem de prioridade:
    validado pelo PRODES. **Não** ajustar o número para fazer uma cena específica passar.
 5. **Revisar o rascunho do trabalho escrito em grupo** e resolver as 13 pendências de
    bibliografia. O texto existe, mas precisa ser assumido por quem vai defendê-lo.
-6. Escrever os Capítulos 4 (desenvolvimento) e 5 (conclusão), e gerar o apêndice de
-   código-fonte a partir de `src/`.
+6. Redigir as seções que faltam — 2.e.i, 2.e.ii, 2.e.iv, 2.e.v e 3.b. Sem bloqueio: o
+   conteúdo já existe no repositório, falta escrever.
+7. Montar o documento final em ABNT e preencher a Ficha de APS (bloqueado por Q7).
 6. Reavaliar as features de textura em imagem real — na cena sintética elas não
    separam as classes, porque o gerador aplica o mesmo ruído às duas (limitação
    declarada em `modelo/caracteristicas.py`).

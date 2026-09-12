@@ -218,7 +218,7 @@ imagens reais.
 | Modelo de visão computacional | Implementado — floresta aleatória, 25 testes |
 | Aplicação em imagens reais de satélite | Executado — MODIS/Terra, São Félix do Xingu (PA), 2002 e 2024 |
 | **Quantificação validada em imagem real** | **Bloqueada pela resolução — exige 10 a 30 m/pixel** |
-| Trabalho escrito | Capítulo 1 e seções de filtragem dos caps. 2 e 3 em rascunho |
+| Trabalho escrito | Caps. 1, 3.a, 4 e 5 em rascunho; filtragem do cap. 2 completa; apêndice gerado |
 
 ### O resultado em imagem real foi uma recusa
 
