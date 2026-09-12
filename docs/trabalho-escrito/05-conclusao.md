@@ -13,7 +13,7 @@ Prewitt e Laplaciano, realce de nitidez, textura por desvio padrão local, limia
 Otsu, morfologia binária e rotulagem de componentes conexos por união-busca.
 
 O sistema é operável por três caminhos — biblioteca, linha de comando e interface web — e é
-verificado por 288 testes construídos contra propriedades matemáticas conhecidas, e não
+verificado por 294 testes construídos contra propriedades matemáticas conhecidas, e não
 contra a saída de outra biblioteca.
 
 ## O resultado principal não foi o esperado, e é o mais importante
@@ -24,10 +24,10 @@ reportou área de desmatamento.
 
 A recusa está correta. A 253 metros por pixel, quase todo pixel de uma frente de
 desmatamento contém floresta, pastagem, regeneração e estrada simultaneamente. O índice
-espectral de um pixel misto cai entre os valores das classes puras, e o histograma
-resultante é contínuo — não há o vale que a limiarização global precisa para separar duas
-populações. O sinal de perda existe, e a mediana do índice cai de forma clara entre as duas
-datas, mas como deslocamento da distribuição inteira, não como separação de dois modos.
+espectral de um pixel misto cai entre os valores das classes puras, e as distribuições das
+duas datas se sobrepõem fortemente. O sinal de perda existe, e a mediana do índice cai de
+forma clara entre as duas datas. Há um vale entre as classes, mas raso — e a limiarização
+global precisa de um vale profundo para separar duas populações com confiança.
 
 Seria trivial produzir um número: bastaria baixar o critério de aceitação de 4,0 para 3,0 e
 o sistema reportaria uma área. **Isso não foi feito.** Ajustar a régua depois de ver a

@@ -6,8 +6,8 @@ _Atualizado em marcos, não a cada alteração. Última atualização: capítulo
 
 **Primeira execução em imagem real, com resultado negativo documentado.** A cadeia
 roda de ponta a ponta e já processou um par bi-temporal MODIS de São Félix do Xingu
-(2002 e 2024). O sistema **recusou-se a quantificar**: a 253 m/pixel o índice de vegetação
-não é bimodal, e o critério de confiabilidade disparou. A recusa está correta e o
+(2002 e 2024). O sistema **recusou-se a quantificar**: a 253 m/pixel as classes se
+sobrepõem demais — o vale entre elas é raso — e o critério de confiabilidade disparou. A recusa está correta e o
 diagnóstico está em `docs/decisions/005-resolucao-espacial.md`.
 
 O bloqueio deixou de ser "não temos imagem real" e passou a ser **"precisamos de 10 a
@@ -68,7 +68,23 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
   o Capítulo 7 do enunciado. Gerado e não copiado, para não divergir do código
   entregue: 16 arquivos, 3.782 linhas.
 - **Média separável**: mesmo tratamento do gaussiano, até 11,3× em janela 21×21.
-- Suíte de testes: **291 passando**, incluindo os caminhos de erro, um teste de fumaça da
+- **Apresentação preparada** (`docs/apresentacao/`): roteiro de 13 minutos em seis blocos com
+  a parte exigida pelo enunciado em cada um, passo a passo da demonstração ao vivo, plano B,
+  checklist e 14 perguntas prováveis com onde está a resposta no código.
+- **Figuras da apresentação** geradas dos dados reais: comparativo 2002 × 2024 e histogramas
+  NDVI/NDMI com tabela equivalente. A paleta foi validada por script (daltonismo e contraste).
+- **Screenshots da interface por comando** (`scripts/capturar_telas.mjs`): quatro telas,
+  incluindo a recusa. Regerar antes da entrega — o `AGENTS.md` exige telas da versão entregue.
+- **Interface revisada** a partir dos screenshots: ícones que dependiam de fonte de emoji
+  viravam quadrados, a máscara toda branca sumia no fundo, e os números usavam ponto decimal.
+- **Correção de descrição**: o texto dizia que os histogramas reais eram "unimodais" e sem
+  vale. O gráfico mostrou vale raso entre as classes. Corrigido em 11 documentos; a
+  conclusão e as métricas não mudam.
+- **Bug no aviso de "desempenho perfeito"**, achado pelo screenshot: disparava com teste de uma
+  classe só, ao lado de precisão, revocação e F1 iguais a zero. Corrigido, com teste de
+  regressão.
+- Graphify regenerado e validado — `READY`.
+- Suíte de testes: **294 passando**, incluindo os caminhos de erro, um teste de fumaça da
   interface e a verificação por força bruta de que treino e teste não compartilham pixel.
 - Verificado que `pdi/` não importa `cv2`, `skimage`, `scipy` nem `PIL`, e não depende de
   nenhuma camada superior — a restrição central do enunciado continua de pé.
@@ -107,7 +123,7 @@ Em ordem de prioridade:
 | B2 | Escopo do modelo indefinido (Q5) | Mitigado: `modelo/` foi implementado pela leitura conservadora do `AGENTS.md` §14 |
 | B3 | Datas de P1/P2 desconhecidas (Q3) | Sem cronograma real — e a Fase Intermediária I tem prazo amarrado à P1 |
 | B4 | ~~Nenhuma imagem real baixada~~ — **resolvido**: par MODIS baixado e processado | — |
-| B6 | **Resolução de 250 m insuficiente**: o índice não é bimodal e a detecção é recusada | Trava a quantificação. Exige Sentinel-2/Landsat, que exigem cadastro |
+| B6 | **Resolução de 250 m insuficiente**: classes sobrepostas, vale raso, detecção recusada | Trava a quantificação. Exige Sentinel-2/Landsat, que exigem cadastro |
 | B5 | `DISTINGUIBILIDADE_MINIMA` calibrada só em cena sintética | Confirmado em imagem real. Recalibrar por procedimento honesto, nunca ajustando para uma cena passar |
 
 ## Known Issues
@@ -151,11 +167,10 @@ Em ordem de prioridade:
 
 | Campo | Valor |
 |-------|-------|
-| Estado | `STALE` |
-| Grafo | `graphify-out/graph.json` — 433 nós, 726 arestas |
-| Validado em | commit `64f6dec` |
+| Estado | `READY` |
+| Grafo | `graphify-out/graph.json` — 863 nós, 1531 arestas, 37 fontes, 100% AST |
+| Consulta de aceite | `treinar_e_avaliar → dividir_espacialmente`, conferida em `modelo/classificador.py` L307 — o arquivo alterado por último |
 | Baseline | `~/.local/state/graphify-baseline/aps-desmatamento-satelite/` |
 
-Marcado `STALE` porque `dataio/`, `pipeline/`, `app/` e `cli.py` foram adicionados depois
-da última extração. Regenerar pelo procedimento do `AGENTS.md` §17 antes de confiar em
-consulta ao grafo. Data do arquivo não comprova atualidade.
+Marcar `STALE` de novo após mudança relevante no código, até regenerar pelo procedimento do
+`AGENTS.md` §17. Data do arquivo não comprova atualidade.

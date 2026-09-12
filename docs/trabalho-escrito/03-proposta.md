@@ -111,14 +111,15 @@ O resultado negativo tem causa identificada, e ela não está no código.
 
 A 253 m/pixel, numa frente de desmatamento, quase todo pixel é **mistura**: contém
 floresta, pastagem, regeneração e estrada simultaneamente. O índice espectral de um pixel
-misto cai entre os valores das classes puras. O resultado é um histograma contínuo, sem o
-vale que a limiarização global precisa para separar duas populações.
+misto cai entre os valores das classes puras, e as distribuições das duas datas se
+sobrepõem fortemente.
 
 O sinal de perda existe e tem a direção correta. Na escala nativa dos índices, `[-1, 1]`,
 a mediana cai de +0,944 para +0,794 no NDVI (queda de 0,150) e de +0,799 para +0,504 no
-NDMI (queda de 0,295). São quedas grandes — mas é um **deslocamento da distribuição
-inteira**, não a separação de dois modos. Toda a cena ficou menos vegetada; não há um
-subconjunto que se destaque do resto.
+NDMI (queda de 0,295). São quedas grandes. O que falta é **separação**: há um vale entre as
+classes — no NDVI de 2024 aparecem dois montes, perto de 0,72 e de 0,99 — mas ele é raso,
+e a limiarização global precisa de um vale profundo para separar duas populações com
+confiança. A Figura de histogramas da apresentação mostra as duas distribuições.
 
 Três hipóteses foram testadas antes de chegar a essa conclusão:
 
@@ -282,10 +283,13 @@ nomeados. E emite **ressalvas automáticas** quando a métrica é frágil:
 | Conjunto de teste com menos de 20 amostras | a métrica é instável |
 | Conjunto com uma classe só | a acurácia não distingue modelo útil de modelo constante |
 | Equilíbrio abaixo de 0,3 | ler revocação e F1, não acurácia |
-| Desempenho perfeito | em imagem real isso praticamente não acontece; não apresentar como validação |
+| Desempenho perfeito, com as duas classes no teste | em imagem real isso praticamente não acontece; não apresentar como validação |
 
 A última ressalva foi acrescentada depois que a avaliação sobre a cena sintética atingiu F1
-igual a 1,000. O número é esperado — a separação foi construída pelo gerador — e sem a
+igual a 1,000. A condição "com as duas classes no teste" foi acrescentada depois, quando um
+screenshot da interface mostrou o aviso de desempenho perfeito ao lado de precisão,
+revocação e F1 **iguais a zero**: com uma classe só no teste, acurácia 1,0 significa um
+modelo degenerado, e chamar isso de perfeito seria o próprio aviso enganando. O número é esperado — a separação foi construída pelo gerador — e sem a
 ressalva ele seria facilmente apresentado como resultado.
 
 ### Resultado e sua limitação

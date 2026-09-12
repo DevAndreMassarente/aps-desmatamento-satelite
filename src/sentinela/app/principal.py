@@ -36,7 +36,7 @@ from sentinela.dataio import (  # noqa: E402
     resolucao_do_satelite,
     sobrepor_mascara,
 )
-from sentinela.pdi import filtros  # noqa: E402
+from sentinela.pdi import filtros, limiar  # noqa: E402
 from sentinela.pdi.nucleo import ErroImagem, para_uint8  # noqa: E402
 from sentinela.pipeline import (  # noqa: E402
     detectar_desmatamento,
@@ -47,10 +47,17 @@ from sentinela.pipeline import (  # noqa: E402
 st.set_page_config(page_title="Sentinela — detecção de desmatamento", layout="wide")
 
 
+def _br(valor: float, casas: int) -> str:
+    """Número com vírgula decimal — a apresentação e o trabalho escrito são em português."""
+    return f"{valor:.{casas}f}".replace(".", ",")
+
+
 def mostrar(imagem: np.ndarray, legenda: str) -> None:
     """Exibe um array como imagem, convertendo para ``uint8`` na fronteira."""
     if imagem.dtype == np.bool_:
-        imagem = imagem.astype(np.float32)
+        # Máscara toda branca (cena inteira vegetada) desaparece no fundo da página e
+        # parece imagem faltando. A moldura cinza delimita a área sem alterar o dado.
+        imagem = np.pad(imagem.astype(np.float32), 2, constant_values=0.55)
     st.image(para_uint8(imagem), caption=legenda, width="stretch")
 
 
@@ -123,7 +130,7 @@ def obter_imagens(opcoes: dict) -> dict | None:
             "**Cena sintética.** Floresta simulada com uma área de corte de tamanho "
             "conhecido, usada para demonstrar o programa e conferir a quantificação. "
             "Não é imagem de satélite e não entra no trabalho escrito como evidência.",
-            icon="🧪",
+            icon=":material/science:",
         )
         col1, col2 = st.columns(2)
         lado = col1.slider("Tamanho da cena (pixels)", 40, 200, 80, step=20)
@@ -160,7 +167,7 @@ def obter_imagens(opcoes: dict) -> dict | None:
         st.warning(
             "Envie as duas datas da **mesma área**, recortadas sobre o mesmo extent. "
             "Sem infravermelho o sistema usa VARI, que trabalha só com o visível.",
-            icon="📂",
+            icon=":material/folder_open:",
         )
         return None
 
@@ -182,31 +189,32 @@ def painel_resultado(resultado, opcoes: dict) -> None:
         st.error(
             f"**Detecção não confiável — nenhuma área é reportada.**\n\n"
             f"A distinguibilidade entre as duas classes ficou em "
-            f"`{resumo['distinguibilidade']}`, abaixo do mínimo de `4.0`. Isso acontece "
+            f"`{_br(resumo['distinguibilidade'], 2)}`, abaixo do mínimo de "
+            f"`{_br(limiar.DISTINGUIBILIDADE_MINIMA, 1)}`. Isso acontece "
             f"quando a cena é homogênea: sem duas classes reais para separar, o limiar "
             f"automático corta o ruído do dossel ao meio e produziria desmatamento onde "
             f"não houve. Recusar o número é a resposta correta.",
-            icon="🚫",
+            icon=":material/block:",
         )
     else:
         colunas = st.columns(4)
         colunas[0].metric("Área desmatada", f"{resumo['area_pixels']} px")
         colunas[1].metric(
             "Em hectares",
-            f"{resumo['area_hectares']:.2f} ha"
+            f"{_br(resumo['area_hectares'], 2)} ha"
             if resumo["area_hectares"] is not None
             else "—",
             help="Requer resolução espacial conhecida.",
         )
         colunas[2].metric("Regiões detectadas", resumo["regioes_detectadas"])
-        colunas[3].metric("Da cena", f"{resumo['proporcao_da_cena'] * 100:.2f}%")
+        colunas[3].metric("Da cena", f"{_br(resumo['proporcao_da_cena'] * 100, 2)}%")
 
         esperada = st.session_state.get("area_esperada")
         if esperada:
             erro = abs(resumo["area_pixels"] - esperada) / esperada * 100
             st.caption(
                 f"Verdade de terreno da cena sintética: **{esperada} px**. "
-                f"Detectado: **{resumo['area_pixels']} px** — erro de {erro:.1f}%."
+                f"Detectado: **{resumo['area_pixels']} px** — erro de {_br(erro, 1)}%."
             )
 
     if resultado.alerta_de_registro:
@@ -214,7 +222,7 @@ def painel_resultado(resultado, opcoes: dict) -> None:
             "**Ganho de vegetação alto demais.** As duas datas podem não estar "
             "alinhadas, ou a diferença pode ser sazonal e não desmatamento. "
             "Inspecione o mapa de mudança antes de usar este resultado.",
-            icon="⚠️",
+            icon=":material/warning:",
         )
 
 
@@ -254,23 +262,48 @@ def aba_etapas(imagens: dict, resultado, opcoes: dict) -> None:
 
     st.subheader("4 · Segmentação")
     st.caption(
-        f"Limiar de Otsu **único** para as duas datas: `{resultado.valor_limiar:.4f}`. "
+        f"Limiar de Otsu **único** para as duas datas: `{_br(resultado.valor_limiar, 4)}`. "
         "Calcular um limiar por data daria réguas diferentes, e a comparação mediria a "
         "diferença entre os limiares, não a mudança no terreno."
     )
     col1, col2, col3 = st.columns(3)
     with col1:
-        mostrar(resultado.vegetacao_antes, "Vegetação — antes")
+        mostrar(resultado.vegetacao_antes, "Vegetação — antes (branco = vegetação)")
     with col2:
-        mostrar(resultado.vegetacao_depois, "Vegetação — depois")
+        mostrar(resultado.vegetacao_depois, "Vegetação — depois (branco = vegetação)")
     with col3:
         mostrar(mapa_de_mudanca(resultado.mudanca), "Mapa de mudança")
 
     st.markdown(
-        "<small>🟥 perda de vegetação &nbsp;·&nbsp; 🟩 ganho &nbsp;·&nbsp; "
-        "🌲 vegetação estável &nbsp;·&nbsp; ⬜ solo exposto nas duas datas</small>",
+        _legenda_mudanca(),
         unsafe_allow_html=True,
     )
+
+
+def _legenda_mudanca() -> str:
+    """Legenda do mapa de mudança com as cores exatas usadas em ``mapa_de_mudanca``.
+
+    Amostra de cor desenhada em HTML, não emoji: emoji depende de fonte instalada e, sem
+    ela, a legenda vira uma fila de quadrados vazios — exatamente o que um screenshot da
+    versão entregue mostraria.
+    """
+    from sentinela.dataio import visual
+
+    def hexa(cor):
+        return "#" + "".join(f"{round(c * 255):02x}" for c in cor)
+
+    itens = (
+        (visual.COR_PERDA, "perda de vegetação"),
+        (visual.COR_GANHO, "ganho"),
+        (visual.COR_ESTAVEL_VEGETADO, "vegetação estável"),
+        (visual.COR_ESTAVEL_EXPOSTO, "solo exposto nas duas datas"),
+    )
+    amostras = " &nbsp;·&nbsp; ".join(
+        f'<span style="display:inline-block;width:0.8em;height:0.8em;'
+        f'background:{hexa(cor)};border-radius:2px;vertical-align:-0.05em"></span> {rotulo}'
+        for cor, rotulo in itens
+    )
+    return f"<small>{amostras}</small>"
 
 
 def _indice_sem_suavizar(imagens: dict, opcoes: dict):
@@ -292,7 +325,7 @@ def aba_deteccao(imagens: dict, resultado) -> None:
         st.info(
             "A máscara abaixo é exibida para inspeção, mas **não deve ser usada como "
             "resultado** enquanto a detecção estiver marcada como não confiável.",
-            icon="ℹ️",
+            icon=":material/info:",
         )
 
     col1, col2 = st.columns([3, 2])
@@ -325,7 +358,7 @@ def aba_deteccao(imagens: dict, resultado) -> None:
             if len(resultado.regioes) > 15:
                 st.caption(f"Mostrando as 15 maiores de {len(resultado.regioes)} regiões.")
         else:
-            st.success("Nenhuma região de desmatamento acima da área mínima.", icon="🌳")
+            st.success("Nenhuma região de desmatamento acima da área mínima.", icon=":material/forest:")
 
     with st.expander("Métricas de decisão do limiar"):
         st.json(resultado.resumo())
@@ -348,7 +381,7 @@ def aba_amostras(imagens: dict, resultado) -> None:
             imagens["rgb_depois"], resultado.perda, lado=lado, passo=passo
         )
     except ErroImagem as erro:
-        st.error(f"Não foi possível extrair amostras: {erro}", icon="🚫")
+        st.error(f"Não foi possível extrair amostras: {erro}", icon=":material/block:")
         return
 
     equilibrado = equilibrar(conjunto)
@@ -358,7 +391,7 @@ def aba_amostras(imagens: dict, resultado) -> None:
     colunas[1].metric("Intacto", conjunto.contagem_por_classe[0])
     colunas[2].metric("Desmatado", conjunto.contagem_por_classe[1])
     colunas[3].metric(
-        "Equilíbrio", f"{conjunto.equilibrio:.2f}",
+        "Equilíbrio", _br(conjunto.equilibrio, 2),
         help="Razão entre a classe minoritária e a majoritária. Perto de 0 = desbalanceado.",
     )
 
@@ -382,7 +415,7 @@ def aba_amostras(imagens: dict, resultado) -> None:
         st.info(
             "Sem amostras das duas classes não há conjunto de treino. Aumente a área "
             "desmatada, reduza o lado do recorte ou diminua o passo.",
-            icon="ℹ️",
+            icon=":material/info:",
         )
 
 
@@ -407,7 +440,7 @@ def aba_modelo(imagens: dict, resultado) -> None:
             imagens["rgb_depois"], resultado.perda, lado=lado, passo=lado // 2
         )
     except ErroImagem as erro:
-        st.error(f"Não foi possível extrair amostras: {erro}", icon="🚫")
+        st.error(f"Não foi possível extrair amostras: {erro}", icon=":material/block:")
         return
 
     st.info(
@@ -415,7 +448,7 @@ def aba_modelo(imagens: dict, resultado) -> None:
         "recorte.** Os recortes se sobrepõem: sortear individualmente colocaria o mesmo "
         "pedaço de terreno nos dois lados e a acurácia medida seria vazamento. Recortes "
         "que cruzam fronteira de bloco são descartados.",
-        icon="🧭",
+        icon=":material/explore:",
     )
 
     try:
@@ -423,21 +456,21 @@ def aba_modelo(imagens: dict, resultado) -> None:
             conjunto, proporcao_teste=proporcao, semente=int(semente)
         )
     except ErroModelo as erro:
-        st.warning(f"**Modelo não treinado.** {erro}", icon="⚠️")
+        st.warning(f"**Modelo não treinado.** {erro}", icon=":material/warning:")
         return
 
     resumo = avaliacao.resumo()
     colunas = st.columns(4)
-    colunas[0].metric("Acurácia", f"{resumo['acuracia']:.3f}")
-    colunas[1].metric("Precisão", f"{resumo['precisao']:.3f}")
+    colunas[0].metric("Acurácia", _br(resumo['acuracia'], 3))
+    colunas[1].metric("Precisão", _br(resumo['precisao'], 3))
     colunas[2].metric(
-        "Revocação", f"{resumo['revocacao']:.3f}",
+        "Revocação", _br(resumo['revocacao'], 3),
         help="Fração do desmatamento real que o modelo encontrou.",
     )
-    colunas[3].metric("F1", f"{resumo['f1']:.3f}")
+    colunas[3].metric("F1", _br(resumo['f1'], 3))
 
     for aviso in avaliacao.avisos:
-        st.warning(aviso, icon="⚠️")
+        st.warning(aviso, icon=":material/warning:")
 
     col1, col2 = st.columns(2)
 
@@ -493,7 +526,7 @@ def principal() -> None:
     try:
         imagens = obter_imagens(opcoes)
     except (ErroArquivo, ErroImagem) as erro:
-        st.error(str(erro), icon="🚫")
+        st.error(str(erro), icon=":material/block:")
         return
 
     if imagens is None:
@@ -513,7 +546,7 @@ def principal() -> None:
             metros_por_pixel=opcoes["metros_por_pixel"],
         )
     except ErroImagem as erro:
-        st.error(f"**Não foi possível processar:** {erro}", icon="🚫")
+        st.error(f"**Não foi possível processar:** {erro}", icon=":material/block:")
         return
 
     painel_resultado(resultado, opcoes)

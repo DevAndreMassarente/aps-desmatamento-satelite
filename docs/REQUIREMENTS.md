@@ -35,7 +35,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 | R011 | Cap. 3.b — Proposta de modelagem + escolha de algoritmos de inteligência | MUST | PDF p.3, item 3.b | `sentinela/modelo/` | `docs/decisions/004-divisao-espacial.md` | IN_PROGRESS |
 | R012 | Cap. 4.a — Descrever como os métodos foram implantados | MUST | PDF p.3, item 4.a | `docs/trabalho-escrito/04-desenvolvimento.md` §4.a | rascunho completo | IN_PROGRESS |
 | R013 | Cap. 4.b — Listar as ferramentas utilizadas | MUST | PDF p.3, item 4.b | `docs/trabalho-escrito/04-desenvolvimento.md` §4.b | versões conferidas no ambiente | IN_PROGRESS |
-| R014 | Cap. 4.c — Descrever como foram feitos os testes | MUST | PDF p.3, item 4.c | `docs/trabalho-escrito/04-desenvolvimento.md` §4.c | `tests/` — 288 testes | IN_PROGRESS |
+| R014 | Cap. 4.c — Descrever como foram feitos os testes | MUST | PDF p.3, item 4.c | `docs/trabalho-escrito/04-desenvolvimento.md` §4.c | `tests/` — 294 testes | IN_PROGRESS |
 | R015 | Cap. 4.d — Mostrar os resultados obtidos | MUST | PDF p.3, item 4.d | `docs/trabalho-escrito/04-desenvolvimento.md` §4.d | `docs/evidence/` | IN_PROGRESS |
 | R016 | Cap. 5 — Conclusão | MUST | PDF p.3, item 5 | `docs/trabalho-escrito/05-conclusao.md` | rascunho completo | IN_PROGRESS |
 | R017 | Cap. 6 — Bibliografia (fontes reais, ABNT) | MUST | PDF p.3, item 6 | `docs/trabalho-escrito/BIBLIOGRAFIA.md` | 13 pendências mapeadas, nenhuma inventada | IN_PROGRESS |
@@ -60,7 +60,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | ID | Requisito | Tipo | Fonte | Implementação | Evidência/Teste | Status |
 |----|-----------|------|-------|---------------|-----------------|--------|
-| R029 | Sistema que implementa as soluções propostas no item 3 da seção I | MUST | PDF p.4, item II.1 | `src/sentinela/` + `cli.py` + `scripts/` | `tests/` — 253 testes | IN_PROGRESS |
+| R029 | Sistema que implementa as soluções propostas no item 3 da seção I | MUST | PDF p.4, item II.1 | `src/sentinela/` + `cli.py` + `scripts/` | `tests/` — 294 testes | IN_PROGRESS |
 | R030 | **Filtros desenvolvidos pelo próprio grupo** (não usar prontos de biblioteca) | MUST | PDF p.3, item 3.a | `sentinela/pdi/` | `tests/test_filtros.py`, `test_nucleo.py` — 154 testes | VERIFIED |
 | R031 | Filtros preferencialmente em linguagem Python | SHOULD | PDF p.3, item 3.a | Python 3.12 | — | IMPLEMENTED |
 | R032 | Filtros aplicados em **imagens reais** do problema escolhido | MUST | PDF p.3, item 3.a | `scripts/baixar_imagens.py` | `docs/evidence/results/` — MODIS real, 2002 e 2024 | IMPLEMENTED |
@@ -83,15 +83,15 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | ID | Requisito | Tipo | Fonte | Implementação | Evidência/Teste | Status |
 |----|-----------|------|-------|---------------|-----------------|--------|
-| R042 | Apresentar em sala, sessão de **10 a 15 minutos** | MUST | PDF p.4, item III.1 | — | — | NOT_STARTED |
-| R043 | Apresentação inclui explicação do problema e contexto | MUST | PDF p.4, item III.2 | — | — | NOT_STARTED |
-| R044 | Apresentação inclui **demonstração da aplicação** | MUST | PDF p.4, item III.2 | `sentinela/app/` | `tests/test_app.py` | IN_PROGRESS |
-| R045 | Apresentação inclui discussão dos resultados obtidos | MUST | PDF p.4, item III.2 | — | — | NOT_STARTED |
-| R046 | Grupo preparado para responder perguntas da turma e dos professores | MUST | PDF p.4, item III.3 | — | — | NOT_STARTED |
+| R042 | Apresentar em sala, sessão de **10 a 15 minutos** | MUST | PDF p.4, item III.1 | `docs/apresentacao/ROTEIRO.md` — 13 min em 6 blocos | ensaio cronometrado pendente | IN_PROGRESS |
+| R043 | Apresentação inclui explicação do problema e contexto | MUST | PDF p.4, item III.2 | `ROTEIRO.md` blocos 1–3 | `figuras/comparativo-real.png` | IN_PROGRESS |
+| R044 | Apresentação inclui **demonstração da aplicação** | MUST | PDF p.4, item III.2 | `sentinela/app/` + `ROTEIRO.md` bloco 4 | `tests/test_app.py`, `docs/evidence/screenshots/` | IN_PROGRESS |
+| R045 | Apresentação inclui discussão dos resultados obtidos | MUST | PDF p.4, item III.2 | `ROTEIRO.md` blocos 5–6 | `figuras/histogramas-ndmi.png` + tabela | IN_PROGRESS |
+| R046 | Grupo preparado para responder perguntas da turma e dos professores | MUST | PDF p.4, item III.3 | `ROTEIRO.md` — 14 perguntas prováveis com resposta e local no código | depende do grupo | IN_PROGRESS |
 | R047 | **Participação de todos os membros** na apresentação (20% da nota de apresentação) | MUST | PDF p.5, item 3 | — | — | NOT_STARTED |
-| R048 | Clareza e estrutura da apresentação (30% da nota de apresentação) | SHOULD | PDF p.5, item 3 | — | — | NOT_STARTED |
+| R048 | Clareza e estrutura da apresentação (30% da nota de apresentação) | SHOULD | PDF p.5, item 3 | `ROTEIRO.md` — ordem fixa, tempos por bloco, checklist | ensaio pendente | IN_PROGRESS |
 | R049 | Grupo composto de **até 4 alunos** | MUST | PDF p.4, item III.4 | — | — | NOT_STARTED |
-| R050 | Demonstração do programa no seminário | MUST | PDF p.4, item III.7 | `sentinela/app/` | `tests/test_app.py` | IN_PROGRESS |
+| R050 | Demonstração do programa no seminário | MUST | PDF p.4, item III.7 | `sentinela/app/` + plano B `sentinela demo` | `docs/evidence/screenshots/` — 4 telas | IN_PROGRESS |
 
 ## F. Pendências de confirmação
 
@@ -112,8 +112,8 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | Status | Qtd |
 |--------|-----|
-| NOT_STARTED | 18 |
-| IN_PROGRESS | 27 |
+| NOT_STARTED | 13 |
+| IN_PROGRESS | 32 |
 | IMPLEMENTED | 3 |
 | VERIFIED | 2 |
 | BLOCKED (perguntas) | 8 |
@@ -133,7 +133,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 > **recusa**: a 253 m/pixel o índice não é bimodal. Quantificação validada depende de
 > imagem de 10 a 30 m — `docs/decisions/005-resolucao-espacial.md`.
 
-> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 288
+> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 294
 > testes contra casos analíticos.
 
 > **Q5 continua em aberto.** O projeto segue a leitura conservadora do `AGENTS.md` §14: o

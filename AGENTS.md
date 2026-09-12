@@ -162,7 +162,7 @@ imagem bimodal sintética cai entre os dois modos.
 Ao implementar um filtro novo, escrever o teste **junto**. Um filtro sem teste não pode ser
 marcado `VERIFIED` na matriz de requisitos.
 
-A suíte tem **291 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
+A suíte tem **294 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
 automaticamente quando o extra `app` não está instalado.
 
 ---
@@ -253,7 +253,7 @@ delas, registrar a suposição explicitamente.
 
 | # | Item | Quando resolver |
 |---|------|-----------------|
-| T1 | **Resolução insuficiente**: o par MODIS (253 m/px) foi processado, mas o índice não é bimodal e a detecção é recusada. Quantificação exige Sentinel-2/Landsat, que exigem cadastro | Antes da Fase Intermediária I |
+| T1 | **Resolução insuficiente**: o par MODIS (253 m/px) foi processado, mas as classes se sobrepõem — vale raso — e a detecção é recusada. Quantificação exige Sentinel-2/Landsat, que exigem cadastro | Antes da Fase Intermediária I |
 | T7 | Features de textura não são separáveis na cena sintética (mesmo ruído nas duas classes); só podem ser validadas em imagem real | Junto com T1 |
 | T4 | Convolução genérica continua `O(H·W·k²)`. Gaussiano e média — os filtros separáveis — já usam dois passes 1D. Mediana não é separável e segue `O(H·W·k²)` por natureza | Só se a demonstração exigir |
 | T5 | `DISTINGUIBILIDADE_MINIMA = 4.0` foi calibrada em cena sintética. Confirmado em imagem real que precisa de recalibração — por procedimento honesto, **nunca** ajustando para uma cena passar | Junto com T1 |
@@ -280,9 +280,9 @@ esta seção é autossuficiente, com os caminhos e comandos já validados neste 
 
 | Campo | Valor |
 |-------|-------|
-| Estado | `STALE` — `dataio/`, `pipeline/`, `modelo/`, `app/`, `cli.py` e `scripts/` entraram depois da extração |
-| Grafo | `graphify-out/graph.json` — 433 nós, 726 arestas |
-| Origem dos nós | 433/433 `ast` — zero LLM (`input_tokens=0`, `output_tokens=0`) |
+| Estado | `READY` — regenerado em 2026-09-12 sobre o código com as cinco etapas |
+| Grafo | `graphify-out/graph.json` — 863 nós, 1531 arestas, 37 arquivos-fonte |
+| Origem dos nós | 863/863 `ast` — zero LLM (`input_tokens=0`, `output_tokens=0`) |
 | Ferramenta | `/home/vader/.local/share/uv/tools/graphifyy/bin/graphify` — `graphify 0.9.51` |
 | Baseline | `~/.local/state/graphify-baseline/aps-desmatamento-satelite/` (fora do repo) |
 
@@ -344,5 +344,12 @@ Só declarar `READY` após verificar: extração bem-sucedida e esquema válido;
 fora da allowlist e nenhum secret; **uma consulta de resposta conhecida confirmada na
 fonte**; saída restrita e fora do Git; baseline atualizado.
 
-A validação desta geração: `abertura → dilatacao` (L126), `fechamento → erosao` (L137),
-`erosao → _aplicar` (L104) — as três conferidas linha a linha em `pdi/morfologia.py`.
+A validação desta geração: `path treinar_e_avaliar → dividir_espacialmente` devolveu 1 salto,
+`calls [EXTRACTED]`, conferido em `modelo/classificador.py` L307 — o arquivo que mudou nesta
+extração, o que prova que ele foi relido. A geração anterior foi validada com
+`aba_etapas → _legenda_mudanca` (`app/principal.py` L278). Um nó `ndarray` **sem arquivo-fonte**
+apareceu nesta extração: referência a tipo externo registrada pelo extrator incremental, não
+conteúdo indexado — nenhum nó foi removido. A varredura de secrets usa fronteira de
+palavra: uma versão anterior da regex acusou "senha" dentro de "Desenha", falso positivo.
+As gerações anteriores (433 e 840 nós) estão em backups verificados por hash no diretório
+de baseline.

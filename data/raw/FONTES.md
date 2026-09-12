@@ -70,8 +70,8 @@ superfície (MOD09, Sentinel-2 L2A) seria necessária para isso.
 ### O que estas imagens não resolvem
 
 A 253 m/pixel, quase todo pixel numa frente de desmatamento é **mistura** de floresta,
-pastagem, regeneração e estrada. A mudança do índice ficou contínua, não bimodal, e o
-critério de confiabilidade recusou a detecção — corretamente. Ver
+pastagem, regeneração e estrada. As distribuições das duas datas se sobrepõem, o vale entre
+as classes é raso, e o critério de confiabilidade recusou a detecção — corretamente. Ver
 `docs/decisions/005-resolucao-espacial.md`.
 
 **Para o resultado quantitativo do trabalho escrito é preciso imagem de 10 a 30 m.** Isso

@@ -229,12 +229,12 @@ interseção é conferida.
 | `test_pipeline.py` | 36 | orquestração, validação, amostras |
 | `test_nucleo.py` | 30 | convolução, bordas, histograma |
 | `test_dataio.py` | 25 | entrada e saída, cena sintética, visualização |
-| `test_modelo.py` | 25 | descritores, divisão espacial, classificador |
+| `test_modelo.py` | 26 | descritores, divisão espacial, classificador |
 | `test_aquisicao.py` | 12 | qualidade de cena, composição, resolução |
 | `test_integracao.py` | 10 | cadeia completa contra verdade de terreno |
-| `test_app.py` | 9 | interface |
+| `test_app.py` | 11 | interface |
 | `test_cli.py` | 9 | linha de comando e apêndice |
-| **Total** | **291** | |
+| **Total** | **294** | |
 
 Reprodução:
 
@@ -318,10 +318,12 @@ comportamento, justamente para impedir que sejam apresentados como validados.
 | *Piso sem duas classes* | *2,650* | — |
 
 A perda de vegetação existe e tem a direção correta. Na escala nativa dos índices,
-`[-1, 1]`, a mediana cai de +0,944 para +0,794 no NDVI e de +0,799 para +0,504 no NDMI. Mas
-é um deslocamento da distribuição inteira, não a separação de dois modos: a 253 m/pixel
-quase todo pixel da frente de desmatamento contém floresta, pastagem, regeneração e estrada
-simultaneamente, e o índice de um pixel misto cai entre as classes puras.
+`[-1, 1]`, a mediana cai de +0,944 para +0,794 no NDVI e de +0,799 para +0,504 no NDMI. O
+problema é a separação: a 253 m/pixel quase todo pixel da frente de desmatamento contém
+floresta, pastagem, regeneração e estrada simultaneamente, o índice de um pixel misto cai
+entre as classes puras, e as distribuições das duas datas se sobrepõem fortemente. Há um
+vale entre as classes — no NDVI de 2024 aparecem dois montes, perto de 0,72 e de 0,99 — mas
+ele é raso demais para que um limiar global atinja o tamanho de efeito exigido.
 
 A análise completa, com as três hipóteses testadas antes de se chegar a essa conclusão,
 está na seção 3.a.
@@ -349,7 +351,7 @@ detecção do erro veio de medição, não de inspeção visual.
 
 | O que foi demonstrado | Como |
 |-----------------------|------|
-| Os filtros são do grupo e estão corretos | 291 testes contra propriedades analíticas |
+| Os filtros são do grupo e estão corretos | 294 testes contra propriedades analíticas |
 | A cadeia quantifica corretamente | erro de 0,0% contra verdade de terreno construída |
 | O sistema reconhece quando não sabe | recusa acionada em cena homogênea e em imagem real |
 | A preparação de dados alimenta um modelo | conjunto rotulado, divisão espacial, classificador treinado |

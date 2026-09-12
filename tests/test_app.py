@@ -40,7 +40,7 @@ class TestInterface:
     def test_mostra_a_area_detectada(self, app):
         metricas = {m.label: m.value for m in app.metric}
         assert metricas["Área desmatada"] == "400 px"
-        assert metricas["Em hectares"] == "4.00 ha"
+        assert metricas["Em hectares"] == "4,00 ha"
 
     def test_declara_que_a_cena_e_sintetica(self, app):
         """`AGENTS.md` §11: imagem sintética precisa estar rotulada como tal na tela."""
@@ -70,7 +70,7 @@ class TestInterface:
     def test_desempenho_perfeito_vem_acompanhado_de_ressalva(self, app):
         """Nunca exibir 1.000 sem dizer que a cena é sintética."""
         metricas = {m.label: m.value for m in app.metric}
-        if metricas.get("F1") == "1.000":
+        if metricas.get("F1") == "1,000":
             avisos = " ".join(w.value for w in app.warning)
             assert "perfeito" in avisos
 
@@ -84,6 +84,20 @@ class TestInterface:
         assert not app.exception, [str(e.value) for e in app.exception]
         assert not app.error, [e.value[:80] for e in app.error]
         assert {m.label for m in app.metric} >= {"Área desmatada", "Em hectares"}
+
+    def test_nenhum_emoji_como_icone(self):
+        """Emoji vira quadrado vazio em máquina sem fonte de emoji — inclusive no screenshot."""
+        import re
+
+        fonte = Path(CAMINHO).read_text(encoding="utf-8")
+        icones = re.findall(r'icon="([^"]+)"', fonte)
+        assert icones, "nenhum ícone encontrado — o teste perdeu o alvo"
+        assert all(i.startswith(":material/") for i in icones), icones
+
+    def test_numeros_com_virgula_decimal(self, app):
+        metricas = {m.label: m.value for m in app.metric}
+        assert "," in metricas["Em hectares"]
+        assert "." not in metricas["Em hectares"]
 
     def test_upload_sem_arquivo_orienta_em_vez_de_quebrar(self, app):
         app.sidebar.radio[0].set_value("Enviar imagens").run()

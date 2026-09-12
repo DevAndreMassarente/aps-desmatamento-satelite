@@ -216,6 +216,29 @@ class TestAvisosDaAvaliacao:
         if avaliacao.acuracia == 1.0:
             assert any("perfeito" in aviso for aviso in avaliacao.avisos)
 
+    def test_classe_unica_nao_e_chamada_de_desempenho_perfeito(self, conjunto):
+        """Regressão: com uma classe só no teste, acurácia 1,0 vinha com aviso de "perfeito".
+
+        Encontrado no screenshot da interface — acurácia 1,000 ao lado de precisão, revocação
+        e F1 iguais a 0,000, e o programa dizendo que o desempenho era perfeito.
+        """
+        treino, _ = clf.dividir_espacialmente(conjunto)
+        modelo = clf.ClassificadorDesmatamento().treinar(treino)
+
+        indices = np.nonzero(conjunto.rotulos == INTACTO)[0][:15]
+        so_intacto = ConjuntoDeAmostras(
+            recortes=conjunto.recortes[indices],
+            rotulos=conjunto.rotulos[indices],
+            posicoes=[conjunto.posicoes[i] for i in indices],
+            descartados_ambiguos=0,
+        )
+        avaliacao = modelo.avaliar(so_intacto)
+
+        assert avaliacao.acuracia == 1.0
+        assert avaliacao.f1 == 0.0
+        assert not any("perfeito" in aviso for aviso in avaliacao.avisos)
+        assert any("classe só" in aviso for aviso in avaliacao.avisos)
+
     def test_conjunto_desbalanceado_manda_ler_o_f1(self, conjunto):
         _, avaliacao = clf.treinar_e_avaliar(conjunto)
         if avaliacao.total_teste and conjunto.equilibrio < 0.3:

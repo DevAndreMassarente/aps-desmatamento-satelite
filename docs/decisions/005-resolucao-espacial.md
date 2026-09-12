@@ -31,12 +31,19 @@ Três hipóteses foram testadas, em ordem:
 
 A 253 m/pixel, numa frente de desmatamento, **quase todo pixel é mistura**: floresta,
 pastagem, regeneração e estrada dentro do mesmo pixel. O índice de vegetação de um pixel
-misto cai entre as duas classes puras, e o histograma sai contínuo em vez de bimodal.
+misto cai entre as duas classes puras, e as distribuições das duas datas se sobrepõem.
 
-Os dois histogramas ficaram unimodais e sobrepostos. O sinal existe e tem a direção certa:
-na escala nativa do índice, `[-1, 1]`, a mediana cai de +0,944 para +0,794 no NDVI (0,150)
-e de +0,799 para +0,504 no NDMI (0,295). Mas a queda é da **distribuição inteira** — não
-há vale no histograma onde cortar.
+O sinal existe e tem a direção certa: na escala nativa do índice, `[-1, 1]`, a mediana cai
+de +0,944 para +0,794 no NDVI (0,150) e de +0,799 para +0,504 no NDMI (0,295). O que falta é
+**separação**. Há vale entre as classes — no NDVI de 2024 aparecem dois montes, perto de
+0,72 e de 0,99, e o de 2002 concentra 24% dos pixels na última faixa, saturado — mas o vale
+é **raso**, e nenhum corte global atinge o tamanho de efeito exigido.
+
+> **Correção registrada.** Uma versão anterior deste documento dizia que os histogramas
+> eram "unimodais" e que "não há vale onde cortar". O gráfico
+> `docs/apresentacao/figuras/histogramas-ndmi.png` mostrou que isso exagera: o vale existe
+> e é raso. A conclusão não muda — a métrica é a mesma, 2,99 e 3,51 contra 4,00 — mas a
+> descrição precisa corresponder ao que a figura mostra.
 
 > Atenção à escala ao reproduzir estes números: internamente o pipeline mapeia o índice
 > para `[0, 1]` por `(x+1)/2` antes de limiarizar, o que reduz qualquer diferença à

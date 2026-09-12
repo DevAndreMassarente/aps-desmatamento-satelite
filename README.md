@@ -79,7 +79,7 @@ src/sentinela/
 ├── app/principal.py  interface Streamlit
 └── cli.py            linha de comando (app, detectar, demo, apendice)
 
-tests/                291 testes contra casos analíticos
+tests/                294 testes contra casos analíticos
 docs/                 enunciado, especificação, requisitos, arquitetura, decisões, evidências
 data/                 imagens (não versionadas — ver docs/decisions/002)
 ```
@@ -199,6 +199,7 @@ região.
 | [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md) | Estado atual, próximos passos, bloqueios |
 | [`docs/decisions/`](docs/decisions/) | Registros de decisão arquitetural |
 | [`docs/trabalho-escrito/`](docs/trabalho-escrito/) | Rascunhos dos capítulos e pendências de bibliografia |
+| [`docs/apresentacao/`](docs/apresentacao/) | Roteiro da apresentação, figuras e perguntas prováveis |
 | [`docs/enunciado/`](docs/enunciado/) | Documento oficial e transcrição |
 | [`AGENTS.md`](AGENTS.md) | Regras do projeto para agentes de IA |
 
@@ -210,7 +211,7 @@ imagens reais.
 | Etapa | Situação |
 |-------|----------|
 | Estrutura e documentação | Concluído |
-| Núcleo de PDI (filtros próprios) | Implementado, 291 testes passando |
+| Núcleo de PDI (filtros próprios) | Implementado, 294 testes passando |
 | Aquisição e I/O de imagem | Implementado |
 | Pipeline de orquestração | Implementado |
 | Interface Streamlit e linha de comando | Implementado |
@@ -224,8 +225,9 @@ imagens reais.
 
 O pipeline já rodou sobre um par bi-temporal real ([`docs/evidence/results/`](docs/evidence/results/)),
 e **o sistema recusou-se a quantificar**: a 253 m/pixel quase todo pixel da frente de
-desmatamento é mistura de floresta, pastagem e regeneração, o índice de vegetação sai
-contínuo em vez de bimodal, e não existe limiar defensável. A recusa é o comportamento
+desmatamento é mistura de floresta, pastagem e regeneração, as distribuições das duas
+datas se sobrepõem demais — o vale entre as classes é raso — e não existe limiar global
+defensável. A recusa é o comportamento
 correto — o diagnóstico completo, com as três hipóteses testadas, está na
 [decisão 005](docs/decisions/005-resolucao-espacial.md).
 

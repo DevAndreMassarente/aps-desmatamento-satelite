@@ -247,7 +247,12 @@ class ClassificadorDesmatamento:
             )
 
         acuracia = float((previsto == real).mean())
-        if acuracia == 1.0:
+        # "Perfeito" só faz sentido com as duas classes no teste. Com uma classe só, acurácia
+        # 1,0 convive com precisão e revocação zero — o desempenho é degenerado, não perfeito,
+        # e dizer "perfeito" ali seria o próprio aviso enganando.
+        contagens_teste = conjunto.contagem_por_classe
+        duas_classes = contagens_teste[INTACTO] > 0 and contagens_teste[DESMATADO] > 0
+        if acuracia == 1.0 and duas_classes:
             avisos.append(
                 "desempenho perfeito — em imagem real isso praticamente não acontece. "
                 "Em cena sintética é esperado, porque a separação radiométrica entre as "
@@ -263,7 +268,7 @@ class ClassificadorDesmatamento:
             )
         elif conjunto.equilibrio < 0.3:
             avisos.append(
-                f"conjunto de teste desbalanceado (equilíbrio {conjunto.equilibrio:.2f}) "
+                f"conjunto de teste desbalanceado (equilíbrio {format(conjunto.equilibrio, '.2f').replace('.', ',')}) "
                 "— leia a revocação e o F1, não a acurácia"
             )
 

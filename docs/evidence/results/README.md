@@ -46,10 +46,12 @@ O NDMI mede água do dossel em vez de verde e separa melhor floresta de pastagem
 ganho não bastou.
 
 A 253 m/pixel quase todo pixel da frente de desmatamento é mistura de floresta, pastagem,
-regeneração e estrada. O índice sai contínuo em vez de bimodal, e não existe vale no
-histograma onde cortar. A perda existe e tem a direção certa — na escala nativa do índice,
-a mediana do NDVI cai 0,150 e a do NDMI cai 0,295 entre as duas datas — mas é um
-deslocamento da distribuição inteira, não separável por limiar global.
+regeneração e estrada. O índice de um pixel misto cai entre as classes puras, e as
+distribuições das duas datas se **sobrepõem fortemente**. Há um vale entre as classes — no
+NDVI de 2024 aparecem dois montes, perto de 0,72 e de 0,99 — mas ele é **raso**: nenhum
+limiar global separa as classes com o tamanho de efeito exigido. A perda existe e tem a
+direção certa — na escala nativa do índice, a mediana do NDVI cai 0,150 e a do NDMI cai
+0,295 entre as duas datas. Ver `docs/apresentacao/figuras/histogramas-ndmi.png`.
 
 Diagnóstico completo, com as três hipóteses testadas: `docs/decisions/005-resolucao-espacial.md`.
 
