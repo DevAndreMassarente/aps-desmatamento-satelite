@@ -59,7 +59,11 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
 - Erro de escala corrigido na documentação: a queda do índice entre as datas tinha sido
   reportada na escala interna `[0,1]` do pipeline (0,06 e 0,11) em vez da escala nativa
   `[-1,1]` do índice (0,150 e 0,295). Corrigido em três documentos.
-- Suíte de testes: **271 passando**, incluindo os caminhos de erro, um teste de fumaça da
+- **Gaussiano separável**: dois passes 1D em vez do núcleo 2D, explorando uma identidade
+  algébrica exata. Medido: 2,2× mais rápido em janela 5×5 e 9,4× em 21×21, com
+  diferença máxima de 1e-6 (arredondamento de `float32`). Os números reportados na
+  imagem real não mudaram.
+- Suíte de testes: **279 passando**, incluindo os caminhos de erro, um teste de fumaça da
   interface e a verificação por força bruta de que treino e teste não compartilham pixel.
 - Verificado que `pdi/` não importa `cv2`, `skimage`, `scipy` nem `PIL`, e não depende de
   nenhuma camada superior — a restrição central do enunciado continua de pé.
@@ -108,8 +112,9 @@ Em ordem de prioridade:
 - `rasterio` continua **não instalado** (dependência nativa GDAL). O sistema degrada para
   PNG/JPEG: a resolução espacial passa a ser informada à mão na interface ou por
   `--metros-por-pixel`. Instalar só se as cenas reais vierem em GeoTIFF.
-- A convolução é `O(H·W·k²)` com laço sobre o kernel. Suficiente para os recortes usados
-  na demonstração; pode ficar lenta em cena Sentinel-2 completa.
+- A convolução **genérica** continua `O(H·W·k²)`. O gaussiano já usa a forma separável.
+  Média e caixa também são separáveis e ainda não foram convertidas. O pipeline completo
+  roda em ~730 ms numa cena de 440×440.
 - **As features de textura não separam as classes na cena sintética**, porque o gerador
   aplica o mesmo desvio de ruído às duas. Elas continuam no vetor porque devem separar em
   imagem real — hipótese da literatura, ainda não medida. Não apresentar como validadas.

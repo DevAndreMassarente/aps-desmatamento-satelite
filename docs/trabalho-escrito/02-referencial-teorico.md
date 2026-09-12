@@ -206,6 +206,41 @@ Uma máscara esburacada multiplica a contagem de componentes conexos e inviabili
 análise por região — o sistema reportaria centenas de "áreas desmatadas" de poucos pixels
 onde há uma só.
 
+#### Separabilidade: uma propriedade algébrica com efeito mensurável
+
+A convolução 2D direta custa `k²` multiplicações por pixel. Para o núcleo gaussiano esse
+custo pode ser reduzido a `2k`, e a redução **não é uma aproximação**.
+
+O expoente da gaussiana é uma soma, e o expoente de uma soma é o produto de exponenciais:
+
+```text
+G(x, y) = exp(−(x² + y²) / 2σ²) = exp(−x² / 2σ²) · exp(−y² / 2σ²) = g(x) · g(y)
+```
+
+O núcleo 2D é exatamente o produto externo de dois núcleos 1D idênticos. Convoluir a
+imagem pelo núcleo 2D equivale a convoluí-la por `g` na horizontal e depois por `g` na
+vertical. A normalização acompanha: se cada núcleo 1D soma 1, o produto externo soma 1,
+que é a mesma condição imposta ao núcleo 2D.
+
+O ganho foi medido sobre uma imagem de 440 × 440 pixels, comparando os dois caminhos:
+
+| Lado da janela | 2D direto | Dois passes 1D | Ganho |
+|----------------|-----------|----------------|-------|
+| 3 | 0,9 ms | 0,7 ms | 1,4× |
+| 5 | 1,8 ms | 0,8 ms | 2,2× |
+| 9 | 5,1 ms | 1,3 ms | 3,9× |
+| 15 | 13,5 ms | 2,6 ms | 5,2× |
+| 21 | 23,9 ms | 2,5 ms | 9,4× |
+
+A maior diferença observada entre os resultados dos dois caminhos foi de 1,0 × 10⁻⁶ —
+compatível com o arredondamento de ponto flutuante de precisão simples, e não com uma
+diferença de método. A equivalência é verificada por teste, inclusive nas bordas e nos
+quatro modos de tratamento de margem, porque é lá que ela poderia falhar.
+
+Nem todo filtro tem essa propriedade. O filtro de média também é separável, pelo mesmo
+argumento de produto. O de mediana **não é**: a mediana de uma janela 2D não é a mediana
+das medianas das linhas, porque estatísticas de ordem não se decompõem dessa forma.
+
 **Mediana.** Não é uma convolução: substitui cada pixel pela mediana da vizinhança. Por ser
 uma estatística de ordem, remove ruído impulsivo — pixel isolado com valor extremo — sem
 borrar a borda, porque um valor extremo isolado não altera a mediana de uma janela. O

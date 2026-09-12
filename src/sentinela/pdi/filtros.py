@@ -76,6 +76,34 @@ def kernel_gaussiano(tamanho: int = 5, sigma: float | None = None) -> np.ndarray
     return (kernel / kernel.sum()).astype(np.float32)
 
 
+def kernel_gaussiano_1d(tamanho: int = 5, sigma: float | None = None) -> np.ndarray:
+    """Kernel gaussiano de uma dimensão, normalizado para somar 1, no formato ``(1, k)``.
+
+    A gaussiana 2D é **separável**, e isso não é uma aproximação:
+
+    ``G(x,y) = exp(-(x² + y²) / 2σ²) = exp(-x² / 2σ²) · exp(-y² / 2σ²)``
+
+    O expoente de uma soma vira produto de exponenciais, então o núcleo 2D é exatamente
+    o produto externo de dois núcleos 1D idênticos. A normalização acompanha: se cada
+    1D soma 1, o produto externo soma 1, que é a mesma condição do núcleo 2D.
+
+    A consequência prática está em ``gaussiano``: convoluir duas vezes em 1D custa
+    ``2k`` multiplicações por pixel em vez de ``k²``.
+    """
+    if tamanho < 1 or tamanho % 2 == 0:
+        raise ErroImagem(f"tamanho deve ser ímpar e positivo, recebido {tamanho}")
+
+    if sigma is None:
+        sigma = tamanho / 6.0
+    if sigma <= 0:
+        raise ErroImagem(f"sigma deve ser positivo, recebido {sigma}")
+
+    raio = tamanho // 2
+    eixo = np.arange(-raio, raio + 1, dtype=np.float32)
+    kernel = np.exp(-(eixo**2) / (2.0 * sigma**2))
+    return (kernel / kernel.sum()).astype(np.float32).reshape(1, tamanho)
+
+
 # --------------------------------------------------------------------------------------
 # Filtros de suavização
 # --------------------------------------------------------------------------------------
@@ -91,13 +119,29 @@ def gaussiano(
     tamanho: int = 5,
     sigma: float | None = None,
     modo_borda: str = "reflete",
+    separavel: bool = True,
 ) -> np.ndarray:
     """Filtro gaussiano (passa-baixa).
 
     Pondera a vizinhança pela distância ao centro, produzindo suavização mais natural
     que a média — sem o artefato de "caixa" que o kernel uniforme deixa.
+
+    Com ``separavel=True`` (padrão) aplica dois passes de uma dimensão — horizontal e
+    depois vertical — explorando a separabilidade demonstrada em ``kernel_gaussiano_1d``.
+    O resultado é o **mesmo** do núcleo 2D, a menos de erro de ponto flutuante; o custo
+    cai de ``k²`` para ``2k`` multiplicações por pixel, o que importa em janela grande e
+    em cena de satélite inteira.
+
+    ``separavel=False`` aplica o núcleo 2D diretamente. Existe para que a equivalência
+    entre os dois caminhos possa ser verificada por teste, e para a demonstração do
+    conceito na apresentação.
     """
-    return correlacionar(imagem, kernel_gaussiano(tamanho, sigma), modo_borda)
+    if not separavel:
+        return correlacionar(imagem, kernel_gaussiano(tamanho, sigma), modo_borda)
+
+    linha = kernel_gaussiano_1d(tamanho, sigma)
+    horizontal = correlacionar(imagem, linha, modo_borda)
+    return correlacionar(horizontal, linha.T, modo_borda)
 
 
 def mediana(imagem: np.ndarray, tamanho: int = 3, modo_borda: str = "reflete") -> np.ndarray:

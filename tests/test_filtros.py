@@ -227,3 +227,69 @@ class TestEstatisticaLocal:
         imagem[:, 15:] += gerador.normal(0, 0.15, (30, 15)).astype(np.float32)
         desvio = filtros.desvio_padrao_local(imagem, 5)
         assert desvio[10:20, 2:12].mean() < desvio[10:20, 18:28].mean()
+
+
+class TestSeparabilidadeDoGaussiano:
+    """A separabilidade é uma identidade algébrica, não uma aproximação.
+
+    ``exp(-(x²+y²)/2σ²) = exp(-x²/2σ²)·exp(-y²/2σ²)`` — o expoente de uma soma vira
+    produto de exponenciais. Estes testes fixam essa igualdade no código, porque é dela
+    que vem o ganho de desempenho.
+    """
+
+    def test_kernel_1d_soma_um(self):
+        for tamanho in (3, 5, 9, 15):
+            assert filtros.kernel_gaussiano_1d(tamanho).sum() == pytest.approx(1.0)
+
+    def test_produto_externo_reconstroi_o_kernel_2d(self):
+        """A prova da separabilidade, em uma linha."""
+        for tamanho in (3, 5, 9):
+            linha = filtros.kernel_gaussiano_1d(tamanho).ravel()
+            reconstruido = np.outer(linha, linha)
+            assert reconstruido == pytest.approx(
+                filtros.kernel_gaussiano(tamanho), abs=1e-6
+            )
+
+    def test_os_dois_caminhos_dao_o_mesmo_resultado(self):
+        gerador = np.random.default_rng(3)
+        imagem = gerador.random((60, 60)).astype(np.float32)
+
+        for tamanho in (3, 5, 9, 15):
+            direto = filtros.gaussiano(imagem, tamanho=tamanho, separavel=False)
+            separado = filtros.gaussiano(imagem, tamanho=tamanho, separavel=True)
+            assert separado == pytest.approx(direto, abs=1e-5), tamanho
+
+    def test_equivalencia_vale_tambem_na_borda(self):
+        """Onde a equivalência poderia falhar: o tratamento de borda de cada passe."""
+        gerador = np.random.default_rng(4)
+        imagem = gerador.random((40, 40)).astype(np.float32)
+
+        for modo in ("reflete", "replica", "zero", "circular"):
+            direto = filtros.gaussiano(imagem, tamanho=9, modo_borda=modo, separavel=False)
+            separado = filtros.gaussiano(imagem, tamanho=9, modo_borda=modo, separavel=True)
+            assert separado[:5, :] == pytest.approx(direto[:5, :], abs=1e-5), modo
+            assert separado[:, :5] == pytest.approx(direto[:, :5], abs=1e-5), modo
+
+    def test_equivalencia_vale_em_imagem_multibanda(self):
+        gerador = np.random.default_rng(5)
+        imagem = gerador.random((30, 30, 3)).astype(np.float32)
+
+        direto = filtros.gaussiano(imagem, tamanho=5, separavel=False)
+        separado = filtros.gaussiano(imagem, tamanho=5, separavel=True)
+        assert separado == pytest.approx(direto, abs=1e-5)
+
+    def test_sigma_explicito_tambem_e_separavel(self):
+        gerador = np.random.default_rng(6)
+        imagem = gerador.random((30, 30)).astype(np.float32)
+
+        direto = filtros.gaussiano(imagem, tamanho=9, sigma=2.5, separavel=False)
+        separado = filtros.gaussiano(imagem, tamanho=9, sigma=2.5, separavel=True)
+        assert separado == pytest.approx(direto, abs=1e-5)
+
+    def test_tamanho_par_e_recusado(self):
+        with pytest.raises(ErroImagem, match="ímpar"):
+            filtros.kernel_gaussiano_1d(4)
+
+    def test_sigma_nao_positivo_e_recusado(self):
+        with pytest.raises(ErroImagem, match="sigma"):
+            filtros.kernel_gaussiano_1d(5, sigma=0)

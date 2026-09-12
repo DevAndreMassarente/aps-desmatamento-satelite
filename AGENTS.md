@@ -162,7 +162,7 @@ imagem bimodal sintética cai entre os dois modos.
 Ao implementar um filtro novo, escrever o teste **junto**. Um filtro sem teste não pode ser
 marcado `VERIFIED` na matriz de requisitos.
 
-A suíte tem **271 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
+A suíte tem **279 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
 automaticamente quando o extra `app` não está instalado.
 
 ---
@@ -255,7 +255,7 @@ delas, registrar a suposição explicitamente.
 |---|------|-----------------|
 | T1 | **Resolução insuficiente**: o par MODIS (253 m/px) foi processado, mas o índice não é bimodal e a detecção é recusada. Quantificação exige Sentinel-2/Landsat, que exigem cadastro | Antes da Fase Intermediária I |
 | T7 | Features de textura não são separáveis na cena sintética (mesmo ruído nas duas classes); só podem ser validadas em imagem real | Junto com T1 |
-| T4 | Convolução é `O(H·W·k²)` com laço sobre o kernel — suficiente para recortes, pode ficar lenta em cena Sentinel-2 completa | Só se a demonstração exigir |
+| T4 | Convolução genérica continua `O(H·W·k²)`. O gaussiano, que é o filtro do caminho quente, já usa a forma separável `O(H·W·2k)`. Média e caixa também são separáveis e ainda não foram convertidas | Só se a demonstração exigir |
 | T5 | `DISTINGUIBILIDADE_MINIMA = 4.0` foi calibrada em cena sintética. Confirmado em imagem real que precisa de recalibração — por procedimento honesto, **nunca** ajustando para uma cena passar | Junto com T1 |
 | T6 | `rasterio` não está instalado; sem ele a resolução espacial é informada à mão | Só se as cenas vierem em GeoTIFF |
 
