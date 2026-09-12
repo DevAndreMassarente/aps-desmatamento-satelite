@@ -28,6 +28,9 @@ data/interim/*
 data/processed/*
 !data/**/.gitkeep
 !data/raw/FONTES.md
+# Manifestos de aquisição são metadado de procedência, não dado: pequenos e
+# necessários para reproduzir o download.
+!data/raw/*_manifesto.json
 
 # Modelos treinados (regeneráveis a partir do código)
 *.joblib

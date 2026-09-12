@@ -1,0 +1,12 @@
+{
+  "confiavel": false,
+  "metodo_indice": "ndvi",
+  "limiar": 0.9082,
+  "distinguibilidade": 2.994,
+  "separabilidade_otsu": 0.709,
+  "area_pixels": null,
+  "area_hectares": null,
+  "proporcao_da_cena": null,
+  "regioes_detectadas": null,
+  "alerta_de_registro": false
+}

@@ -1,13 +1,17 @@
 # Project State
 
-_Atualizado em marcos, não a cada alteração. Última atualização: etapa de modelo._
+_Atualizado em marcos, não a cada alteração. Última atualização: primeira execução em imagem real._
 
 ## Current Phase
 
-**Cinco etapas implementadas.** A cadeia roda de ponta a ponta, incluindo o
-classificador: aquisição → manipulação → filtragem → segmentação → modelo. Nenhum módulo
-do `src/` continua vazio. O que falta no programa não é código: são **imagens reais**
-(R032).
+**Primeira execução em imagem real, com resultado negativo documentado.** A cadeia
+roda de ponta a ponta e já processou um par bi-temporal MODIS de São Félix do Xingu
+(2002 e 2024). O sistema **recusou-se a quantificar**: a 253 m/pixel o índice de vegetação
+não é bimodal, e o critério de confiabilidade disparou. A recusa está correta e o
+diagnóstico está em `docs/decisions/005-resolucao-espacial.md`.
+
+O bloqueio deixou de ser "não temos imagem real" e passou a ser **"precisamos de 10 a
+30 m/pixel"**, o que exige cadastro no Copernicus ou no USGS.
 
 Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado manda concluir
 **antes** do desenvolvimento prático pesado, em paralelo com a aquisição das cenas.
@@ -39,7 +43,15 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
 - Divisão treino/teste **por blocos espaciais**, não por sorteio de recorte
   (`docs/decisions/004-divisao-espacial.md`). Os recortes se sobrepõem; sortear
   individualmente mediria memorização, não generalização.
-- Suíte de testes: **241 passando**, incluindo os caminhos de erro, um teste de fumaça da
+- **`scripts/baixar_imagens.py`** — aquisição reproduzível via NASA GIBS (MODIS/Terra),
+  sem credencial, com controle de qualidade que mede ausência de dado, nuvem e **bruma**.
+- Par bi-temporal real baixado e registrado em `data/raw/FONTES.md` com procedência,
+  licença e URLs exatas.
+- Dois achados de medição documentados: os dois produtos GIBS realçam a banda 1 de forma
+  diferente (média 88 contra 62), e **fumaça de queimada atravessa o SWIR** — o controle
+  de qualidade original aprovou uma cena tomada por fumaça, que inverteu a comparação
+  entre as datas.
+- Suíte de testes: **253 passando**, incluindo os caminhos de erro, um teste de fumaça da
   interface e a verificação por força bruta de que treino e teste não compartilham pixel.
 - Verificado que `pdi/` não importa `cv2`, `skimage`, `scipy` nem `PIL`, e não depende de
   nenhuma camada superior — a restrição central do enunciado continua de pé.
@@ -53,15 +65,16 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
 
 Em ordem de prioridade:
 
-1. **Levar as perguntas Q1–Q8 ao professor** (`docs/PROJECT_SPEC.md` → Open Questions).
+1. **Criar conta no Copernicus Data Space ou no USGS EarthExplorer** e baixar um par
+   Sentinel-2 (10 m) ou Landsat (30 m) da mesma área. É o único caminho para a
+   quantificação validada; o cadastro precisa ser feito por um integrante do grupo.
+2. **Levar as perguntas Q1–Q8 ao professor** (`docs/PROJECT_SPEC.md` → Open Questions).
    Q5 (modelo treinado vs. proposta teórica) muda o escopo e trava o planejamento.
-2. **Selecionar a região de estudo e baixar o par bi-temporal real** — é o bloqueio que
-   segura R032, e por consequência R033, R034, R037, R044 e R050. Registrar em
-   `data/raw/FONTES.md`.
-3. Rodar `sentinela detectar` nas imagens reais e gerar as evidências em
-   `docs/evidence/results/`.
-4. Reavaliar `DISTINGUIBILIDADE_MINIMA` em cena real — hoje está calibrada só em
-   sintética (B5).
+3. Implementar o **NDMI** (NIR − SWIR) em `pdi/cor.py` e expô-lo no pipeline. Medido
+   nesta cena: separa melhor que o NDVI (distinguibilidade 3,51 contra 2,99).
+4. Recalibrar `DISTINGUIBILIDADE_MINIMA` por procedimento honesto (B5): medir a
+   distribuição da métrica em pares de floresta intacta e em pares com desmatamento
+   validado pelo PRODES. **Não** ajustar o número para fazer uma cena específica passar.
 5. Escrever Capítulo 1 + a parte de filtragem dos Capítulos 2 e 3 (**Fase Intermediária I**).
 6. Reavaliar as features de textura em imagem real — na cena sintética elas não
    separam as classes, porque o gerador aplica o mesmo ruído às duas (limitação
@@ -74,8 +87,9 @@ Em ordem de prioridade:
 | B1 | Integrantes do grupo não definidos (Q7) | Ficha de APS e capa |
 | B2 | Escopo do modelo indefinido (Q5) | Mitigado: `modelo/` foi implementado pela leitura conservadora do `AGENTS.md` §14 |
 | B3 | Datas de P1/P2 desconhecidas (Q3) | Sem cronograma real |
-| B4 | **Nenhuma imagem real baixada** | Segura R032 e mais cinco requisitos atrás dele |
-| B5 | `DISTINGUIBILIDADE_MINIMA` calibrada só em cena sintética | Precisa ser reavaliada em imagem real antes de ir para o trabalho escrito |
+| B4 | ~~Nenhuma imagem real baixada~~ — **resolvido**: par MODIS baixado e processado | — |
+| B6 | **Resolução de 250 m insuficiente**: o índice não é bimodal e a detecção é recusada | Trava a quantificação. Exige Sentinel-2/Landsat, que exigem cadastro |
+| B5 | `DISTINGUIBILIDADE_MINIMA` calibrada só em cena sintética | Confirmado em imagem real. Recalibrar por procedimento honesto, nunca ajustando para uma cena passar |
 
 ## Known Issues
 
@@ -109,6 +123,8 @@ Em ordem de prioridade:
 | D9 | Recortes ambíguos são descartados na rotulagem, não arredondados para a classe majoritária | `pipeline/amostras.py` |
 | D10 | Divisão treino/teste por blocos espaciais, nunca por sorteio de recorte | `docs/decisions/004-divisao-espacial.md` |
 | D11 | Floresta aleatória em vez de rede convolucional, pela explicabilidade na banca | `modelo/classificador.py` |
+| D12 | Vermelho e NIR extraídos do **mesmo** produto GIBS, porque os realces de 8 bits diferem entre produtos | `data/raw/FONTES.md` |
+| D13 | Resultado negativo em imagem real mantido como resultado; limiar **não** ajustado para fazê-lo passar | `docs/decisions/005-resolucao-espacial.md` |
 
 ## Graphify
 

@@ -60,11 +60,11 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | ID | Requisito | Tipo | Fonte | Implementação | Evidência/Teste | Status |
 |----|-----------|------|-------|---------------|-----------------|--------|
-| R029 | Sistema que implementa as soluções propostas no item 3 da seção I | MUST | PDF p.4, item II.1 | `src/sentinela/` + `cli.py` | `tests/` — 241 testes | IN_PROGRESS |
+| R029 | Sistema que implementa as soluções propostas no item 3 da seção I | MUST | PDF p.4, item II.1 | `src/sentinela/` + `cli.py` + `scripts/` | `tests/` — 253 testes | IN_PROGRESS |
 | R030 | **Filtros desenvolvidos pelo próprio grupo** (não usar prontos de biblioteca) | MUST | PDF p.3, item 3.a | `sentinela/pdi/` | `tests/test_filtros.py`, `test_nucleo.py` — 154 testes | VERIFIED |
 | R031 | Filtros preferencialmente em linguagem Python | SHOULD | PDF p.3, item 3.a | Python 3.12 | — | IMPLEMENTED |
-| R032 | Filtros aplicados em **imagens reais** do problema escolhido | MUST | PDF p.3, item 3.a | `data/raw/` | `docs/evidence/results/` | NOT_STARTED |
-| R033 | Resultado dos filtros apresentado **e analisado** | MUST | PDF p.3, item 3.a | `sentinela/app/principal.py` | `docs/evidence/demo-sintetica/` (sintética) | IN_PROGRESS |
+| R032 | Filtros aplicados em **imagens reais** do problema escolhido | MUST | PDF p.3, item 3.a | `scripts/baixar_imagens.py` | `docs/evidence/results/` — MODIS real, 2002 e 2024 | IMPLEMENTED |
+| R033 | Resultado dos filtros apresentado **e analisado** | MUST | PDF p.3, item 3.a | `sentinela/app/principal.py` | `docs/evidence/results/README.md` — análise da recusa | IN_PROGRESS |
 | R034 | PDI usado como **preparação de dados** para alimentar modelo de visão computacional | MUST | PDF p.2 (Objetivo) | `pipeline/amostras.py` → `modelo/` | `tests/test_pipeline.py`, `test_modelo.py` | IN_PROGRESS |
 | R035 | Processo de modelagem + algoritmos de inteligência adequados para imagens | MUST | PDF p.3, item 3.b | `modelo/caracteristicas.py`, `modelo/classificador.py` | `tests/test_modelo.py` — 25 testes | IN_PROGRESS |
 | R036 | **Tratamento de erros** — citado como fator de impacto direto na nota | SHOULD | PDF p.4, item II.2 | `dataio/imagem.py`, `pipeline/deteccao.py` | `test_dataio.py`, `TestValidacaoDeEntrada` — 18 casos | VERIFIED |
@@ -112,25 +112,27 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | Status | Qtd |
 |--------|-----|
-| NOT_STARTED | 33 |
+| NOT_STARTED | 32 |
 | IN_PROGRESS | 14 |
-| IMPLEMENTED | 1 |
+| IMPLEMENTED | 2 |
 | VERIFIED | 2 |
 | BLOCKED (perguntas) | 8 |
 
-> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 241
-> testes contra casos analíticos. A aplicação em **imagens reais** (R032) é requisito
-> separado e continua `NOT_STARTED` — é hoje o bloqueio mais relevante do programa.
+> **R032 está `IMPLEMENTED`, não `VERIFIED`.** Os filtros do grupo foram aplicados a
+> imagens reais de satélite (MODIS/Terra sobre São Félix do Xingu, 2002 e 2024) e a
+> evidência está em `docs/evidence/results/`. Mas o resultado foi uma **recusa**: a
+> 253 m/pixel o índice de vegetação não é bimodal, e o critério de confiabilidade
+> impediu a quantificação. Quantificação validada depende de imagem de 10 a 30 m —
+> ver `docs/decisions/005-resolucao-espacial.md`.
 
-> Os requisitos do programa que dependem de demonstração — R033, R034, R035, R037, R039,
-> R044, R050 — estão `IN_PROGRESS`, não `VERIFIED`: o código existe e tem teste, mas a
-> única evidência disponível vem de **cena sintética**
-> (`docs/evidence/demo-sintetica/`), que por `AGENTS.md` §11 não pode sustentar requisito
-> acadêmico. Eles só avançam depois de R032.
+> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 253
+> testes contra casos analíticos.
 
-> **Q5 continua em aberto.** Até haver resposta do professor, o projeto segue a leitura
-> conservadora do `AGENTS.md` §14 e implementa o modelo de fato — feito em
-> `sentinela/modelo/`. Se a resposta for "basta a proposta teórica", o trabalho já está
-> coberto; o contrário custaria uma fase inteira.
+> Os requisitos que dependem de demonstração quantitativa — R033, R034, R035, R037, R039,
+> R044, R050 — seguem `IN_PROGRESS`. O programa roda, tem teste e já processou imagem
+> real; o que falta é o resultado numérico defensável, travado pela resolução.
+
+> **Q5 continua em aberto.** Até haver resposta, o projeto segue a leitura conservadora do
+> `AGENTS.md` §14: o modelo foi implementado de fato, em `sentinela/modelo/`.
 
 **Total de requisitos rastreados:** 50 (R001–R050) + 8 perguntas em aberto.

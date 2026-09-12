@@ -162,7 +162,7 @@ imagem bimodal sintética cai entre os dois modos.
 Ao implementar um filtro novo, escrever o teste **junto**. Um filtro sem teste não pode ser
 marcado `VERIFIED` na matriz de requisitos.
 
-A suíte tem **241 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
+A suíte tem **253 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
 automaticamente quando o extra `app` não está instalado.
 
 ---
@@ -185,6 +185,8 @@ não é verificar.
 - `data/` não é versionado (`docs/decisions/002-dados-nao-versionados.md`).
 - Toda imagem baixada deve ser registrada em `data/raw/FONTES.md`: satélite, produto, data,
   coordenadas, licença, URL.
+- Imagens reais baixadas com `scripts/baixar_imagens.py`; procedência obrigatória em
+  `data/raw/FONTES.md`, incluindo licença e URL exata.
 - **Nunca fabricar imagem de satélite e apresentar como real.** Imagem sintética é permitida em
   teste, desde que rotulada como sintética no código e no trabalho escrito.
 - Resultados que entram no trabalho escrito vão em `docs/evidence/`.
@@ -245,10 +247,11 @@ delas, registrar a suposição explicitamente.
 
 | # | Item | Quando resolver |
 |---|------|-----------------|
-| T1 | **Nenhuma imagem real baixada** — o pipeline nunca rodou em dado verdadeiro. Segura R032 e cinco requisitos atrás dele | Antes da Fase Intermediária I |
+| T1 | **Resolução insuficiente**: o par MODIS (253 m/px) foi processado, mas o índice não é bimodal e a detecção é recusada. Quantificação exige Sentinel-2/Landsat, que exigem cadastro | Antes da Fase Intermediária I |
+| T8 | NDMI (NIR − SWIR) não implementado. Medido: separa melhor que o NDVI em MODIS (3,51 contra 2,99) | Junto com T1 |
 | T7 | Features de textura não são separáveis na cena sintética (mesmo ruído nas duas classes); só podem ser validadas em imagem real | Junto com T1 |
 | T4 | Convolução é `O(H·W·k²)` com laço sobre o kernel — suficiente para recortes, pode ficar lenta em cena Sentinel-2 completa | Só se a demonstração exigir |
-| T5 | `DISTINGUIBILIDADE_MINIMA = 4.0` foi calibrada em cena sintética. Em imagem real o ruído de dossel é maior e o valor pode precisar de ajuste | Junto com T1 |
+| T5 | `DISTINGUIBILIDADE_MINIMA = 4.0` foi calibrada em cena sintética. Confirmado em imagem real que precisa de recalibração — por procedimento honesto, **nunca** ajustando para uma cena passar | Junto com T1 |
 | T6 | `rasterio` não está instalado; sem ele a resolução espacial é informada à mão | Só se as cenas vierem em GeoTIFF |
 
 > **T2 (interface Streamlit) foi resolvido.** `app/principal.py` está implementado e
@@ -269,7 +272,7 @@ esta seção é autossuficiente, com os caminhos e comandos já validados neste 
 
 | Campo | Valor |
 |-------|-------|
-| Estado | `STALE` — `dataio/`, `pipeline/`, `modelo/`, `app/` e `cli.py` entraram depois da extração |
+| Estado | `STALE` — `dataio/`, `pipeline/`, `modelo/`, `app/`, `cli.py` e `scripts/` entraram depois da extração |
 | Grafo | `graphify-out/graph.json` — 433 nós, 726 arestas |
 | Origem dos nós | 433/433 `ast` — zero LLM (`input_tokens=0`, `output_tokens=0`) |
 | Ferramenta | `/home/vader/.local/share/uv/tools/graphifyy/bin/graphify` — `graphify 0.9.51` |

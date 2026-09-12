@@ -79,7 +79,7 @@ src/sentinela/
 ├── app/principal.py  interface Streamlit
 └── cli.py            linha de comando
 
-tests/                241 testes contra casos analíticos
+tests/                253 testes contra casos analíticos
 docs/                 enunciado, especificação, requisitos, arquitetura, decisões, evidências
 data/                 imagens (não versionadas — ver docs/decisions/002)
 ```
@@ -115,6 +115,18 @@ Abre em `http://localhost:8501`. A interface parte de uma **cena sintética** de
 demonstração — rotulada como tal na tela — e aceita upload de um par de imagens reais.
 Mostra as cinco etapas lado a lado, a área desmatada em pixels e hectares, a tabela de
 regiões e os recortes rotulados que alimentariam o modelo.
+
+### Baixar imagens reais
+
+```bash
+python scripts/baixar_imagens.py --listar-regioes
+python scripts/baixar_imagens.py --regiao sao-felix
+```
+
+Usa o NASA GIBS (MODIS/Terra), que **não exige credencial** — a aquisição é reproduzível
+por qualquer integrante do grupo. O script mede ausência de dado, nuvem e bruma, e avisa
+quando a cena não presta. Procedência registrada em
+[`data/raw/FONTES.md`](data/raw/FONTES.md).
 
 ### Linha de comando
 
@@ -197,19 +209,31 @@ imagens reais.
 | Etapa | Situação |
 |-------|----------|
 | Estrutura e documentação | Concluído |
-| Núcleo de PDI (filtros próprios) | Implementado, 241 testes passando |
+| Núcleo de PDI (filtros próprios) | Implementado, 253 testes passando |
 | Aquisição e I/O de imagem | Implementado |
 | Pipeline de orquestração | Implementado |
 | Interface Streamlit e linha de comando | Implementado |
 | Extração de amostras para o modelo | Implementado |
 | Modelo de visão computacional | Implementado — floresta aleatória, 25 testes |
-| **Aplicação em imagens reais de satélite** | **Não iniciado — bloqueio principal (R032)** |
+| Aplicação em imagens reais de satélite | Executado — MODIS/Terra, São Félix do Xingu (PA), 2002 e 2024 |
+| **Quantificação validada em imagem real** | **Bloqueada pela resolução — exige 10 a 30 m/pixel** |
 | Trabalho escrito | Não iniciado |
 
-A única evidência existente hoje vem de **cena sintética**
-([`docs/evidence/demo-sintetica/`](docs/evidence/demo-sintetica/)), que serve para
-demonstrar o programa e conferir a quantificação contra uma verdade de terreno conhecida,
-mas **não sustenta requisito acadêmico**.
+### O resultado em imagem real foi uma recusa
+
+O pipeline já rodou sobre um par bi-temporal real ([`docs/evidence/results/`](docs/evidence/results/)),
+e **o sistema recusou-se a quantificar**: a 253 m/pixel quase todo pixel da frente de
+desmatamento é mistura de floresta, pastagem e regeneração, o índice de vegetação sai
+contínuo em vez de bimodal, e não existe limiar defensável. A recusa é o comportamento
+correto — o diagnóstico completo, com as três hipóteses testadas, está na
+[decisão 005](docs/decisions/005-resolucao-espacial.md).
+
+Para quantificação validada é preciso Sentinel-2 (10 m) ou Landsat (30 m), que exigem
+cadastro gratuito no Copernicus Data Space ou no USGS EarthExplorer.
+
+A evidência de cena sintética ([`docs/evidence/demo-sintetica/`](docs/evidence/demo-sintetica/))
+serve para demonstrar o programa e conferir a quantificação contra uma verdade de terreno
+conhecida, mas **não sustenta requisito acadêmico**.
 
 Oito perguntas aguardam confirmação do professor — ver
 [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md), seção *Open Questions*.

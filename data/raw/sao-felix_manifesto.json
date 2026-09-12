@@ -1,0 +1,47 @@
+{
+  "regiao": "sao-felix",
+  "descricao": "São Félix do Xingu (PA) — frente de expansão da pecuária",
+  "bbox_epsg4326": [
+    -7.0,
+    -52.5,
+    -6.0,
+    -51.5
+  ],
+  "largura_px": 440,
+  "metros_por_pixel": 253.0,
+  "fonte": "NASA GIBS — MODIS/Terra Corrected Reflectance",
+  "licenca": "domínio público (NASA open data policy)",
+  "baixado_em": "2026-09-12",
+  "datas": {
+    "antes": {
+      "data": "2002-07-01",
+      "qualidade": {
+        "ausente": 0.0071,
+        "nuvem": 0.0,
+        "bruma_p05_azul": 6.0
+      },
+      "arquivos": {
+        "cor_real": "sao-felix_2002-07-01_cor-real.png",
+        "analise": "sao-felix_2002-07-01_analise.png",
+        "nir": "sao-felix_2002-07-01_nir.png"
+      },
+      "url_visual": "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=MODIS_Terra_CorrectedReflectance_TrueColor&STYLES=&CRS=EPSG%3A4326&BBOX=-7.0%2C-52.5%2C-6.0%2C-51.5&WIDTH=440&HEIGHT=440&FORMAT=image%2Fpng&TIME=2002-07-01",
+      "url_analise": "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=MODIS_Terra_CorrectedReflectance_Bands721&STYLES=&CRS=EPSG%3A4326&BBOX=-7.0%2C-52.5%2C-6.0%2C-51.5&WIDTH=440&HEIGHT=440&FORMAT=image%2Fpng&TIME=2002-07-01"
+    },
+    "depois": {
+      "data": "2024-07-05",
+      "qualidade": {
+        "ausente": 0.0068,
+        "nuvem": 0.0,
+        "bruma_p05_azul": 6.0
+      },
+      "arquivos": {
+        "cor_real": "sao-felix_2024-07-05_cor-real.png",
+        "analise": "sao-felix_2024-07-05_analise.png",
+        "nir": "sao-felix_2024-07-05_nir.png"
+      },
+      "url_visual": "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=MODIS_Terra_CorrectedReflectance_TrueColor&STYLES=&CRS=EPSG%3A4326&BBOX=-7.0%2C-52.5%2C-6.0%2C-51.5&WIDTH=440&HEIGHT=440&FORMAT=image%2Fpng&TIME=2024-07-05",
+      "url_analise": "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&LAYERS=MODIS_Terra_CorrectedReflectance_Bands721&STYLES=&CRS=EPSG%3A4326&BBOX=-7.0%2C-52.5%2C-6.0%2C-51.5&WIDTH=440&HEIGHT=440&FORMAT=image%2Fpng&TIME=2024-07-05"
+    }
+  }
+}
