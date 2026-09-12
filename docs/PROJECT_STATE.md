@@ -1,12 +1,15 @@
 # Project State
 
-_Atualizado em marcos, não a cada alteração. Última atualização: bootstrap._
+_Atualizado em marcos, não a cada alteração. Última atualização: programa executável._
 
 ## Current Phase
 
-**Bootstrap concluído.** Fundação do projeto (estrutura, documentação, núcleo de PDI e testes)
-pronta. Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado manda concluir
-**antes** do desenvolvimento prático pesado.
+**Programa executável.** A cadeia completa roda de ponta a ponta — interface no
+navegador, linha de comando e extração de amostras rotuladas. O que falta no programa
+não é código: são **imagens reais** (R032).
+
+Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado manda concluir
+**antes** do desenvolvimento prático pesado, em paralelo com a aquisição das cenas.
 
 ## Completed
 
@@ -16,16 +19,24 @@ pronta. Próxima fase: Fase Intermediária I — Qualificação (R040), que o en
 - 50 requisitos extraídos e rastreados em `docs/REQUIREMENTS.md`.
 - Problema definido: detecção e quantificação de desmatamento em imagens de satélite.
 - Arquitetura definida espelhando as cinco etapas nomeadas pelo enunciado.
-- Estrutura de diretórios e configuração de projeto criadas.
-- Núcleo de PDI implementado com NumPy puro: convolução, filtros, limiarização, morfologia,
-  segmentação e índices de vegetação.
-- Suíte de testes cobrindo os filtros contra casos analíticos conhecidos: **154 passando**.
-- Achado metodológico durante o teste de integração: Otsu por data usa réguas diferentes, e
-  a separabilidade η do artigo original não detecta cena homogênea. Resolvido com limiar
-  conjunto e tamanho de efeito padronizado (`docs/decisions/003-limiar-bitemporal.md`).
-
-- Graphify preparado e validado sob Security Gate: grafo de código local `READY`
-  (433 nós, 726 arestas, 100% AST, zero LLM). Baseline fora do repositório.
+- Núcleo de PDI implementado com NumPy puro: convolução, filtros, limiarização,
+  morfologia, segmentação e índices de vegetação.
+- Achado metodológico: Otsu por data usa réguas diferentes, e a separabilidade η do
+  artigo original não detecta cena homogênea. Resolvido com limiar conjunto e tamanho de
+  efeito padronizado (`docs/decisions/003-limiar-bitemporal.md`).
+- **`dataio/`** — leitura e escrita de imagem (Pillow), metadado geográfico opcional
+  (rasterio), cena sintética determinística e composição visual dos resultados.
+- **`pipeline/`** — orquestração das cinco etapas (`deteccao.py`) e extração de recortes
+  rotulados para o modelo (`amostras.py`), que é o objetivo literal do enunciado (p.2).
+- **`app/`** — interface Streamlit com as etapas lado a lado, quantificação em pixels e
+  hectares, tabela de regiões e amostras para o modelo.
+- **`cli.py`** — `sentinela app`, `sentinela detectar` e `sentinela demo`. A geração de
+  evidência passa a ser reproduzível por comando, não por cliques numa tela.
+- Suíte de testes: **214 passando**, incluindo os caminhos de erro e um teste de fumaça
+  da interface.
+- Verificado que `pdi/` não importa `cv2`, `skimage`, `scipy` nem `PIL`, e não depende de
+  nenhuma camada superior — a restrição central do enunciado continua de pé.
+- Graphify preparado e validado sob Security Gate.
 
 ## In Progress
 
@@ -36,22 +47,26 @@ pronta. Próxima fase: Fase Intermediária I — Qualificação (R040), que o en
 Em ordem de prioridade:
 
 1. **Levar as perguntas Q1–Q8 ao professor** (`docs/PROJECT_SPEC.md` → Open Questions).
-   Q5 (modelo treinado vs. proposta teórica) muda o escopo do programa e trava o planejamento.
-2. Selecionar a região de estudo e baixar o par de imagens bi-temporais reais; registrar em
+   Q5 (modelo treinado vs. proposta teórica) muda o escopo e trava o planejamento.
+2. **Selecionar a região de estudo e baixar o par bi-temporal real** — é o bloqueio que
+   segura R032, e por consequência R033, R034, R037, R044 e R050. Registrar em
    `data/raw/FONTES.md`.
-3. Rodar o pipeline nas imagens reais e gerar as primeiras evidências em `docs/evidence/`.
-4. Escrever Capítulo 1 + a parte de filtragem dos Capítulos 2 e 3 (**Fase Intermediária I**).
-5. Construir a interface Streamlit para a demonstração.
-6. Implementar a etapa de modelo.
+3. Rodar `sentinela detectar` nas imagens reais e gerar as evidências em
+   `docs/evidence/results/`.
+4. Reavaliar `DISTINGUIBILIDADE_MINIMA` em cena real — hoje está calibrada só em
+   sintética (B5).
+5. Escrever Capítulo 1 + a parte de filtragem dos Capítulos 2 e 3 (**Fase Intermediária I**).
+6. Implementar a etapa de modelo em `modelo/`, consumindo o conjunto de
+   `pipeline.extrair_amostras`. Depende de Q5.
 
 ## Blockers
 
 | # | Bloqueio | Impacto |
 |---|----------|---------|
 | B1 | Integrantes do grupo não definidos (Q7) | Ficha de APS e capa |
-| B2 | Escopo do modelo indefinido (Q5) | Dimensiona metade do esforço do programa |
+| B2 | Escopo do modelo indefinido (Q5) | Dimensiona a etapa de `modelo/` |
 | B3 | Datas de P1/P2 desconhecidas (Q3) | Sem cronograma real |
-| B4 | Nenhuma imagem real baixada ainda | R032 não pode avançar |
+| B4 | **Nenhuma imagem real baixada** | Segura R032 e mais cinco requisitos atrás dele |
 | B5 | `DISTINGUIBILIDADE_MINIMA` calibrada só em cena sintética | Precisa ser reavaliada em imagem real antes de ir para o trabalho escrito |
 
 ## Known Issues
@@ -59,9 +74,11 @@ Em ordem de prioridade:
 - O `python3-venv` desta máquina veio sem `ensurepip`, então `python3 -m venv` cria um
   ambiente sem `pip`. Contornado com `venv --without-pip` + `get-pip.py`. A correção
   definitiva é `sudo apt install python3-venv`, que precisa da senha do usuário.
-  O ambiente atual está funcional com numpy 2.5.3 e pytest 9.1.1.
-- `rasterio` é opcional e pode falhar de instalar (dependência nativa GDAL). O sistema degrada
-  para PNG/JPEG sem ele, perdendo apenas a conversão de pixels para hectares.
+- `rasterio` continua **não instalado** (dependência nativa GDAL). O sistema degrada para
+  PNG/JPEG: a resolução espacial passa a ser informada à mão na interface ou por
+  `--metros-por-pixel`. Instalar só se as cenas reais vierem em GeoTIFF.
+- A convolução é `O(H·W·k²)` com laço sobre o kernel. Suficiente para os recortes usados
+  na demonstração; pode ficar lenta em cena Sentinel-2 completa.
 
 ## Important Decisions
 
@@ -74,15 +91,18 @@ Em ordem de prioridade:
 | D5 | Representação interna `float32` em `[0,1]` | `docs/ARCHITECTURE.md` |
 | D6 | Limiar único para as duas datas + confiabilidade por tamanho de efeito | `docs/decisions/003-limiar-bitemporal.md` |
 | D7 | Graphify como contexto de código local, nunca versionado | `AGENTS.md` §17 |
+| D8 | Detecção não confiável **não reporta área** — `resumo()` devolve `None` em vez de um número inventado | `pipeline/deteccao.py` |
+| D9 | Recortes ambíguos são descartados na rotulagem, não arredondados para a classe majoritária | `pipeline/amostras.py` |
 
 ## Graphify
 
 | Campo | Valor |
 |-------|-------|
-| Estado | `READY` |
+| Estado | `STALE` |
 | Grafo | `graphify-out/graph.json` — 433 nós, 726 arestas |
 | Validado em | commit `64f6dec` |
 | Baseline | `~/.local/state/graphify-baseline/aps-desmatamento-satelite/` |
 
-Marcar `STALE` após mudança relevante no código, até regenerar pelo procedimento do
-`AGENTS.md` §17. Data do arquivo não comprova atualidade.
+Marcado `STALE` porque `dataio/`, `pipeline/`, `app/` e `cli.py` foram adicionados depois
+da última extração. Regenerar pelo procedimento do `AGENTS.md` §17 antes de confiar em
+consulta ao grafo. Data do arquivo não comprova atualidade.

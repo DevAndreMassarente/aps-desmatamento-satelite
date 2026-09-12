@@ -114,10 +114,15 @@ Espelha as cinco etapas nomeadas pelo enunciado (p.3, item 2.e):
 
 ```text
 Aquisição → Manipulação → Filtragem → Segmentação → Modelo
-dataio/      pdi/cor.py   pdi/filtros.py  pdi/limiar.py    modelo/
-                                          pdi/morfologia.py
+dataio/      pdi/cor.py   pdi/filtros.py  pdi/limiar.py    pipeline/amostras.py
+                                          pdi/morfologia.py  modelo/ (a implementar)
                                           pdi/segmentacao.py
 ```
+
+`pipeline/deteccao.py` encadeia as cinco etapas e guarda **todos** os intermediários —
+a interface precisa exibir etapa por etapa e o trabalho escrito precisa mostrar o efeito
+de cada filtro. `app/principal.py` e `cli.py` só consomem o resultado; nenhum algoritmo
+de PDI mora neles.
 
 Regra de dependência: `pdi/` não importa de `pipeline/`, `app/`, `dataio/` nem `modelo/`.
 Recebe e devolve arrays NumPy puros.
@@ -152,6 +157,9 @@ imagem bimodal sintética cai entre os dois modos.
 
 Ao implementar um filtro novo, escrever o teste **junto**. Um filtro sem teste não pode ser
 marcado `VERIFIED` na matriz de requisitos.
+
+A suíte tem **214 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
+automaticamente quando o extra `app` não está instalado.
 
 ---
 
@@ -233,10 +241,14 @@ delas, registrar a suposição explicitamente.
 
 | # | Item | Quando resolver |
 |---|------|-----------------|
-| T1 | Nenhuma imagem real baixada — pipeline ainda não rodou em dado verdadeiro | Antes da Fase Intermediária I |
-| T2 | Interface Streamlit ainda não construída | Antes da Fase Intermediária II |
-| T3 | Etapa de modelo ainda não implementada | Depende de Q5 |
-| T4 | Convolução é `O(H·W·k²)` com laço sobre o kernel — suficiente para recortes, pode ficar lenta em cena grande | Só se a demonstração exigir |
+| T1 | **Nenhuma imagem real baixada** — o pipeline nunca rodou em dado verdadeiro. Segura R032 e cinco requisitos atrás dele | Antes da Fase Intermediária I |
+| T3 | Etapa de modelo (`modelo/`) ainda não implementada — o conjunto de amostras já é produzido por `pipeline/amostras.py` e está esperando um consumidor | Depende de Q5 |
+| T4 | Convolução é `O(H·W·k²)` com laço sobre o kernel — suficiente para recortes, pode ficar lenta em cena Sentinel-2 completa | Só se a demonstração exigir |
+| T5 | `DISTINGUIBILIDADE_MINIMA = 4.0` foi calibrada em cena sintética. Em imagem real o ruído de dossel é maior e o valor pode precisar de ajuste | Junto com T1 |
+| T6 | `rasterio` não está instalado; sem ele a resolução espacial é informada à mão | Só se as cenas vierem em GeoTIFF |
+
+> **T2 (interface Streamlit) foi resolvido.** `app/principal.py` está implementado e
+> coberto por teste de fumaça em `tests/test_app.py`.
 
 ---
 
@@ -250,7 +262,7 @@ esta seção é autossuficiente, com os caminhos e comandos já validados neste 
 
 | Campo | Valor |
 |-------|-------|
-| Estado | `READY` |
+| Estado | `STALE` — `dataio/`, `pipeline/`, `app/` e `cli.py` entraram depois da extração |
 | Grafo | `graphify-out/graph.json` — 433 nós, 726 arestas |
 | Origem dos nós | 433/433 `ast` — zero LLM (`input_tokens=0`, `output_tokens=0`) |
 | Ferramenta | `/home/vader/.local/share/uv/tools/graphifyy/bin/graphify` — `graphify 0.9.51` |

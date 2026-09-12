@@ -19,20 +19,23 @@ requisito de rastreabilidade (R005–R009) sem custo arquitetural nenhum.
 
 ```text
 ┌─────────────────────────────────────────────────────────────────┐
-│  sentinela/app/           Interface Streamlit                   │
-│                           (demonstração, sliders, comparações)  │
+│  sentinela/app/ · sentinela/cli.py                              │
+│  Interface Streamlit e linha de comando                         │
 └────────────────────────────┬────────────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────────────┐
 │  sentinela/pipeline/       Orquestração das etapas              │
-│                           encadeia PDI → produz dado para modelo│
+│   deteccao.py  encadeia PDI e guarda os intermediários          │
+│   amostras.py  recortes rotulados que alimentam o modelo        │
 └───┬─────────────────────────────────────────────┬───────────────┘
     │                                             │
 ┌───▼──────────────────────┐         ┌────────────▼───────────────┐
 │ sentinela/dataio/        │         │ sentinela/modelo/          │
-│ AQUISIÇÃO                │         │ MODELO                     │
-│ leitura PNG/JPEG/GeoTIFF │         │ features + classificador   │
-│ metadados geográficos    │         │ (scikit-learn)             │
+│ AQUISIÇÃO                │         │ MODELO   (a implementar)   │
+│ imagem.py  leitura/escrita│        │ features + classificador   │
+│ geo.py     GeoTIFF (opc.) │        │ (scikit-learn)             │
+│ sintetico.py  demonstração│        │                            │
+│ visual.py  sobreposição   │        │                            │
 └───┬──────────────────────┘         └────────────────────────────┘
     │
 ┌───▼─────────────────────────────────────────────────────────────┐
@@ -67,8 +70,13 @@ recebe e devolve arrays NumPy puros. Isso é o que torna cada filtro testável i
 | `pdi/limiar.py` | Cálculo de limiares e binarização | Não aplica morfologia |
 | `pdi/morfologia.py` | Operadores morfológicos sobre máscaras binárias | Não rotula regiões |
 | `pdi/segmentacao.py` | Rotulagem de componentes conexos, filtro por área | Não classifica |
-| `dataio/` | Abrir imagem, ler metadado geográfico, salvar resultado | Não processa pixel |
-| `pipeline/` | Encadear as etapas, registrar cada saída intermediária | Não implementa algoritmo |
+| `dataio/imagem.py` | Abrir e salvar imagem; converter faixa na fronteira | Não processa pixel |
+| `dataio/geo.py` | Ler resolução espacial do GeoTIFF | Não converte área |
+| `dataio/sintetico.py` | Gerar cena de demonstração | Não é fonte de evidência |
+| `dataio/visual.py` | Sobreposição, mapa de mudança, falsa cor | Não decide nada |
+| `pipeline/deteccao.py` | Encadear as etapas, registrar cada saída intermediária | Não implementa algoritmo |
+| `pipeline/amostras.py` | Recortar e rotular amostras para o modelo | Não treina |
+| `cli.py` | Expor o pipeline por comando, gravar evidência reproduzível | Não implementa algoritmo |
 | `modelo/` | Extrair features dos patches, treinar e aplicar classificador | Não faz PDI |
 | `app/` | Apresentar, receber parâmetros, exibir comparações | Não contém lógica de domínio |
 
@@ -76,38 +84,61 @@ recebe e devolve arrays NumPy puros. Isso é o que torna cada filtro testável i
 
 ## Fluxo principal
 
+Os nomes abaixo são os do código real. `pipeline.detectar_desmatamento()` executa as
+etapas 1 a 4 numa chamada e devolve um `ResultadoDeteccao` com todos os intermediários.
+
 ```text
 1. AQUISIÇÃO
    imagem T1 (antes)  ─┐
-   imagem T2 (depois) ─┴─► dataio.carregar()
-                           → array float32 [H,W,C] em [0,1] + metadado geográfico opcional
+   imagem T2 (depois) ─┴─► dataio.carregar_par()
+                           → float32 [H,W,3] em [0,1]; recusa recortes de tamanhos diferentes
+                           dataio.metros_por_pixel()   resolução do GeoTIFF (opcional)
 
 2. MANIPULAÇÃO
-   → cor.para_cinza() / cor.para_hsv()
-   → cor.indice_vegetacao()   NDVI se houver banda NIR; senão ExG/VARI sobre RGB
-   → nucleo.alongar_contraste() / equalizar_histograma()
+   → cor.indice_vegetacao()      NDVI se houver banda NIR; VARI sobre RGB caso contrário
+   → cor.para_faixa_unitaria()   índice assinado [-1,1] → [0,1]
 
 3. FILTRAGEM
-   → filtros.gaussiano()   suaviza ruído sensor/atmosfera antes de segmentar
-   → filtros.mediana()     remove ruído sal-e-pimenta preservando borda
-   → filtros.sobel()       realça a fronteira floresta/solo exposto
+   → filtros.gaussiano()             suaviza antes de segmentar; sem isso a máscara
+                                     sai esburacada e a contagem por região se perde
+   → filtros.magnitude_gradiente()   Sobel — realça a fronteira floresta/solo exposto
+                                     (exibido na interface, não entra na decisão)
 
 4. SEGMENTAÇÃO
-   → limiar.otsu()                 separa vegetação de não-vegetação
-   → morfologia.abertura()         remove respingos isolados
-   → morfologia.fechamento()       fecha buracos dentro da área desmatada
-   → segmentacao.componentes()     rotula regiões
-   → segmentacao.filtrar_area()    descarta região menor que o limiar mínimo
+   → limiar.limiar_confiavel()          limiar ÚNICO para as duas datas + veredito de
+                                        confiabilidade por tamanho de efeito
+   → limiar.binarizar()                 aplica o mesmo valor nas duas máscaras
+   → morfologia.abertura() / fechamento()   remove respingos e fecha buracos
+   → segmentacao.mudanca_entre_mascaras()   perda / ganho / estável
+   → segmentacao.filtrar_por_area()     descarta fragmentos residuais
+   → segmentacao.rotular() + descrever_regioes()   área, centroide e caixa por região
+
+   Quantificação: Regiao.area_hectares(metros_por_pixel), quando a resolução é conhecida.
 
 5. PREPARAÇÃO DE DADOS   ← é aqui que o objetivo do enunciado se cumpre
-   → pipeline.extrair_patches()    recortes normalizados + rótulo
-   → dataio.salvar_dataset()       data/processed/
+   → pipeline.extrair_amostras()   recortes + rótulo vindo da máscara de perda;
+                                   recortes ambíguos são descartados, não arredondados
+   → pipeline.equilibrar()         subamostra a classe majoritária
 
-6. MODELO
-   → modelo.features()             estatísticas de cor, textura e índice por patch
+6. MODELO   (a implementar — depende de Q5)
+   → modelo.features()             estatísticas de cor, textura e índice por recorte
    → modelo.treinar() / prever()   classificador
-   → quantificação: pixels → hectares (quando houver metadado geográfico)
 ```
+
+### Saídas
+
+| Consumidor | Como |
+|-----------|------|
+| Interface | `app/principal.py` — etapas lado a lado, métricas, tabela de regiões |
+| Linha de comando | `cli.py` — `sentinela detectar --saida <dir>` grava PNG por etapa + `resumo.json` |
+| Biblioteca | `ResultadoDeteccao.resumo()` — dicionário pronto para relatório |
+
+### A recusa deliberada
+
+Quando as duas datas não apresentam classes separáveis, `limiar_confiavel` devolve
+`confiavel=False` e `resumo()` põe `None` no lugar da área. A máscara continua acessível
+para inspeção, mas o número não é reportado. Produzir uma área ali seria inventar
+desmatamento — ver `docs/decisions/003-limiar-bitemporal.md`.
 
 ---
 
@@ -152,7 +183,8 @@ aps-desmatamento-satelite/
 │   ├── dataio/           aquisição e persistência
 │   ├── pipeline/         orquestração
 │   ├── modelo/           visão computacional
-│   └── app/              interface Streamlit
+│   ├── app/              interface Streamlit
+│   └── cli.py            linha de comando
 ├── tests/                pytest — valida os filtros contra casos analíticos
 ├── docs/
 │   ├── enunciado/        documento oficial + transcrição

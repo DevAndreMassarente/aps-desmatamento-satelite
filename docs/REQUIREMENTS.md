@@ -26,7 +26,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 | R002 | Cap. 1.b — Contexto: importância da resolução, impacto ecológico, implicações sociais | MUST | PDF p.3, item 1.b | — | — | NOT_STARTED |
 | R003 | Cap. 1.c — Objetivos principais da solução proposta | MUST | PDF p.3, item 1.c | — | — | NOT_STARTED |
 | R004 | Cap. 2 — Descrição **formal** do problema computacional | MUST | PDF p.3, item 2.d | — | — | NOT_STARTED |
-| R005 | Cap. 2 — Conceito de **Aquisição** | MUST | PDF p.3, item 2.e.i | `sentinela/dataio/` | — | NOT_STARTED |
+| R005 | Cap. 2 — Conceito de **Aquisição** | MUST | PDF p.3, item 2.e.i | `sentinela/dataio/` | `tests/test_dataio.py` | IN_PROGRESS |
 | R006 | Cap. 2 — Conceito de **Manipulação das imagens** | MUST | PDF p.3, item 2.e.ii | `sentinela/pdi/cor.py` | `tests/test_cor.py` | IN_PROGRESS |
 | R007 | Cap. 2 — Conceito de **Filtragem** | MUST | PDF p.3, item 2.e.iii | `sentinela/pdi/filtros.py` | `tests/test_filtros.py` | IN_PROGRESS |
 | R008 | Cap. 2 — Conceito de **Segmentação** | MUST | PDF p.3, item 2.e.iv | `sentinela/pdi/{limiar,morfologia,segmentacao}.py` | `tests/test_segmentacao.py` | IN_PROGRESS |
@@ -60,15 +60,15 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | ID | Requisito | Tipo | Fonte | Implementação | Evidência/Teste | Status |
 |----|-----------|------|-------|---------------|-----------------|--------|
-| R029 | Sistema que implementa as soluções propostas no item 3 da seção I | MUST | PDF p.4, item II.1 | `src/sentinela/` | — | IN_PROGRESS |
+| R029 | Sistema que implementa as soluções propostas no item 3 da seção I | MUST | PDF p.4, item II.1 | `src/sentinela/` + `cli.py` | `tests/` — 214 testes | IN_PROGRESS |
 | R030 | **Filtros desenvolvidos pelo próprio grupo** (não usar prontos de biblioteca) | MUST | PDF p.3, item 3.a | `sentinela/pdi/` | `tests/test_filtros.py`, `test_nucleo.py` — 154 testes | VERIFIED |
 | R031 | Filtros preferencialmente em linguagem Python | SHOULD | PDF p.3, item 3.a | Python 3.12 | — | IMPLEMENTED |
 | R032 | Filtros aplicados em **imagens reais** do problema escolhido | MUST | PDF p.3, item 3.a | `data/raw/` | `docs/evidence/results/` | NOT_STARTED |
-| R033 | Resultado dos filtros apresentado **e analisado** | MUST | PDF p.3, item 3.a | `sentinela/app/` | `docs/evidence/` | NOT_STARTED |
-| R034 | PDI usado como **preparação de dados** para alimentar modelo de visão computacional | MUST | PDF p.2 (Objetivo) | `sentinela/pipeline/` | — | NOT_STARTED |
+| R033 | Resultado dos filtros apresentado **e analisado** | MUST | PDF p.3, item 3.a | `sentinela/app/principal.py` | `docs/evidence/demo-sintetica/` (sintética) | IN_PROGRESS |
+| R034 | PDI usado como **preparação de dados** para alimentar modelo de visão computacional | MUST | PDF p.2 (Objetivo) | `sentinela/pipeline/amostras.py` | `tests/test_pipeline.py::TestAmostras` | IN_PROGRESS |
 | R035 | Processo de modelagem + algoritmos de inteligência adequados para imagens | MUST | PDF p.3, item 3.b | `sentinela/modelo/` | — | NOT_STARTED |
-| R036 | **Tratamento de erros** — citado como fator de impacto direto na nota | SHOULD | PDF p.4, item II.2 | transversal | `tests/` | NOT_STARTED |
-| R037 | Nível de refinamento e funcionalidade do sistema | SHOULD | PDF p.4, item II.2 | `sentinela/app/` | — | NOT_STARTED |
+| R036 | **Tratamento de erros** — citado como fator de impacto direto na nota | SHOULD | PDF p.4, item II.2 | `dataio/imagem.py`, `pipeline/deteccao.py` | `test_dataio.py`, `TestValidacaoDeEntrada` — 18 casos | VERIFIED |
+| R037 | Nível de refinamento e funcionalidade do sistema | SHOULD | PDF p.4, item II.2 | `sentinela/app/`, `sentinela/cli.py` | `tests/test_app.py` | IN_PROGRESS |
 | R038 | Funções extras implementadas | MAY | PDF p.4, item II.2 | — | — | NOT_STARTED |
 | R039 | Complexidade da técnica escolhida | SHOULD | PDF p.4, item II.2 | `sentinela/modelo/` | — | NOT_STARTED |
 
@@ -85,13 +85,13 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 |----|-----------|------|-------|---------------|-----------------|--------|
 | R042 | Apresentar em sala, sessão de **10 a 15 minutos** | MUST | PDF p.4, item III.1 | — | — | NOT_STARTED |
 | R043 | Apresentação inclui explicação do problema e contexto | MUST | PDF p.4, item III.2 | — | — | NOT_STARTED |
-| R044 | Apresentação inclui **demonstração da aplicação** | MUST | PDF p.4, item III.2 | `sentinela/app/` | — | NOT_STARTED |
+| R044 | Apresentação inclui **demonstração da aplicação** | MUST | PDF p.4, item III.2 | `sentinela/app/` | `tests/test_app.py` | IN_PROGRESS |
 | R045 | Apresentação inclui discussão dos resultados obtidos | MUST | PDF p.4, item III.2 | — | — | NOT_STARTED |
 | R046 | Grupo preparado para responder perguntas da turma e dos professores | MUST | PDF p.4, item III.3 | — | — | NOT_STARTED |
 | R047 | **Participação de todos os membros** na apresentação (20% da nota de apresentação) | MUST | PDF p.5, item 3 | — | — | NOT_STARTED |
 | R048 | Clareza e estrutura da apresentação (30% da nota de apresentação) | SHOULD | PDF p.5, item 3 | — | — | NOT_STARTED |
 | R049 | Grupo composto de **até 4 alunos** | MUST | PDF p.4, item III.4 | — | — | NOT_STARTED |
-| R050 | Demonstração do programa no seminário | MUST | PDF p.4, item III.7 | `sentinela/app/` | — | NOT_STARTED |
+| R050 | Demonstração do programa no seminário | MUST | PDF p.4, item III.7 | `sentinela/app/` | `tests/test_app.py` | IN_PROGRESS |
 
 ## F. Pendências de confirmação
 
@@ -112,14 +112,19 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | Status | Qtd |
 |--------|-----|
-| NOT_STARTED | 41 |
-| IN_PROGRESS | 6 |
+| NOT_STARTED | 36 |
+| IN_PROGRESS | 11 |
 | IMPLEMENTED | 1 |
-| VERIFIED | 1 |
+| VERIFIED | 2 |
 | BLOCKED (perguntas) | 8 |
 
-> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 154
+> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 214
 > testes contra casos analíticos. A aplicação em **imagens reais** (R032) é requisito
-> separado e continua `NOT_STARTED`.
+> separado e continua `NOT_STARTED` — é hoje o bloqueio mais relevante do programa.
+
+> R033, R034, R037, R044 e R050 estão `IN_PROGRESS`, não `VERIFIED`: o código existe e
+> tem teste, mas a evidência disponível vem de **cena sintética**
+> (`docs/evidence/demo-sintetica/`), que por `AGENTS.md` §11 não pode sustentar requisito
+> acadêmico. Eles só avançam depois de R032.
 
 **Total de requisitos rastreados:** 50 (R001–R050) + 8 perguntas em aberto.

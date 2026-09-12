@@ -1,4 +1,9 @@
-"""Módulo `app` — ainda não implementado.
+"""Interface de demonstração em Streamlit.
 
-Ver `docs/PROJECT_STATE.md` (seção Next) para a ordem de implementação.
+Executar com ``sentinela app`` ou ``streamlit run src/sentinela/app/principal.py``.
+O módulo ``principal`` só é importável com o Streamlit instalado (extra ``app``).
 """
+
+CAMINHO_APP = __file__.replace("__init__.py", "principal.py")
+
+__all__ = ["CAMINHO_APP"]

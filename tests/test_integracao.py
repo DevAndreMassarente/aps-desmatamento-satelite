@@ -12,33 +12,8 @@ cenas registradas em `data/raw/FONTES.md`.
 import numpy as np
 import pytest
 
+from sentinela.dataio.sintetico import cena_sintetica
 from sentinela.pdi import cor, filtros, limiar, morfologia, segmentacao
-
-
-def cena_sintetica(semente: int, corte: tuple[slice, slice] | None = None):
-    """Constrói uma cena RGB + NIR imitando floresta, com uma área de corte opcional.
-
-    Floresta: refletância baixa no vermelho (clorofila absorve) e alta no NIR.
-    Solo exposto: refletância parecida nas duas bandas — NDVI cai para perto de zero.
-    O ruído gaussiano simula variação de dossel e do sensor.
-    """
-    gerador = np.random.default_rng(semente)
-    altura, largura = 80, 80
-
-    vermelho = np.full((altura, largura), 0.05, dtype=np.float32)
-    verde = np.full((altura, largura), 0.09, dtype=np.float32)
-    azul = np.full((altura, largura), 0.04, dtype=np.float32)
-    nir = np.full((altura, largura), 0.55, dtype=np.float32)
-
-    if corte is not None:
-        vermelho[corte] = 0.33
-        verde[corte] = 0.30
-        azul[corte] = 0.24
-        nir[corte] = 0.37
-
-    ruido = lambda: gerador.normal(0, 0.012, (altura, largura)).astype(np.float32)
-    rgb = np.clip(np.stack([vermelho + ruido(), verde + ruido(), azul + ruido()], axis=2), 0, 1)
-    return rgb.astype(np.float32), np.clip(nir + ruido(), 0, 1).astype(np.float32)
 
 
 def indice_suavizado(rgb, nir=None):

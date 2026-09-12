@@ -65,17 +65,25 @@ src/sentinela/
 │   ├── limiar.py         Otsu, limiar adaptativo, histerese
 │   ├── morfologia.py     erosão, dilatação, abertura, fechamento, preenchimento
 │   └── segmentacao.py    componentes conexos, análise de regiões, mudança bi-temporal
-├── dataio/           aquisição e persistência          (a implementar)
-├── pipeline/         orquestração das etapas           (a implementar)
-├── modelo/           features e classificador          (a implementar)
-└── app/              interface Streamlit                (a implementar)
+├── dataio/           aquisição e persistência
+│   ├── imagem.py         leitura e escrita (Pillow) — única fronteira de I/O
+│   ├── geo.py            resolução espacial via GeoTIFF (rasterio, opcional)
+│   ├── sintetico.py      cena sintética de demonstração — nunca evidência
+│   └── visual.py         sobreposição, mapa de mudança, falsa cor
+├── pipeline/         orquestração das etapas
+│   ├── deteccao.py       encadeia as cinco etapas e guarda os intermediários
+│   └── amostras.py       recortes rotulados para o modelo
+├── modelo/           features e classificador          (a implementar — depende de Q5)
+├── app/principal.py  interface Streamlit
+└── cli.py            linha de comando
 
-tests/                134 testes contra casos analíticos
+tests/                214 testes contra casos analíticos
 docs/                 enunciado, especificação, requisitos, arquitetura, decisões, evidências
 data/                 imagens (não versionadas — ver docs/decisions/002)
 ```
 
-Detalhes em [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+Regra de dependência: `pdi/` não importa de nenhuma camada acima dele e trabalha só com
+arrays NumPy. Detalhes em [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Pré-requisitos
 
@@ -87,35 +95,59 @@ Detalhes em [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Como executar
 
+Instalação:
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[app,modelo,dev]"
 ```
 
-O núcleo de PDI já está utilizável:
+### Interface no navegador
 
-```python
-from sentinela.pdi import cor, filtros, limiar, morfologia, segmentacao
-
-# índice de vegetação a partir de RGB + infravermelho
-indice, metodo = cor.indice_vegetacao(imagem_rgb, banda_nir)
-
-# suavizar antes de segmentar, para não gerar máscara esburacada
-suave = filtros.gaussiano(cor.para_faixa_unitaria(indice), tamanho=5)
-
-# limiar automático separando vegetação de solo exposto
-vegetacao, valor_do_limiar = limiar.otsu_binarizar(suave)
-
-# limpar a máscara
-limpa = morfologia.fechamento(morfologia.abertura(vegetacao))
-
-# comparar duas datas: 'perda' é a máscara de desmatamento
-mudanca = segmentacao.mudanca_entre_mascaras(vegetacao_t1, vegetacao_t2)
+```bash
+sentinela app
 ```
 
-A interface Streamlit e o pipeline de linha de comando ainda não estão implementados —
-ver [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md).
+Abre em `http://localhost:8501`. A interface parte de uma **cena sintética** de
+demonstração — rotulada como tal na tela — e aceita upload de um par de imagens reais.
+Mostra as cinco etapas lado a lado, a área desmatada em pixels e hectares, a tabela de
+regiões e os recortes rotulados que alimentariam o modelo.
+
+### Linha de comando
+
+```bash
+# demonstração com cena sintética, gravando as imagens de cada etapa
+sentinela demo --saida docs/evidence/demo-sintetica
+
+# par de imagens reais
+sentinela detectar --antes data/raw/2020.png --depois data/raw/2024.png \
+                   --nir-antes data/raw/2020_nir.png --nir-depois data/raw/2024_nir.png \
+                   --metros-por-pixel 10 --saida docs/evidence/results
+```
+
+A linha de comando existe porque evidência para o trabalho escrito precisa ser
+reproduzível por comando: resultado que só aparece depois de alguém clicar numa tela não
+é reproduzível.
+
+### Pela biblioteca
+
+```python
+from sentinela.dataio import carregar_par
+from sentinela.pipeline import detectar_desmatamento
+
+antes, depois = carregar_par("2020.png", "2024.png")
+resultado = detectar_desmatamento(antes, depois, metros_por_pixel=10.0)
+
+print(resultado.resumo())
+```
+
+### Quando o sistema se recusa a responder
+
+Se a cena não apresenta duas classes separáveis — floresta intacta nas duas datas — o
+limiar automático cortaria o ruído do dossel ao meio e produziria desmatamento onde não
+houve. Nesse caso `resumo()` devolve `None` no lugar da área, e a interface exibe a
+recusa em vez de um número. **Não é falha: é a resposta correta.**
 
 ## Como testar
 
@@ -143,17 +175,25 @@ região.
 
 ## Status
 
-**Em desenvolvimento.** Bootstrap concluído.
+**Em desenvolvimento.** O programa roda de ponta a ponta; o que falta não é código, são
+imagens reais.
 
 | Etapa | Situação |
 |-------|----------|
 | Estrutura e documentação | Concluído |
-| Núcleo de PDI (filtros próprios) | Implementado, 134 testes passando |
-| Aquisição de imagens reais | Não iniciado |
-| Pipeline de orquestração | Não iniciado |
-| Interface Streamlit | Não iniciado |
+| Núcleo de PDI (filtros próprios) | Implementado, 214 testes passando |
+| Aquisição e I/O de imagem | Implementado |
+| Pipeline de orquestração | Implementado |
+| Interface Streamlit e linha de comando | Implementado |
+| Extração de amostras para o modelo | Implementado |
+| **Aplicação em imagens reais de satélite** | **Não iniciado — bloqueio principal (R032)** |
 | Modelo de visão computacional | Não iniciado — depende da pergunta Q5 |
 | Trabalho escrito | Não iniciado |
+
+A única evidência existente hoje vem de **cena sintética**
+([`docs/evidence/demo-sintetica/`](docs/evidence/demo-sintetica/)), que serve para
+demonstrar o programa e conferir a quantificação contra uma verdade de terreno conhecida,
+mas **não sustenta requisito acadêmico**.
 
 Oito perguntas aguardam confirmação do professor — ver
 [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md), seção *Open Questions*.
