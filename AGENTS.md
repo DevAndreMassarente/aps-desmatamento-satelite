@@ -237,3 +237,82 @@ delas, registrar a suposição explicitamente.
 | T2 | Interface Streamlit ainda não construída | Antes da Fase Intermediária II |
 | T3 | Etapa de modelo ainda não implementada | Depende de Q5 |
 | T4 | Convolução é `O(H·W·k²)` com laço sobre o kernel — suficiente para recortes, pode ficar lenta em cena grande | Só se a demonstração exigir |
+
+---
+
+## 17. Graphify — contexto de código local
+
+Ferramenta **auxiliar do agente**. Não é dependência da aplicação, não é entregável
+acadêmico e não entra no trabalho escrito. Regra global em `faculdade/AGENTS.md` §55;
+esta seção é autossuficiente, com os caminhos e comandos já validados neste projeto.
+
+### Estado
+
+| Campo | Valor |
+|-------|-------|
+| Estado | `READY` |
+| Grafo | `graphify-out/graph.json` — 433 nós, 726 arestas |
+| Origem dos nós | 433/433 `ast` — zero LLM (`input_tokens=0`, `output_tokens=0`) |
+| Ferramenta | `/home/vader/.local/share/uv/tools/graphifyy/bin/graphify` — `graphify 0.9.51` |
+| Baseline | `~/.local/state/graphify-baseline/aps-desmatamento-satelite/` (fora do repo) |
+
+### Fronteiras
+
+- Um grafo **deste** projeto apenas. Nunca indexar `faculdade/` ou `projetos/`, nunca
+  usar `--global`.
+- `graphify-out/` e `.handoff/` estão no `.gitignore` e **nunca** vão para o GitHub,
+  Drive, Alpha Brain ou qualquer provedor de IA.
+- Somente AST local: sem LLM, sem embeddings, sem rede, sem telemetria.
+- **O código-fonte é a autoridade.** O grafo só orienta a busca e pode estar obsoleto —
+  confirmar na fonte antes de editar.
+- Sem `sudo`, instalação, hooks, MCP, `watch`, cron ou alteração global. Mudança de
+  ferramenta, versão, isolamento ou escopo exige novo Security Gate.
+
+### Consultas (da raiz do projeto)
+
+```bash
+G=/home/vader/.local/share/uv/tools/graphifyy/bin/graphify
+
+umask 077 && GRAPHIFY_QUERY_LOG_DISABLE=1 unshare -Urn $G \
+  query "<símbolo A> calls <símbolo B>" --context call --budget 1200 \
+  --graph graphify-out/graph.json
+
+umask 077 && GRAPHIFY_QUERY_LOG_DISABLE=1 unshare -Urn $G \
+  explain "<símbolo-ou-ID>" --graph graphify-out/graph.json
+
+umask 077 && GRAPHIFY_QUERY_LOG_DISABLE=1 unshare -Urn $G \
+  path "<A>" "<B>" --graph graphify-out/graph.json
+```
+
+Um símbolo ou relação por vez. **Guardrail:** acima de 20 nós, ou com aviso de orçamento
+excedido, parar e reformular — preferir ID exato em caso de ambiguidade. Nunca compensar
+despejando arquivos inteiros.
+
+### Regeneração
+
+Só pelo procedimento revisado, com backup e nova validação:
+
+```bash
+umask 077 && unshare -Urn $G extract . --code-only --no-cluster
+```
+
+- **`--code-only` é obrigatório.** A ajuda da 0.9.51 descreve `extract` puro como
+  "AST + semantic LLM": sem essa flag, dispara extração semântica com LLM.
+- `--no-cluster` evita a nomeação de comunidades, que também usa LLM.
+- **Nunca** usar `--global`, `--no-gitignore`, `--force`, enriquecimento ou visualização.
+- **Não** rodar `graphify update` automaticamente: o piloto identificou mudança de esquema
+  `edges`/`links` e alteração semântica de baseline. Migração exige novo Security Gate.
+
+Exclusões em `.graphifyignore` — `.gitignore` sozinho não basta.
+
+Após mudança relevante no código, marcar o grafo como `STALE` em `docs/PROJECT_STATE.md`
+até regenerar. Data do arquivo não comprova atualidade.
+
+### Aceite
+
+Só declarar `READY` após verificar: extração bem-sucedida e esquema válido; nenhum caminho
+fora da allowlist e nenhum secret; **uma consulta de resposta conhecida confirmada na
+fonte**; saída restrita e fora do Git; baseline atualizado.
+
+A validação desta geração: `abertura → dilatacao` (L126), `fechamento → erosao` (L137),
+`erosao → _aplicar` (L104) — as três conferidas linha a linha em `pdi/morfologia.py`.

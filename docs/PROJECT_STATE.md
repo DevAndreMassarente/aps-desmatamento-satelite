@@ -24,6 +24,9 @@ pronta. Próxima fase: Fase Intermediária I — Qualificação (R040), que o en
   a separabilidade η do artigo original não detecta cena homogênea. Resolvido com limiar
   conjunto e tamanho de efeito padronizado (`docs/decisions/003-limiar-bitemporal.md`).
 
+- Graphify preparado e validado sob Security Gate: grafo de código local `READY`
+  (433 nós, 726 arestas, 100% AST, zero LLM). Baseline fora do repositório.
+
 ## In Progress
 
 - Nada em andamento. Aguardando definição de integrantes e resposta às perguntas em aberto.
@@ -70,3 +73,16 @@ Em ordem de prioridade:
 | D4 | Streamlit para a interface, pela demonstração ao vivo | `docs/PROJECT_SPEC.md` |
 | D5 | Representação interna `float32` em `[0,1]` | `docs/ARCHITECTURE.md` |
 | D6 | Limiar único para as duas datas + confiabilidade por tamanho de efeito | `docs/decisions/003-limiar-bitemporal.md` |
+| D7 | Graphify como contexto de código local, nunca versionado | `AGENTS.md` §17 |
+
+## Graphify
+
+| Campo | Valor |
+|-------|-------|
+| Estado | `READY` |
+| Grafo | `graphify-out/graph.json` — 433 nós, 726 arestas |
+| Validado em | commit `64f6dec` |
+| Baseline | `~/.local/state/graphify-baseline/aps-desmatamento-satelite/` |
+
+Marcar `STALE` após mudança relevante no código, até regenerar pelo procedimento do
+`AGENTS.md` §17. Data do arquivo não comprova atualidade.

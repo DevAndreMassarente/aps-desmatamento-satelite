@@ -1,0 +1,44 @@
+# Exclusões explícitas do Graphify — AGENTS.md global §55, item 4.
+# O .gitignore sozinho não basta: esta lista é a allowlist negativa do extrator.
+
+# Ambientes e dependências
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.egg-info/
+
+# Controle de versão e caches
+.git/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Documentação, enunciado e evidências — não é código próprio
+docs/
+*.pdf
+*.md
+*.html
+
+# Dados, imagens e artefatos
+data/
+*.tif
+*.tiff
+*.png
+*.jpg
+*.jpeg
+*.joblib
+*.pkl
+*.log
+
+# Credenciais
+.env
+.env.*
+*.pem
+*.key
+credenciais*.json
+
+# Saídas da própria ferramenta
+graphify-out/
+.handoff/

@@ -48,3 +48,9 @@ Thumbs.db
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Graphify — ferramenta auxiliar do agente, nunca versionada (AGENTS.md global §55)
+/graphify-out/
+/.handoff/
+.graphify_analysis.json
+.graphify_labels.json
