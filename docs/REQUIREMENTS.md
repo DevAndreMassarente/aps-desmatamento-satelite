@@ -39,7 +39,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 | R015 | Cap. 4.d — Mostrar os resultados obtidos | MUST | PDF p.3, item 4.d | `docs/evidence/results/` | — | NOT_STARTED |
 | R016 | Cap. 5 — Conclusão | MUST | PDF p.3, item 5 | — | — | NOT_STARTED |
 | R017 | Cap. 6 — Bibliografia (fontes reais, ABNT) | MUST | PDF p.3, item 6 | `docs/trabalho-escrito/BIBLIOGRAFIA.md` | 13 pendências mapeadas, nenhuma inventada | IN_PROGRESS |
-| R018 | Cap. 7 — Apêndice com o código-fonte do programa | MUST | PDF p.3, item 7 | gerado de `src/` | — | NOT_STARTED |
+| R018 | Cap. 7 — Apêndice com o código-fonte do programa | MUST | PDF p.3, item 7 | `sentinela apendice` → `07-apendice.md` | `tests/test_cli.py` | IMPLEMENTED |
 | R019 | Cap. 8 — Ficha de Atividades Práticas Supervisionadas | MUST | PDF p.4, item 8 | — | — | NOT_STARTED |
 
 ## B. Formatação e entrega
@@ -112,9 +112,9 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | Status | Qtd |
 |--------|-----|
-| NOT_STARTED | 25 |
+| NOT_STARTED | 24 |
 | IN_PROGRESS | 21 |
-| IMPLEMENTED | 2 |
+| IMPLEMENTED | 3 |
 | VERIFIED | 2 |
 | BLOCKED (perguntas) | 8 |
 
@@ -129,7 +129,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 > **recusa**: a 253 m/pixel o índice não é bimodal. Quantificação validada depende de
 > imagem de 10 a 30 m — `docs/decisions/005-resolucao-espacial.md`.
 
-> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 271
+> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 288
 > testes contra casos analíticos.
 
 > **Q5 continua em aberto.** O projeto segue a leitura conservadora do `AGENTS.md` §14: o

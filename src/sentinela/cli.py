@@ -248,6 +248,85 @@ def comando_demo(args: argparse.Namespace) -> int:
     )
 
 
+def comando_apendice(args: argparse.Namespace) -> int:
+    """Gera o apêndice de código-fonte exigido pelo Capítulo 7 do enunciado (R018).
+
+    Automatizado de propósito: um apêndice copiado à mão diverge do código entregue na
+    primeira correção feita depois de copiar, e a divergência é exatamente o tipo de
+    coisa que uma banca encontra.
+    """
+    raiz = Path(__file__).resolve().parents[2]
+    origem = raiz / "src" / "sentinela"
+
+    if not origem.is_dir():
+        print(f"Código-fonte não encontrado em {origem}", file=sys.stderr)
+        return 1
+
+    # Ordem de leitura, não alfabética: o apêndice é lido por quem quer entender o
+    # sistema, e o núcleo vem antes de quem o consome.
+    ordem = [
+        "pdi/nucleo.py", "pdi/cor.py", "pdi/filtros.py", "pdi/limiar.py",
+        "pdi/morfologia.py", "pdi/segmentacao.py",
+        "dataio/imagem.py", "dataio/geo.py", "dataio/visual.py", "dataio/sintetico.py",
+        "pipeline/deteccao.py", "pipeline/amostras.py",
+        "modelo/caracteristicas.py", "modelo/classificador.py",
+        "app/principal.py", "cli.py",
+    ]
+
+    encontrados = [caminho for caminho in ordem if (origem / caminho).is_file()]
+    restantes = sorted(
+        str(caminho.relative_to(origem))
+        for caminho in origem.rglob("*.py")
+        if caminho.is_file()
+        and str(caminho.relative_to(origem)) not in encontrados
+        and "__pycache__" not in str(caminho)
+        and caminho.name != "__init__.py"
+    )
+    arquivos = encontrados + restantes
+
+    cabecalho = [
+        "# 7. Apêndice — código-fonte do programa",
+        "",
+        "> **Gerado automaticamente** por `sentinela apendice`. Não editar à mão: a edição",
+        "> se perde na próxima geração, e um apêndice editado deixa de corresponder ao",
+        "> código entregue.",
+        "",
+        "Os filtros de processamento de imagens em `pdi/` foram implementados pelo grupo,",
+        "com NumPy apenas, conforme exige o enunciado (p.3, item 3.a).",
+        "",
+        "## Índice",
+        "",
+    ]
+
+    indice = []
+    corpo = []
+    total_linhas = 0
+
+    for relativo in arquivos:
+        texto = (origem / relativo).read_text(encoding="utf-8").rstrip()
+        linhas = len(texto.splitlines())
+        total_linhas += linhas
+
+        indice.append(f"- `sentinela/{relativo}` — {linhas} linhas")
+        corpo.extend(
+            ["", "---", "", f"## `sentinela/{relativo}`", "", "```python", texto, "```"]
+        )
+
+    rodape = ["", f"**Total: {len(arquivos)} arquivos, {total_linhas} linhas.**"]
+
+    destino = Path(args.saida)
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    destino.write_text("\n".join(cabecalho + indice + rodape + corpo) + "\n", encoding="utf-8")
+
+    print(f"Apêndice gerado: {destino}")
+    print(f"{len(arquivos)} arquivos, {total_linhas} linhas.")
+    print(
+        "\nAo montar o documento final, conferir se o volume do apêndice é compatível "
+        "com o limite de páginas do trabalho."
+    )
+    return 0
+
+
 def construir_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="sentinela",
@@ -295,6 +374,12 @@ def construir_parser() -> argparse.ArgumentParser:
     demo.add_argument("--proporcao-teste", dest="proporcao_teste", type=float, default=0.3)
     demo.add_argument("--semente", type=int, default=0)
     demo.set_defaults(funcao=comando_demo)
+
+    apendice = subcomandos.add_parser(
+        "apendice", help="gera o apêndice de código-fonte do trabalho escrito"
+    )
+    apendice.add_argument("--saida", default="docs/trabalho-escrito/07-apendice.md")
+    apendice.set_defaults(funcao=comando_apendice)
 
     return parser
 

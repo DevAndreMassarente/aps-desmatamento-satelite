@@ -77,9 +77,9 @@ src/sentinela/
 │   ├── caracteristicas.py  15 descritores por recorte, todos vindos de pdi/
 │   └── classificador.py    floresta aleatória + divisão espacial por blocos
 ├── app/principal.py  interface Streamlit
-└── cli.py            linha de comando
+└── cli.py            linha de comando (app, detectar, demo, apendice)
 
-tests/                279 testes contra casos analíticos
+tests/                288 testes contra casos analíticos
 docs/                 enunciado, especificação, requisitos, arquitetura, decisões, evidências
 data/                 imagens (não versionadas — ver docs/decisions/002)
 ```
@@ -210,7 +210,7 @@ imagens reais.
 | Etapa | Situação |
 |-------|----------|
 | Estrutura e documentação | Concluído |
-| Núcleo de PDI (filtros próprios) | Implementado, 279 testes passando |
+| Núcleo de PDI (filtros próprios) | Implementado, 288 testes passando |
 | Aquisição e I/O de imagem | Implementado |
 | Pipeline de orquestração | Implementado |
 | Interface Streamlit e linha de comando | Implementado |

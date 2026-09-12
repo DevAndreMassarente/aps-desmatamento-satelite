@@ -28,7 +28,7 @@ formatação ABNT exigida; aqui ficam o texto e a rastreabilidade.
 | 4 | Desenvolvimento: a) implantação, b) ferramentas, c) testes, d) resultados | — | Não iniciado |
 | 5 | Conclusão | — | Não iniciado |
 | 6 | Bibliografia | `BIBLIOGRAFIA.md` | Lista de pendências |
-| 7 | Apêndice — código-fonte | gerado de `src/` | Não iniciado |
+| 7 | Apêndice — código-fonte | `07-apendice.md` | **Gerado automaticamente** por `sentinela apendice` |
 | 8 | Ficha de APS | — | Bloqueado por Q7 (integrantes) |
 
 ## Fase Intermediária I — Qualificação (R040)
@@ -54,6 +54,17 @@ O que essa fase exige já está escrito:
 
 Margens superior e inferior não constam do enunciado — é a pergunta **Q4**, ainda sem
 resposta do professor.
+
+## Apêndice de código-fonte
+
+```bash
+sentinela apendice
+```
+
+Regenera `07-apendice.md` a partir de `src/`, na ordem de leitura — o núcleo de PDI antes
+de quem o consome. **Não editar à mão.** Um apêndice copiado diverge do código na primeira
+correção feita depois de copiar, e essa divergência é o tipo de coisa que uma banca
+encontra. Rodar de novo antes de fechar o documento final.
 
 ## Regra de ouro
 

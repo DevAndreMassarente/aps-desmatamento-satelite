@@ -63,7 +63,10 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
   algébrica exata. Medido: 2,2× mais rápido em janela 5×5 e 9,4× em 21×21, com
   diferença máxima de 1e-6 (arredondamento de `float32`). Os números reportados na
   imagem real não mudaram.
-- Suíte de testes: **279 passando**, incluindo os caminhos de erro, um teste de fumaça da
+- **Apêndice de código-fonte gerado por comando** (`sentinela apendice`), atendendo
+  o Capítulo 7 do enunciado. Gerado e não copiado, para não divergir do código
+  entregue: 16 arquivos, 3.782 linhas.
+- Suíte de testes: **288 passando**, incluindo os caminhos de erro, um teste de fumaça da
   interface e a verificação por força bruta de que treino e teste não compartilham pixel.
 - Verificado que `pdi/` não importa `cv2`, `skimage`, `scipy` nem `PIL`, e não depende de
   nenhuma camada superior — a restrição central do enunciado continua de pé.
