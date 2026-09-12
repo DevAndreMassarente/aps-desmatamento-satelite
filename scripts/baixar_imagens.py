@@ -237,6 +237,7 @@ def baixar_par(
             "cor_real": _salvar(destino / f"{prefixo}_cor-real.png", visual),
             "analise": _salvar(destino / f"{prefixo}_analise.png", analise),
             "nir": _salvar(destino / f"{prefixo}_nir.png", analise[:, :, 1]),
+            "swir": _salvar(destino / f"{prefixo}_swir.png", analise[:, :, 2]),
         }
 
         registro["datas"][rotulo] = {

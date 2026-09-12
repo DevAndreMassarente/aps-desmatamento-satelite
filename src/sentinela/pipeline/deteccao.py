@@ -125,6 +125,7 @@ def preparar_indice(
     *,
     metodo: str = "auto",
     suavizacao: int = 5,
+    swir: np.ndarray | None = None,
 ) -> tuple[np.ndarray, str]:
     """Etapas 2 e 3: índice de vegetação, normalizado para ``[0, 1]`` e suavizado.
 
@@ -134,7 +135,7 @@ def preparar_indice(
 
     Devolve ``(indice_suavizado, nome_do_metodo)``.
     """
-    indice, nome = cor.indice_vegetacao(rgb, infravermelho, metodo=metodo)
+    indice, nome = cor.indice_vegetacao(rgb, infravermelho, metodo=metodo, swir=swir)
     unitario = cor.para_faixa_unitaria(indice)
 
     if suavizacao <= 1:
@@ -149,6 +150,8 @@ def detectar_desmatamento(
     nir_antes: np.ndarray | None = None,
     nir_depois: np.ndarray | None = None,
     *,
+    swir_antes: np.ndarray | None = None,
+    swir_depois: np.ndarray | None = None,
     metodo: str = "auto",
     suavizacao: int = 5,
     area_minima: int = AREA_MINIMA_PADRAO,
@@ -179,7 +182,18 @@ def detectar_desmatamento(
             "usar NDVI numa data e VARI na outra compara índices de escalas diferentes"
         )
 
-    for nome, banda in (("nir_antes", nir_antes), ("nir_depois", nir_depois)):
+    if (swir_antes is None) != (swir_depois is None):
+        raise ErroImagem(
+            "SWIR precisa estar presente nas duas datas ou em nenhuma: o NDMI de uma "
+            "data não é comparável ao NDVI da outra"
+        )
+
+    for nome, banda in (
+        ("nir_antes", nir_antes),
+        ("nir_depois", nir_depois),
+        ("swir_antes", swir_antes),
+        ("swir_depois", swir_depois),
+    ):
         if banda is not None and banda.shape[:2] != rgb_antes.shape[:2]:
             raise ErroImagem(
                 f"'{nome}' tem formato {banda.shape[:2]}, diferente do RGB "
@@ -195,10 +209,10 @@ def detectar_desmatamento(
 
     # Etapas 2 e 3 — manipulação e filtragem.
     indice_antes, nome_metodo = preparar_indice(
-        rgb_antes, nir_antes, metodo=metodo, suavizacao=suavizacao
+        rgb_antes, nir_antes, metodo=metodo, suavizacao=suavizacao, swir=swir_antes
     )
     indice_depois, _ = preparar_indice(
-        rgb_depois, nir_depois, metodo=metodo, suavizacao=suavizacao
+        rgb_depois, nir_depois, metodo=metodo, suavizacao=suavizacao, swir=swir_depois
     )
 
     # Etapa 4 — segmentação, com régua única para as duas datas.

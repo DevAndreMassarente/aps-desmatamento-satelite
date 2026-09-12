@@ -21,16 +21,29 @@ python scripts/baixar_imagens.py --regiao sao-felix
 sentinela detectar \
   --antes  data/raw/sao-felix_2002-07-01_analise.png \
   --depois data/raw/sao-felix_2024-07-05_analise.png \
-  --nir-antes  data/raw/sao-felix_2002-07-01_nir.png \
-  --nir-depois data/raw/sao-felix_2024-07-05_nir.png \
-  --metros-por-pixel 253 --area-minima 4 --saida docs/evidence/results
+  --nir-antes   data/raw/sao-felix_2002-07-01_nir.png \
+  --nir-depois  data/raw/sao-felix_2024-07-05_nir.png \
+  --swir-antes  data/raw/sao-felix_2002-07-01_swir.png \
+  --swir-depois data/raw/sao-felix_2024-07-05_swir.png \
+  --metodo ndmi --metros-por-pixel 253 --area-minima 4 --saida docs/evidence/results
 ```
+
+As imagens desta pasta foram geradas com `--metodo ndmi`, que é a melhor leitura
+disponível para esta cena.
 
 ## O resultado foi uma RECUSA
 
-**Nenhuma área desmatada é reportada para esta cena.** A distinguibilidade entre as classes
-ficou em 2,99, abaixo do mínimo de 4,0 — e o piso de uma distribuição sem duas classes é
-2,65.
+**Nenhuma área desmatada é reportada para esta cena.**
+
+| Índice | Distinguibilidade | Veredito |
+|--------|-------------------|----------|
+| NDVI | 2,99 | recusado |
+| **NDMI** (NIR − SWIR) | **3,51** | recusado |
+| Mínimo exigido | 4,00 | — |
+| Piso de uma distribuição sem duas classes | 2,65 | — |
+
+O NDMI mede água do dossel em vez de verde e separa melhor floresta de pastagem, mas o
+ganho não bastou.
 
 A 253 m/pixel quase todo pixel da frente de desmatamento é mistura de floresta, pastagem,
 regeneração e estrada. O índice de vegetação sai contínuo em vez de bimodal, e não existe

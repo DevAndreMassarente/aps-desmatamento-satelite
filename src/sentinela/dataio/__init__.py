@@ -6,7 +6,7 @@ e rasterio; ``pdi/`` continua trabalhando só com NumPy.
 
 from .geo import RASTERIO_DISPONIVEL, metros_por_pixel, resolucao_do_satelite
 from .imagem import ErroArquivo, carregar, carregar_par, salvar
-from .sintetico import cena_sintetica, par_bitemporal
+from .sintetico import banda_swir, cena_sintetica, par_bitemporal
 from .visual import (
     contornar_mascara,
     indice_em_falsa_cor,
@@ -16,6 +16,7 @@ from .visual import (
 
 __all__ = [
     "ErroArquivo",
+    "banda_swir",
     "RASTERIO_DISPONIVEL",
     "carregar",
     "carregar_par",

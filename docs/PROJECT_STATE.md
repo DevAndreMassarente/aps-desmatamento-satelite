@@ -51,7 +51,9 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
   diferente (média 88 contra 62), e **fumaça de queimada atravessa o SWIR** — o controle
   de qualidade original aprovou uma cena tomada por fumaça, que inverteu a comparação
   entre as datas.
-- Suíte de testes: **253 passando**, incluindo os caminhos de erro, um teste de fumaça da
+- **NDMI implementado** (`pdi.cor.ndmi`), exposto na CLI (`--metodo ndmi`) e na
+  interface; a cena sintética ganhou banda SWIR para que ele seja demonstrável.
+- Suíte de testes: **271 passando**, incluindo os caminhos de erro, um teste de fumaça da
   interface e a verificação por força bruta de que treino e teste não compartilham pixel.
 - Verificado que `pdi/` não importa `cv2`, `skimage`, `scipy` nem `PIL`, e não depende de
   nenhuma camada superior — a restrição central do enunciado continua de pé.
@@ -70,9 +72,7 @@ Em ordem de prioridade:
    quantificação validada; o cadastro precisa ser feito por um integrante do grupo.
 2. **Levar as perguntas Q1–Q8 ao professor** (`docs/PROJECT_SPEC.md` → Open Questions).
    Q5 (modelo treinado vs. proposta teórica) muda o escopo e trava o planejamento.
-3. Implementar o **NDMI** (NIR − SWIR) em `pdi/cor.py` e expô-lo no pipeline. Medido
-   nesta cena: separa melhor que o NDVI (distinguibilidade 3,51 contra 2,99).
-4. Recalibrar `DISTINGUIBILIDADE_MINIMA` por procedimento honesto (B5): medir a
+3. Recalibrar `DISTINGUIBILIDADE_MINIMA` por procedimento honesto (B5): medir a
    distribuição da métrica em pares de floresta intacta e em pares com desmatamento
    validado pelo PRODES. **Não** ajustar o número para fazer uma cena específica passar.
 5. Escrever Capítulo 1 + a parte de filtragem dos Capítulos 2 e 3 (**Fase Intermediária I**).
@@ -125,6 +125,7 @@ Em ordem de prioridade:
 | D11 | Floresta aleatória em vez de rede convolucional, pela explicabilidade na banca | `modelo/classificador.py` |
 | D12 | Vermelho e NIR extraídos do **mesmo** produto GIBS, porque os realces de 8 bits diferem entre produtos | `data/raw/FONTES.md` |
 | D13 | Resultado negativo em imagem real mantido como resultado; limiar **não** ajustado para fazê-lo passar | `docs/decisions/005-resolucao-espacial.md` |
+| D14 | NDMI disponível mas **fora** do modo automático: ele mede água, não verde | `pdi/cor.py` |
 
 ## Graphify
 

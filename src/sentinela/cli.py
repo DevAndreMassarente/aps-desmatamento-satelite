@@ -167,6 +167,8 @@ def comando_detectar(args: argparse.Namespace) -> int:
         rgb_antes, rgb_depois = carregar_par(args.antes, args.depois)
         nir_antes = carregar(args.nir_antes, cinza=True) if args.nir_antes else None
         nir_depois = carregar(args.nir_depois, cinza=True) if args.nir_depois else None
+        swir_antes = carregar(args.swir_antes, cinza=True) if args.swir_antes else None
+        swir_depois = carregar(args.swir_depois, cinza=True) if args.swir_depois else None
     except ErroArquivo as erro:
         print(f"Erro de leitura: {erro}", file=sys.stderr)
         return 1
@@ -176,6 +178,7 @@ def comando_detectar(args: argparse.Namespace) -> int:
     try:
         resultado = detectar_desmatamento(
             rgb_antes, rgb_depois, nir_antes, nir_depois,
+            swir_antes=swir_antes, swir_depois=swir_depois,
             metodo=args.metodo,
             suavizacao=args.suavizacao,
             area_minima=args.area_minima,
@@ -261,9 +264,12 @@ def construir_parser() -> argparse.ArgumentParser:
     detectar.add_argument("--depois", required=True, help="imagem RGB da segunda data")
     detectar.add_argument("--nir-antes", dest="nir_antes")
     detectar.add_argument("--nir-depois", dest="nir_depois")
+    detectar.add_argument("--swir-antes", dest="swir_antes",
+                          help="banda SWIR da primeira data — necessária para --metodo ndmi")
+    detectar.add_argument("--swir-depois", dest="swir_depois")
     detectar.add_argument("--saida", help="diretório para gravar as imagens e o resumo")
     detectar.add_argument("--metodo", default="auto",
-                          choices=("auto", "ndvi", "vari", "exg"))
+                          choices=("auto", "ndvi", "ndmi", "vari", "exg"))
     detectar.add_argument("--suavizacao", type=int, default=5)
     detectar.add_argument("--area-minima", dest="area_minima", type=int, default=25)
     detectar.add_argument("--metros-por-pixel", dest="metros_por_pixel", type=float,

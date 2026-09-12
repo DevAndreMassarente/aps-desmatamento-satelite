@@ -159,3 +159,105 @@ class TestSelecaoDeIndice:
         assert convertido[0, 2] == pytest.approx(0.5)
         assert convertido[0, 4] == pytest.approx(1.0)
         assert np.all(np.diff(convertido[0]) > 0)
+
+
+class TestNdmi:
+    """Índice de umidade — mede água do dossel, não verde.
+
+    O caso que justifica sua existência é o último teste: floresta e pastagem vigorosa
+    têm quase o mesmo NDVI, e NDMI bem diferente.
+    """
+
+    def test_dossel_umido_da_indice_alto(self):
+        """Folha viva reflete no NIR e absorve no SWIR."""
+        nir = np.full((8, 8), 0.55, dtype=np.float32)
+        swir = np.full((8, 8), 0.10, dtype=np.float32)
+
+        assert cor.ndmi(nir, swir).mean() == pytest.approx(0.692, abs=0.01)
+
+    def test_superficie_seca_da_indice_baixo(self):
+        """Solo exposto e pasto seco refletem bem no SWIR."""
+        nir = np.full((8, 8), 0.30, dtype=np.float32)
+        swir = np.full((8, 8), 0.38, dtype=np.float32)
+
+        assert cor.ndmi(nir, swir).mean() < 0
+
+    def test_fica_na_faixa_valida(self):
+        gerador = np.random.default_rng(0)
+        nir = gerador.random((32, 32)).astype(np.float32)
+        swir = gerador.random((32, 32)).astype(np.float32)
+
+        indice = cor.ndmi(nir, swir)
+        assert indice.min() >= -1.0 and indice.max() <= 1.0
+
+    def test_bandas_iguais_zeram_o_indice(self):
+        banda = np.full((6, 6), 0.4, dtype=np.float32)
+        assert cor.ndmi(banda, banda) == pytest.approx(0.0)
+
+    def test_denominador_zero_nao_produz_nan(self):
+        """Sombra e água profunda podem zerar as duas bandas."""
+        zeros = np.zeros((5, 5), dtype=np.float32)
+        indice = cor.ndmi(zeros, zeros)
+
+        assert np.isfinite(indice).all()
+        assert (indice == 0).all()
+
+    def test_formatos_diferentes_sao_recusados(self):
+        with pytest.raises(ErroImagem, match="formatos diferentes"):
+            cor.ndmi(np.zeros((4, 4), np.float32), np.zeros((5, 5), np.float32))
+
+    def test_separa_floresta_de_pastagem_melhor_que_o_ndvi(self):
+        """A razão de existir do NDMI, em números.
+
+        Floresta e pastagem vigorosa são as duas verdes: absorvem no vermelho e refletem
+        no NIR, então o NDVI as distingue pouco. A diferença real está na água do dossel,
+        que aparece no SWIR — a pastagem reflete muito mais ali.
+
+        Com estas refletâncias o NDVI ainda separa 0,086; o NDMI separa 0,378. O ganho é
+        de fator ~4, não uma diferença entre "nada" e "tudo".
+
+        Valores de refletância de ordem de grandeza realista para dossel fechado e para
+        capim em início de estação seca.
+        """
+        floresta = {"vermelho": 0.04, "nir": 0.48, "swir": 0.12}
+        pastagem = {"vermelho": 0.06, "nir": 0.44, "swir": 0.28}
+
+        campo = lambda valor: np.full((8, 8), valor, dtype=np.float32)
+
+        ndvi_floresta = cor.ndvi(campo(floresta["vermelho"]), campo(floresta["nir"])).mean()
+        ndvi_pastagem = cor.ndvi(campo(pastagem["vermelho"]), campo(pastagem["nir"])).mean()
+        ndmi_floresta = cor.ndmi(campo(floresta["nir"]), campo(floresta["swir"])).mean()
+        ndmi_pastagem = cor.ndmi(campo(pastagem["nir"]), campo(pastagem["swir"])).mean()
+
+        separacao_ndvi = abs(ndvi_floresta - ndvi_pastagem)
+        separacao_ndmi = abs(ndmi_floresta - ndmi_pastagem)
+
+        assert separacao_ndvi < 0.10, "NDVI separa pouco"
+        assert separacao_ndmi > 0.30, "NDMI separa bem"
+        assert separacao_ndmi > 4 * separacao_ndvi, "o ganho é de fator ~4"
+
+
+class TestNdmiPorIndiceVegetacao:
+    def test_precisa_das_duas_bandas(self):
+        imagem = np.zeros((8, 8, 3), dtype=np.float32)
+        banda = np.zeros((8, 8), dtype=np.float32)
+
+        with pytest.raises(ErroImagem, match="SWIR"):
+            cor.indice_vegetacao(imagem, banda, metodo="ndmi")
+        with pytest.raises(ErroImagem, match="infravermelho"):
+            cor.indice_vegetacao(imagem, None, metodo="ndmi", swir=banda)
+
+    def test_devolve_o_nome_do_metodo(self):
+        imagem = np.zeros((8, 8, 3), dtype=np.float32)
+        banda = np.full((8, 8), 0.5, dtype=np.float32)
+
+        _, metodo = cor.indice_vegetacao(imagem, banda, metodo="ndmi", swir=banda)
+        assert metodo == "ndmi"
+
+    def test_automatico_nunca_escolhe_ndmi(self):
+        """Trocar a grandeza medida sem o usuário pedir mudaria a interpretação."""
+        imagem = np.zeros((8, 8, 3), dtype=np.float32)
+        banda = np.full((8, 8), 0.5, dtype=np.float32)
+
+        _, metodo = cor.indice_vegetacao(imagem, banda, metodo="auto", swir=banda)
+        assert metodo == "ndvi"

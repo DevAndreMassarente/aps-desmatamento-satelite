@@ -61,6 +61,19 @@ class TestDeteccao:
         assert sem.metodo_indice == "vari"
         assert sem.confiavel  # degradação para o visível continua detectando
 
+    def test_ndmi_quantifica_a_mesma_area_que_o_ndvi(self):
+        """Índices diferentes, mesma verdade de terreno."""
+        par = par_bitemporal(corte=CORTE)
+        com_ndmi = detectar_desmatamento(
+            par["rgb_antes"], par["rgb_depois"], par["nir_antes"], par["nir_depois"],
+            swir_antes=par["swir_antes"], swir_depois=par["swir_depois"],
+            metodo="ndmi", metros_por_pixel=10.0,
+        )
+
+        assert com_ndmi.metodo_indice == "ndmi"
+        assert com_ndmi.confiavel
+        assert com_ndmi.area_pixels == pytest.approx(400, rel=0.10)
+
     def test_o_limiar_e_unico_para_as_duas_datas(self, resultado):
         """A régua única é o que torna as duas máscaras comparáveis."""
         from sentinela.pdi import limiar
@@ -147,6 +160,31 @@ class TestValidacaoDeEntrada:
             detectar_desmatamento(
                 par["rgb_antes"], par["rgb_depois"],
                 np.zeros((10, 10), np.float32), np.zeros((10, 10), np.float32),
+            )
+
+    def test_swir_em_apenas_uma_data(self):
+        par = par_bitemporal(corte=CORTE)
+        with pytest.raises(ErroImagem, match="SWIR precisa estar"):
+            detectar_desmatamento(
+                par["rgb_antes"], par["rgb_depois"], par["nir_antes"], par["nir_depois"],
+                swir_antes=par["nir_antes"],
+            )
+
+    def test_swir_com_formato_incompativel(self):
+        par = par_bitemporal(corte=CORTE)
+        errado = np.zeros((10, 10), np.float32)
+        with pytest.raises(ErroImagem, match="diferente do RGB"):
+            detectar_desmatamento(
+                par["rgb_antes"], par["rgb_depois"], par["nir_antes"], par["nir_depois"],
+                swir_antes=errado, swir_depois=errado,
+            )
+
+    def test_ndmi_sem_swir_e_recusado_com_explicacao(self):
+        par = par_bitemporal(corte=CORTE)
+        with pytest.raises(ErroImagem, match="SWIR"):
+            detectar_desmatamento(
+                par["rgb_antes"], par["rgb_depois"], par["nir_antes"], par["nir_depois"],
+                metodo="ndmi",
             )
 
     def test_imagem_em_tons_de_cinza_e_recusada(self):

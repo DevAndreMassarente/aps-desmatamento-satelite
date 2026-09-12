@@ -1,9 +1,9 @@
 {
   "confiavel": false,
-  "metodo_indice": "ndvi",
-  "limiar": 0.9082,
-  "distinguibilidade": 2.994,
-  "separabilidade_otsu": 0.709,
+  "metodo_indice": "ndmi",
+  "limiar": 0.8145,
+  "distinguibilidade": 3.509,
+  "separabilidade_otsu": 0.7505,
   "area_pixels": null,
   "area_hectares": null,
   "proporcao_da_cena": null,

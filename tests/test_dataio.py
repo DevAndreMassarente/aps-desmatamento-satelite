@@ -111,6 +111,31 @@ class TestSintetico:
 
         assert ndvi[25:35, 25:35].mean() < ndvi[5:15, 5:15].mean() - 0.3
 
+    def test_o_par_traz_a_banda_swir(self):
+        par = par_bitemporal()
+        assert par["swir_antes"].shape == par["nir_antes"].shape
+        assert par["swir_depois"].shape == par["nir_depois"].shape
+
+    def test_swir_inverte_o_comportamento_do_nir(self):
+        """Dossel absorve no SWIR; solo exposto reflete. É o oposto do NIR."""
+        from sentinela.dataio.sintetico import banda_swir
+
+        corte = (slice(20, 40), slice(20, 40))
+        swir = banda_swir(5, corte=corte)
+        _, nir = cena_sintetica(5, corte=corte)
+
+        assert swir[25:35, 25:35].mean() > swir[5:15, 5:15].mean()
+        assert nir[25:35, 25:35].mean() < nir[5:15, 5:15].mean()
+
+    def test_o_swir_nao_altera_a_cena_existente(self):
+        """`cena_sintetica` é verdade de terreno em dezenas de testes: não pode mudar."""
+        antes = cena_sintetica(77)
+        par_bitemporal(semente=77)
+        depois = cena_sintetica(77)
+
+        assert np.array_equal(antes[0], depois[0])
+        assert np.array_equal(antes[1], depois[1])
+
     def test_a_mesma_semente_produz_a_mesma_cena(self):
         assert np.array_equal(cena_sintetica(9)[0], cena_sintetica(9)[0])
 

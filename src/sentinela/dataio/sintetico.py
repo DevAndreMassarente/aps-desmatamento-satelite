@@ -19,8 +19,8 @@ import numpy as np
 
 # Refletâncias aproximadas, em [0, 1]. Valores de ordem de grandeza realista para
 # dossel fechado e solo exposto, não medidas de campo.
-FLORESTA = {"vermelho": 0.05, "verde": 0.09, "azul": 0.04, "nir": 0.55}
-SOLO_EXPOSTO = {"vermelho": 0.33, "verde": 0.30, "azul": 0.24, "nir": 0.37}
+FLORESTA = {"vermelho": 0.05, "verde": 0.09, "azul": 0.04, "nir": 0.55, "swir": 0.12}
+SOLO_EXPOSTO = {"vermelho": 0.33, "verde": 0.30, "azul": 0.24, "nir": 0.37, "swir": 0.34}
 
 # Desvio do ruído gaussiano: variação de dossel somada ao ruído do sensor.
 RUIDO_PADRAO = 0.012
@@ -63,6 +63,35 @@ def cena_sintetica(
     return rgb.astype(np.float32), np.clip(nir + perturbar(), 0, 1).astype(np.float32)
 
 
+def banda_swir(
+    semente: int,
+    corte: tuple[slice, slice] | None = None,
+    *,
+    tamanho: tuple[int, int] = (80, 80),
+    ruido: float = RUIDO_PADRAO,
+) -> np.ndarray:
+    """Banda de infravermelho de ondas curtas, para permitir NDMI na demonstração.
+
+    Fica **fora** de ``cena_sintetica`` de propósito: aquela função tem saída fixada por
+    semente e é usada como verdade de terreno em dezenas de testes. Mudar o que ela
+    consome do gerador mudaria toda a cena. Aqui o gerador é independente, deslocado por
+    um primo para não correlacionar com o ruído das outras bandas.
+
+    Dossel fechado é cheio de água e **absorve** no SWIR; solo exposto e pasto seco
+    refletem. É a inversão do NIR, e é o que dá ao NDMI o poder de separar floresta de
+    pastagem vigorosa, que o NDVI confunde por serem as duas verdes.
+    """
+    gerador = np.random.default_rng(semente + 7919)
+    altura, largura = tamanho
+
+    swir = np.full((altura, largura), FLORESTA["swir"], dtype=np.float32)
+    if corte is not None:
+        swir[corte] = SOLO_EXPOSTO["swir"]
+
+    perturbacao = gerador.normal(0, ruido, (altura, largura)).astype(np.float32)
+    return np.clip(swir + perturbacao, 0, 1).astype(np.float32)
+
+
 def par_bitemporal(
     corte: tuple[slice, slice] | None = (slice(30, 50), slice(30, 50)),
     *,
@@ -90,7 +119,9 @@ def par_bitemporal(
     return {
         "rgb_antes": rgb_antes,
         "nir_antes": nir_antes,
+        "swir_antes": banda_swir(semente, tamanho=tamanho),
         "rgb_depois": rgb_depois,
         "nir_depois": nir_depois,
+        "swir_depois": banda_swir(semente + 101, corte=corte, tamanho=tamanho),
         "area_esperada": area,
     }

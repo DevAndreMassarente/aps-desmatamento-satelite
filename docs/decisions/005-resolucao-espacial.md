@@ -56,8 +56,9 @@ Landsat a 20–30 m e não com MODIS.
    usado aqui por não exigir credencial, não serve essa resolução: as camadas HLS existem
    no catálogo mas com janela de demonstração (S30 cobre 2015-11-28 a 2015-12-11).
 4. **Adotar NDMI quando houver banda SWIR.** Medido: separa melhor que o NDVI nesta cena
-   (3,51 contra 2,99). Ainda não implementado no pipeline — hoje `pdi.cor` expõe NDVI, ExG
-   e VARI.
+   (3,51 contra 2,99). **Implementado** em `pdi.cor.ndmi`, exposto por `--metodo ndmi` e
+   pela interface. Não entra no modo automático: ele mede água do dossel, não verde, e
+   trocar a grandeza sem o usuário pedir mudaria a interpretação do resultado sem aviso.
 
 ## Achado secundário: fumaça atravessa o SWIR
 

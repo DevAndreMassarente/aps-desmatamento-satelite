@@ -162,7 +162,7 @@ imagem bimodal sintética cai entre os dois modos.
 Ao implementar um filtro novo, escrever o teste **junto**. Um filtro sem teste não pode ser
 marcado `VERIFIED` na matriz de requisitos.
 
-A suíte tem **253 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
+A suíte tem **271 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
 automaticamente quando o extra `app` não está instalado.
 
 ---
@@ -248,7 +248,6 @@ delas, registrar a suposição explicitamente.
 | # | Item | Quando resolver |
 |---|------|-----------------|
 | T1 | **Resolução insuficiente**: o par MODIS (253 m/px) foi processado, mas o índice não é bimodal e a detecção é recusada. Quantificação exige Sentinel-2/Landsat, que exigem cadastro | Antes da Fase Intermediária I |
-| T8 | NDMI (NIR − SWIR) não implementado. Medido: separa melhor que o NDVI em MODIS (3,51 contra 2,99) | Junto com T1 |
 | T7 | Features de textura não são separáveis na cena sintética (mesmo ruído nas duas classes); só podem ser validadas em imagem real | Junto com T1 |
 | T4 | Convolução é `O(H·W·k²)` com laço sobre o kernel — suficiente para recortes, pode ficar lenta em cena Sentinel-2 completa | Só se a demonstração exigir |
 | T5 | `DISTINGUIBILIDADE_MINIMA = 4.0` foi calibrada em cena sintética. Confirmado em imagem real que precisa de recalibração — por procedimento honesto, **nunca** ajustando para uma cena passar | Junto com T1 |
@@ -256,6 +255,9 @@ delas, registrar a suposição explicitamente.
 
 > **T2 (interface Streamlit) foi resolvido.** `app/principal.py` está implementado e
 > coberto por teste de fumaça em `tests/test_app.py`.
+>
+> **T8 (NDMI) foi resolvido.** `pdi.cor.ndmi` está implementado, exposto na CLI e na
+> interface, e coberto por teste. Não entra no modo automático de propósito.
 >
 > **T3 (etapa de modelo) foi resolvido.** `modelo/` está implementado pela leitura
 > conservadora do §14, com 25 testes. Q5 continua em aberto, mas deixou de bloquear.

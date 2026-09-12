@@ -74,6 +74,17 @@ class TestInterface:
             avisos = " ".join(w.value for w in app.warning)
             assert "perfeito" in avisos
 
+    def test_ndmi_funciona_na_cena_sintetica(self, app):
+        """A cena sintética traz banda SWIR, então o NDMI é demonstrável na tela."""
+        seletor = next(s for s in app.sidebar.selectbox if "Índice" in s.label)
+        assert "ndmi" in seletor.options
+
+        seletor.set_value("ndmi").run()
+
+        assert not app.exception, [str(e.value) for e in app.exception]
+        assert not app.error, [e.value[:80] for e in app.error]
+        assert {m.label for m in app.metric} >= {"Área desmatada", "Em hectares"}
+
     def test_upload_sem_arquivo_orienta_em_vez_de_quebrar(self, app):
         app.sidebar.radio[0].set_value("Enviar imagens").run()
 

@@ -78,8 +78,13 @@ def barra_lateral() -> dict:
     st.sidebar.subheader("Parâmetros do processamento")
     metodo = st.sidebar.selectbox(
         "Índice de vegetação",
-        ("auto", "ndvi", "vari", "exg"),
-        help="auto usa NDVI quando há banda infravermelha e VARI quando só há o visível.",
+        ("auto", "ndvi", "ndmi", "vari", "exg"),
+        help=(
+            "auto usa NDVI quando há banda infravermelha e VARI quando só há o visível. "
+            "O NDMI mede água do dossel em vez de verde e exige banda SWIR — separa "
+            "melhor floresta de pastagem, mas não entra no automático porque troca a "
+            "grandeza medida."
+        ),
     )
     suavizacao = st.sidebar.slider(
         "Suavização gaussiana (lado do kernel)", 1, 15, 5, step=2,
@@ -141,11 +146,15 @@ def obter_imagens(opcoes: dict) -> dict | None:
         rgb_antes = st.file_uploader("RGB antes", type=["png", "jpg", "jpeg", "tif"])
         nir_antes = st.file_uploader("Infravermelho antes (opcional)",
                                      type=["png", "jpg", "jpeg", "tif"])
+        swir_antes = st.file_uploader("SWIR antes (opcional — habilita NDMI)",
+                                      type=["png", "jpg", "jpeg", "tif"])
     with col2:
         st.markdown("**Data 2 — depois**")
         rgb_depois = st.file_uploader("RGB depois", type=["png", "jpg", "jpeg", "tif"])
         nir_depois = st.file_uploader("Infravermelho depois (opcional)",
                                       type=["png", "jpg", "jpeg", "tif"])
+        swir_depois = st.file_uploader("SWIR depois (opcional — habilita NDMI)",
+                                       type=["png", "jpg", "jpeg", "tif"])
 
     if rgb_antes is None or rgb_depois is None:
         st.warning(
@@ -158,8 +167,10 @@ def obter_imagens(opcoes: dict) -> dict | None:
     return {
         "rgb_antes": ler_upload(rgb_antes),
         "nir_antes": ler_upload(nir_antes, cinza=True),
+        "swir_antes": ler_upload(swir_antes, cinza=True),
         "rgb_depois": ler_upload(rgb_depois),
         "nir_depois": ler_upload(nir_depois, cinza=True),
+        "swir_depois": ler_upload(swir_depois, cinza=True),
     }
 
 
@@ -271,6 +282,7 @@ def _indice_sem_suavizar(imagens: dict, opcoes: dict):
         imagens.get("nir_depois"),
         metodo=opcoes["metodo"],
         suavizacao=1,
+        swir=imagens.get("swir_depois"),
     )
 
 
@@ -493,6 +505,8 @@ def principal() -> None:
             imagens["rgb_depois"],
             imagens.get("nir_antes"),
             imagens.get("nir_depois"),
+            swir_antes=imagens.get("swir_antes"),
+            swir_depois=imagens.get("swir_depois"),
             metodo=opcoes["metodo"],
             suavizacao=opcoes["suavizacao"],
             area_minima=opcoes["area_minima"],

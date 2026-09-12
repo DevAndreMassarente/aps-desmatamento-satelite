@@ -115,6 +115,41 @@ def ndvi(vermelho: np.ndarray, infravermelho: np.ndarray) -> np.ndarray:
     return _divisao_segura(infravermelho - vermelho, infravermelho + vermelho)
 
 
+def ndmi(infravermelho: np.ndarray, swir: np.ndarray) -> np.ndarray:
+    """Índice de Umidade por Diferença Normalizada.
+
+    ``NDMI = (NIR - SWIR) / (NIR + SWIR)``, resultado em ``[-1, 1]``.
+
+    Mede o conteúdo de água do dossel. Folha viva é opticamente espessa e cheia de água:
+    reflete forte no infravermelho próximo e **absorve** no infravermelho de ondas curtas.
+    Pastagem seca, solo exposto e cicatriz de queimada têm pouca água e refletem bem no
+    SWIR, derrubando o índice.
+
+    Onde ele ganha do NDVI: o NDVI satura em dossel denso — acima de certa biomassa ele
+    para de responder — e confunde floresta com pastagem vigorosa, porque as duas são
+    verdes. O NDMI continua separando, porque a diferença de água entre um dossel
+    florestal e um capim é grande mesmo quando a diferença de verde é pequena.
+
+    Medido neste projeto sobre MODIS/Terra em São Félix do Xingu (2002 × 2024): o NDMI
+    elevou a distinguibilidade entre as classes de 2,99 para 3,51 sobre a mesma cena
+    (`docs/decisions/005-resolucao-espacial.md`). Não foi suficiente para atingir o
+    critério de confiabilidade naquela resolução, mas é a melhor leitura disponível
+    quando há banda SWIR.
+
+    Requer a banda SWIR — no Sentinel-2 é a B11 (1610 nm); no MODIS, a banda 7 (2130 nm).
+    """
+    infravermelho = validar_imagem(infravermelho, bandas_aceitas=(2,))
+    swir = validar_imagem(swir, bandas_aceitas=(2,))
+
+    if infravermelho.shape != swir.shape:
+        raise ErroImagem(
+            f"bandas com formatos diferentes: infravermelho {infravermelho.shape}, "
+            f"swir {swir.shape}"
+        )
+
+    return _divisao_segura(infravermelho - swir, infravermelho + swir)
+
+
 def exg(imagem: np.ndarray) -> np.ndarray:
     """Excesso de Verde — ``ExG = 2g - v - a`` sobre as bandas RGB normalizadas.
 
@@ -152,20 +187,40 @@ def vari(imagem: np.ndarray) -> np.ndarray:
 
 
 def indice_vegetacao(
-    imagem: np.ndarray, infravermelho: np.ndarray | None = None, metodo: str = "auto"
+    imagem: np.ndarray,
+    infravermelho: np.ndarray | None = None,
+    metodo: str = "auto",
+    swir: np.ndarray | None = None,
 ) -> tuple[np.ndarray, str]:
     """Calcula o índice de vegetação disponível para a imagem dada.
 
     Com ``metodo="auto"`` usa NDVI se houver banda infravermelha e VARI caso contrário.
+    O NDMI **não** entra no automático mesmo quando há SWIR: ele mede água do dossel, não
+    verde, e trocar de grandeza sem o usuário pedir mudaria a interpretação do resultado
+    sem aviso. Quem quiser NDMI pede ``metodo="ndmi"``.
+
     Devolve ``(indice, nome_do_metodo_usado)`` — o nome é propagado até a interface para
     que fique explícito qual índice está em uso na demonstração.
     """
-    metodos_validos = ("auto", "ndvi", "exg", "vari")
+    metodos_validos = ("auto", "ndvi", "ndmi", "exg", "vari")
     if metodo not in metodos_validos:
         raise ErroImagem(f"método '{metodo}' desconhecido; use um de {metodos_validos}")
 
     if metodo == "auto":
         metodo = "ndvi" if infravermelho is not None else "vari"
+
+    if metodo == "ndmi":
+        if infravermelho is None or swir is None:
+            faltando = []
+            if infravermelho is None:
+                faltando.append("infravermelho")
+            if swir is None:
+                faltando.append("SWIR")
+            raise ErroImagem(
+                f"NDMI requer as bandas {' e '.join(faltando)}. "
+                "No MODIS a banda 7 é o SWIR; no Sentinel-2, a B11."
+            )
+        return ndmi(infravermelho, swir), "ndmi"
 
     if metodo == "ndvi":
         if infravermelho is None:
