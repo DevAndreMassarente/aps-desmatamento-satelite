@@ -159,3 +159,48 @@ fumaça da interface e do gerador de apêndice. Evidência sintética é sempre 
 2. Professor: Q1–Q8, em especial Q4 (margens), Q5 (escopo do modelo) e Q8 (uso de IA).
 3. Cadastro no Copernicus ou USGS para obter imagem de 10–30 m.
 4. Montar o documento final formatado e preencher a ficha de APS.
+
+---
+
+## Marco 3 — bibliografia verificada, auditoria e documento final
+
+_Commits `317fc3e` a este._
+
+### Decisões
+
+| # | Decisão | Onde |
+|---|---------|------|
+| D15 | Bibliografia só com fontes lidas; dez obras descartadas com motivo | `trabalho-escrito/BIBLIOGRAFIA.md` |
+| D16 | Documento `.docx` gerado por comando só com biblioteca padrão; saída fora do Git | `scripts/montar_documento.py` |
+| D17 | Margens superior/inferior pela NBR 14724 (conferida no tutorial da Biblioteca da PUC-SP), registradas como suposição até Q4 | idem |
+
+### Aprendizados
+
+**Buscar fonte é verificação, não formatação.** Resolver as referências corrigiu três fatos
+do projeto (NDMI × NBR, sensor do PRODES, resolução nativa das bandas) e derrubou quatro
+afirmações "óbvias" sem sustentação. Resumo de busca não conta como fonte: só o documento lido.
+
+**Contornos de acesso sem dependência nova:** metadados pelo Crossref, resumos pelo OpenAlex,
+PDFs por `curl` com o extrator próprio do projeto. Páginas de editores bloqueiam; APIs abertas
+não.
+
+**Matriz de requisitos envelhece em silêncio.** A auditoria achou quatro estados desatualizados
+— trabalho feito e não refletido. Rodar a auditoria depois de cada bloco grande.
+
+**Testar o gerador achou dois defeitos antes de qualquer pessoa abrir o documento:** linha de
+continuação de referência que começa com ano ("2018. ISBN") lida como lista numerada, e o ano
+apagado da capa numa edição de seção. Módulo com `@dataclass` carregado por caminho precisa ser
+registrado em `sys.modules`.
+
+### Riscos
+
+| # | Risco | Mitigação |
+|---|-------|-----------|
+| R9 | O `.docx` nunca foi aberto no Word nesta máquina | Testes garantem estrutura e formatação de base; conferência no Word é passo obrigatório antes de postar |
+| R10 | Numeração dos títulos diverge da NBR 14724 (Q2) | Aviso emitido pelo gerador a cada execução |
+
+### Próximos passos
+
+1. Grupo: Q7 (integrantes) → `capa.json`; gerar, abrir no Word, atualizar o sumário.
+2. Professor: Q2, Q4, Q5, Q8.
+3. Imagem de 10–30 m (cadastro Copernicus ou USGS) para a quantificação.

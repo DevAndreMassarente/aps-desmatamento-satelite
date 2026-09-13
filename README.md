@@ -79,7 +79,7 @@ src/sentinela/
 ├── app/principal.py  interface Streamlit
 └── cli.py            linha de comando (app, detectar, demo, apendice)
 
-tests/                301 testes contra casos analíticos
+tests/                329 testes contra casos analíticos
 docs/                 enunciado, especificação, requisitos, arquitetura, decisões, evidências
 data/                 imagens (não versionadas — ver docs/decisions/002)
 ```
@@ -127,6 +127,16 @@ Usa o NASA GIBS (MODIS/Terra), que **não exige credencial** — a aquisição �
 por qualquer integrante do grupo. O script mede ausência de dado, nuvem e bruma, e avisa
 quando a cena não presta. Procedência registrada em
 [`data/raw/FONTES.md`](data/raw/FONTES.md).
+
+### Gerar o trabalho escrito
+
+```bash
+python scripts/montar_documento.py
+```
+
+Gera `saidas/trabalho-escrito.docx` a partir de `docs/trabalho-escrito/`, com a formatação do
+enunciado. Detalhes e o que continua provisório em
+[`docs/trabalho-escrito/README.md`](docs/trabalho-escrito/README.md).
 
 ### Linha de comando
 
@@ -211,7 +221,7 @@ imagens reais.
 | Etapa | Situação |
 |-------|----------|
 | Estrutura e documentação | Concluído |
-| Núcleo de PDI (filtros próprios) | Implementado, 301 testes passando |
+| Núcleo de PDI (filtros próprios) | Implementado, 329 testes passando |
 | Aquisição e I/O de imagem | Implementado |
 | Pipeline de orquestração | Implementado |
 | Interface Streamlit e linha de comando | Implementado |

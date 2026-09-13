@@ -234,7 +234,8 @@ interseção é conferida.
 | `test_integracao.py` | 10 | cadeia completa contra verdade de terreno |
 | `test_app.py` | 11 | interface |
 | `test_cli.py` | 9 | linha de comando e apêndice |
-| **Total** | **301** | |
+| `test_documento.py` | 28 | geração do trabalho escrito em DOCX |
+| **Total** | **329** | |
 
 Reprodução:
 
@@ -351,7 +352,7 @@ detecção do erro veio de medição, não de inspeção visual.
 
 | O que foi demonstrado | Como |
 |-----------------------|------|
-| Os filtros são do grupo e estão corretos | 301 testes contra propriedades analíticas |
+| Os filtros são do grupo e estão corretos | 329 testes contra propriedades analíticas |
 | A cadeia quantifica corretamente | erro de 0,0% contra verdade de terreno construída |
 | O sistema reconhece quando não sabe | recusa acionada em cena homogênea e em imagem real |
 | A preparação de dados alimenta um modelo | conjunto rotulado, divisão espacial, classificador treinado |

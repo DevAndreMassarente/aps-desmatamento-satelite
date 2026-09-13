@@ -39,7 +39,7 @@ formatação ABNT exigida; aqui ficam o texto e a rastreabilidade.
 | 22 referências bibliográficas | Precisam ser localizadas e conferidas |
 | Capítulo 8 — Ficha de APS | Q7: integrantes não definidos |
 | Capa, folha de rosto, sumário | Q7 |
-| Formatação ABNT no documento final | Q4: margens superior e inferior desconhecidas |
+| Conferência do `.docx` gerado no Word | Q2 (numeração dos títulos), Q4 (margens), Q7 (capa) |
 
 ## Fase Intermediária I — Qualificação (R040)
 
@@ -75,6 +75,38 @@ Regenera `07-apendice.md` a partir de `src/`, na ordem de leitura — o núcleo 
 de quem o consome. **Não editar à mão.** Um apêndice copiado diverge do código na primeira
 correção feita depois de copiar, e essa divergência é o tipo de coisa que uma banca
 encontra. Rodar de novo antes de fechar o documento final.
+
+## Documento final (.docx)
+
+```bash
+python scripts/montar_documento.py                  # saidas/trabalho-escrito.docx
+python scripts/montar_documento.py --sem-apendice   # versão leve, para revisão
+```
+
+Monta o trabalho a partir destes arquivos, **só com a biblioteca padrão do Python**. A saída
+fica em `saidas/`, fora do Git: o que se versiona é o texto, e o documento se regera.
+
+| Aspecto | Como sai | Origem |
+|---------|----------|--------|
+| Fonte e tamanho | Arial 12 | enunciado, p.4, III.5 |
+| Espaçamento | 1,5, justificado | enunciado, p.4, III.5 |
+| Papel | A4 | enunciado, p.4, III.5 |
+| Margens laterais | 2,5 cm | enunciado, p.4, III.5 |
+| Margens superior e inferior | 3 cm e 2 cm — **suposição até Q4** | ABNT NBR 14724, conferida no tutorial da Biblioteca da PUC-SP |
+| Recuo de parágrafo | 1,25 cm | idem |
+| Paginação | contada a partir da folha de rosto; número visível a partir da Introdução | idem |
+| Capa e folha de rosto | a partir de `capa.json` — **marcadores até Q7** | — |
+| Sumário | campo do Word — **atualizar ao abrir (F9)** | — |
+| Referências | só a seção de referências de `BIBLIOGRAFIA.md` | — |
+| Ficha de APS | página reservada | enunciado, p.4, III.6 |
+
+O gerador lista, a cada execução, o que ainda está provisório. **Conferir o documento no Word
+antes de postar** — os testes garantem estrutura e formatação de base, não a renderização,
+porque não há Word nesta máquina.
+
+Uma divergência fica para o professor (Q2): a NBR 14724 pede o número da seção sem pontuação
+antes do título ("1 INTRODUÇÃO"), e os capítulos seguem a numeração do próprio enunciado
+("1. Introdução", "1.a.").
 
 ## Regra de ouro
 

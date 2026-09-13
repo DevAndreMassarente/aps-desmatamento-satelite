@@ -173,7 +173,7 @@ Registrado como decisão em [`decisions/001-filtros-proprios.md`](./decisions/00
 
 | # | Entregável | Onde | Status |
 |---|-----------|------|--------|
-| D1 | Trabalho escrito (ABNT, 8 capítulos) | `docs/trabalho-escrito/` + postagem no site UNIP | IN_PROGRESS — caps. 1 a 5 em rascunho completo; 22 referências pendentes; documento ABNT final não montado |
+| D1 | Trabalho escrito (ABNT, 8 capítulos) | `docs/trabalho-escrito/` → `scripts/montar_documento.py` + postagem no site UNIP | IN_PROGRESS — caps. 1 a 5 com rascunho completo; bibliografia conferida; `.docx` gerado por comando; pendem capa (Q7), margens (Q4), ficha e conferência no Word |
 | D2 | Programa (aplicação Python) | `src/` | IN_PROGRESS — cinco etapas implementadas; quantificação em imagem real bloqueada pela resolução |
 | D3 | Apresentação (10–15 min) | `docs/apresentacao/` | IN_PROGRESS — roteiro, figuras e screenshots prontos; falta ensaiar e definir integrantes (Q7) |
 | D4 | Ficha de APS preenchida | `docs/` | NOT_STARTED — bloqueado por Q7 |

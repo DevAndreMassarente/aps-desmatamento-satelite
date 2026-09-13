@@ -162,7 +162,7 @@ imagem bimodal sintética cai entre os dois modos.
 Ao implementar um filtro novo, escrever o teste **junto**. Um filtro sem teste não pode ser
 marcado `VERIFIED` na matriz de requisitos.
 
-A suíte tem **301 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
+A suíte tem **329 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
 automaticamente quando o extra `app` não está instalado.
 
 ---
@@ -283,8 +283,8 @@ esta seção é autossuficiente, com os caminhos e comandos já validados neste 
 | Campo | Valor |
 |-------|-------|
 | Estado | `READY` — regenerado em 2026-09-12 sobre o código com as cinco etapas |
-| Grafo | `graphify-out/graph.json` — 863 nós, 1531 arestas, 37 arquivos-fonte |
-| Origem dos nós | 863/863 `ast` — zero LLM (`input_tokens=0`, `output_tokens=0`) |
+| Grafo | `graphify-out/graph.json` — 943 nós, 1647 arestas, 39 arquivos-fonte |
+| Origem dos nós | 943/943 `ast` — zero LLM (`input_tokens=0`, `output_tokens=0`) |
 | Ferramenta | `/home/vader/.local/share/uv/tools/graphifyy/bin/graphify` — `graphify 0.9.51` |
 | Baseline | `~/.local/state/graphify-baseline/aps-desmatamento-satelite/` (fora do repo) |
 

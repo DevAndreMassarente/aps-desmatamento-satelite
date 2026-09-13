@@ -1,0 +1,15 @@
+{
+  "_leia": "Dados da capa e da folha de rosto usados por scripts/montar_documento.py. Substituir os marcadores quando Q7 for respondida. O gerador avisa enquanto houver marcador.",
+  "instituicao": "UNIVERSIDADE PAULISTA — UNIP",
+  "curso": "Ciência da Computação",
+  "integrantes": [
+    {"nome": "[NOME DO INTEGRANTE 1 — Q7]", "ra": "[RA — Q7]"},
+    {"nome": "[NOME DO INTEGRANTE 2 — Q7]", "ra": "[RA — Q7]"},
+    {"nome": "[NOME DO INTEGRANTE 3 — Q7]", "ra": "[RA — Q7]"},
+    {"nome": "[NOME DO INTEGRANTE 4 — Q7]", "ra": "[RA — Q7]"}
+  ],
+  "titulo": "Detecção e quantificação de desmatamento em imagens de satélite por processamento digital de imagens",
+  "natureza": "Trabalho de Atividades Práticas Supervisionadas (APS) apresentado ao curso de Ciência da Computação da Universidade Paulista, 5º/6º semestre, 2026/2.",
+  "cidade": "[CIDADE DO CAMPUS]",
+  "ano": 2026
+}

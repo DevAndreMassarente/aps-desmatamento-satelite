@@ -35,7 +35,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 | R011 | Cap. 3.b — Proposta de modelagem + escolha de algoritmos de inteligência | MUST | PDF p.3, item 3.b | `03-proposta.md` §3.b + `sentinela/modelo/` | `tests/test_modelo.py`, `docs/decisions/004-divisao-espacial.md` | IN_PROGRESS |
 | R012 | Cap. 4.a — Descrever como os métodos foram implantados | MUST | PDF p.3, item 4.a | `docs/trabalho-escrito/04-desenvolvimento.md` §4.a | rascunho completo | IN_PROGRESS |
 | R013 | Cap. 4.b — Listar as ferramentas utilizadas | MUST | PDF p.3, item 4.b | `docs/trabalho-escrito/04-desenvolvimento.md` §4.b | versões conferidas no ambiente | IN_PROGRESS |
-| R014 | Cap. 4.c — Descrever como foram feitos os testes | MUST | PDF p.3, item 4.c | `docs/trabalho-escrito/04-desenvolvimento.md` §4.c | `tests/` — 301 testes | IN_PROGRESS |
+| R014 | Cap. 4.c — Descrever como foram feitos os testes | MUST | PDF p.3, item 4.c | `docs/trabalho-escrito/04-desenvolvimento.md` §4.c | `tests/` — 329 testes | IN_PROGRESS |
 | R015 | Cap. 4.d — Mostrar os resultados obtidos | MUST | PDF p.3, item 4.d | `docs/trabalho-escrito/04-desenvolvimento.md` §4.d | `docs/evidence/` | IN_PROGRESS |
 | R016 | Cap. 5 — Conclusão | MUST | PDF p.3, item 5 | `docs/trabalho-escrito/05-conclusao.md` | rascunho completo | IN_PROGRESS |
 | R017 | Cap. 6 — Bibliografia (fontes reais, ABNT) | MUST | PDF p.3, item 6 | `docs/trabalho-escrito/BIBLIOGRAFIA.md` | 28 referências conferidas na fonte; 0 pendências; 10 descartadas com motivo | IMPLEMENTED |
@@ -46,11 +46,11 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | ID | Requisito | Tipo | Fonte | Implementação | Evidência/Teste | Status |
 |----|-----------|------|-------|---------------|-----------------|--------|
-| R020 | Fonte ARIAL 12 | MUST | PDF p.4, item III.5 | — | — | NOT_STARTED |
-| R021 | Espaçamento 1,5 | MUST | PDF p.4, item III.5 | — | — | NOT_STARTED |
-| R022 | Margem direita 2,5 cm e esquerda 2,5 cm | MUST | PDF p.4, item III.5 | — | — | NOT_STARTED |
-| R023 | Páginas em formato A4 | MUST | PDF p.4, item III.5 | — | — | NOT_STARTED |
-| R024 | Seguir formato de trabalho acadêmico (normas ABNT) | MUST | PDF p.4, item III.5 | — | — | NOT_STARTED |
+| R020 | Fonte ARIAL 12 | MUST | PDF p.4, item III.5 | `scripts/montar_documento.py` — estilo padrão | `tests/test_documento.py::test_fonte_arial_12` | IMPLEMENTED |
+| R021 | Espaçamento 1,5 | MUST | PDF p.4, item III.5 | `scripts/montar_documento.py` — estilo padrão | `test_documento.py::test_espacamento_um_e_meio` | IMPLEMENTED |
+| R022 | Margem direita 2,5 cm e esquerda 2,5 cm | MUST | PDF p.4, item III.5 | `scripts/montar_documento.py` — margens da seção | `test_documento.py::test_margens_laterais_de_dois_e_meio_centimetros` | IMPLEMENTED |
+| R023 | Páginas em formato A4 | MUST | PDF p.4, item III.5 | `scripts/montar_documento.py` — tamanho da página | `test_documento.py::test_papel_a4` | IMPLEMENTED |
+| R024 | Seguir formato de trabalho acadêmico (normas ABNT) | MUST | PDF p.4, item III.5 | `scripts/montar_documento.py` — capa, folha de rosto, sumário, recuo 1,25 cm, paginação | `TestNormaABNT`; pendentes Q2, Q4, Q7 e conferência no Word | IN_PROGRESS |
 | R025 | Contemplar todos os tópicos do item I do enunciado | MUST | PDF p.4, item III.5 | `docs/trabalho-escrito/` — caps. 1 a 5 e 7 | `docs/trabalho-escrito/README.md` | IN_PROGRESS |
 | R026 | Entregar junto com a ficha padrão de APS, cronologicamente preenchida | MUST | PDF p.4, item III.6 | — | — | NOT_STARTED |
 | R027 | **Postar versão final em `trabalhosacademicos.unip.br/entrega/`** — a não postagem implica reprovação automática | MUST | PDF p.4, item III.8 | — | — | NOT_STARTED |
@@ -60,7 +60,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | ID | Requisito | Tipo | Fonte | Implementação | Evidência/Teste | Status |
 |----|-----------|------|-------|---------------|-----------------|--------|
-| R029 | Sistema que implementa as soluções propostas no item 3 da seção I | MUST | PDF p.4, item II.1 | `src/sentinela/` + `cli.py` + `scripts/` | `tests/` — 301 testes | IN_PROGRESS |
+| R029 | Sistema que implementa as soluções propostas no item 3 da seção I | MUST | PDF p.4, item II.1 | `src/sentinela/` + `cli.py` + `scripts/` | `tests/` — 329 testes | IN_PROGRESS |
 | R030 | **Filtros desenvolvidos pelo próprio grupo** (não usar prontos de biblioteca) | MUST | PDF p.3, item 3.a | `sentinela/pdi/` | `tests/test_filtros.py`, `test_nucleo.py` — 154 testes | VERIFIED |
 | R031 | Filtros preferencialmente em linguagem Python | SHOULD | PDF p.3, item 3.a | Python 3.12 | — | IMPLEMENTED |
 | R032 | Filtros aplicados em **imagens reais** do problema escolhido | MUST | PDF p.3, item 3.a | `scripts/baixar_imagens.py` | `docs/evidence/results/` — MODIS real, 2002 e 2024 | IMPLEMENTED |
@@ -112,16 +112,16 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | Status | Qtd |
 |--------|-----|
-| NOT_STARTED | 9 |
-| IN_PROGRESS | 34 |
-| IMPLEMENTED | 5 |
+| NOT_STARTED | 4 |
+| IN_PROGRESS | 35 |
+| IMPLEMENTED | 9 |
 | VERIFIED | 2 |
 | BLOCKED (perguntas) | 8 |
 
 > **Auditoria de 12 set. 2026.** A matriz foi conferida contra o repositório: R009, R017,
 > R038 e R041 estavam com estado desatualizado em relação ao que existe. Os `NOT_STARTED`
-> restantes dependem de documento final formatado (R020–R024), de integrantes (R019, R026,
-> R049) ou de ação do grupo (R027, postagem).
+> restantes dependem de integrantes (R019, R026, R049) ou de ação do grupo (R027, postagem).
+> R020–R023 passaram a `IMPLEMENTED` com o gerador do documento.
 
 > **Os Capítulos 1 a 5 e o 7 têm rascunho.** Faltam as seções 2.e.i, 2.e.ii, 2.e.iv,
 > 2.e.v e 3.b — sem bloqueio, o conteúdo existe no repositório. O Capítulo 8 depende
@@ -138,7 +138,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 > **recusa**: a 253 m/pixel o índice não é bimodal. Quantificação validada depende de
 > imagem de 10 a 30 m — `docs/decisions/005-resolucao-espacial.md`.
 
-> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 301
+> R030 está `VERIFIED` quanto à **implementação própria** dos filtros, comprovada por 329
 > testes contra casos analíticos.
 
 > **Q5 continua em aberto.** O projeto segue a leitura conservadora do `AGENTS.md` §14: o

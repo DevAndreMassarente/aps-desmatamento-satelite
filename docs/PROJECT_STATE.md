@@ -91,8 +91,15 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
   (2) a linha "NBR" da tabela de hipóteses media outra razão; (3) o PRODES 2025 usou
   Sentinel-2 e Sentinel-1, e não "Landsat a 20–30 m" como estava escrito. Também removidas
   afirmações sem fonte verificável ("NDVI satura", "ExG é mais sensível à iluminação").
+- **Documento final gerado por comando** (`scripts/montar_documento.py`), só com a biblioteca
+  padrão: Arial 12, espaçamento 1,5, A4, margens laterais de 2,5 cm, recuo de 1,25 cm, capa,
+  folha de rosto, sumário e paginação contada a partir da folha de rosto. Margens superior e
+  inferior pela NBR 14724, conferida no tutorial da Biblioteca da PUC-SP — suposição até Q4.
+  A escrita dos testes achou dois defeitos antes da entrega: linhas de continuação de
+  referência lidas como lista numerada, e o ano apagado da capa.
+- **Auditoria da matriz**: R009, R017, R038 e R041 estavam com estado desatualizado.
 - Graphify regenerado e validado — `READY`.
-- Suíte de testes: **301 passando**, incluindo os caminhos de erro, um teste de fumaça da
+- Suíte de testes: **329 passando**, incluindo os caminhos de erro, um teste de fumaça da
   interface e a verificação por força bruta de que treino e teste não compartilham pixel.
 - Verificado que `pdi/` não importa `cv2`, `skimage`, `scipy` nem `PIL`, e não depende de
   nenhuma camada superior — a restrição central do enunciado continua de pé.
@@ -118,7 +125,8 @@ Em ordem de prioridade:
    bibliografia. O texto existe, mas precisa ser assumido por quem vai defendê-lo.
 6. Redigir as seções que faltam — 2.e.i, 2.e.ii, 2.e.iv, 2.e.v e 3.b. Sem bloqueio: o
    conteúdo já existe no repositório, falta escrever.
-7. Montar o documento final em ABNT e preencher a Ficha de APS (bloqueado por Q7).
+7. Gerar o `.docx` (`python scripts/montar_documento.py`), **conferir no Word**, atualizar o
+   sumário e preencher a Ficha de APS (bloqueado por Q7).
 6. Reavaliar as features de textura em imagem real — na cena sintética elas não
    separam as classes, porque o gerador aplica o mesmo ruído às duas (limitação
    declarada em `modelo/caracteristicas.py`).
@@ -177,8 +185,8 @@ Em ordem de prioridade:
 | Campo | Valor |
 |-------|-------|
 | Estado | `READY` |
-| Grafo | `graphify-out/graph.json` — 863 nós, 1531 arestas, 37 fontes, 100% AST |
-| Consulta de aceite | `treinar_e_avaliar → dividir_espacialmente`, conferida em `modelo/classificador.py` L307 — o arquivo alterado por último |
+| Grafo | `graphify-out/graph.json` — 943 nós, 1647 arestas, 39 fontes, 100% AST |
+| Consulta de aceite | `montar → capa_e_rosto`, conferida em `scripts/montar_documento.py` L453 — código criado por último |
 | Baseline | `~/.local/state/graphify-baseline/aps-desmatamento-satelite/` |
 
 Marcar `STALE` de novo após mudança relevante no código, até regenerar pelo procedimento do
