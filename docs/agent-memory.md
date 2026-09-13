@@ -192,6 +192,14 @@ continuação de referência que começa com ano ("2018. ISBN") lida como lista 
 apagado da capa numa edição de seção. Módulo com `@dataclass` carregado por caminho precisa ser
 registrado em `sys.modules`.
 
+**`set -e` não protege cadeias neste ambiente.** O executor roda cada comando como
+`eval '…' && …`, e o bash desliga o `errexit` para tudo o que está do lado esquerdo de um
+`&&`. Uma edição falhou, o script saiu com código 1 e o commit aconteceu mesmo assim, com um
+parágrafo desatualizado no `AGENTS.md` (corrigido no commit seguinte). Reproduzido: em `bash -c`
+novo o `set -e` interrompe; no shell da sessão, não. Usar `|| exit 1` explícito em todo passo
+que deve cancelar os seguintes.
+
+
 ### Riscos
 
 | # | Risco | Mitigação |

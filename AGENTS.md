@@ -346,12 +346,9 @@ Só declarar `READY` após verificar: extração bem-sucedida e esquema válido;
 fora da allowlist e nenhum secret; **uma consulta de resposta conhecida confirmada na
 fonte**; saída restrita e fora do Git; baseline atualizado.
 
-A validação desta geração: `path treinar_e_avaliar → dividir_espacialmente` devolveu 1 salto,
-`calls [EXTRACTED]`, conferido em `modelo/classificador.py` L307 — o arquivo que mudou nesta
-extração, o que prova que ele foi relido. A geração anterior foi validada com
-`aba_etapas → _legenda_mudanca` (`app/principal.py` L278). Um nó `ndarray` **sem arquivo-fonte**
-apareceu nesta extração: referência a tipo externo registrada pelo extrator incremental, não
-conteúdo indexado — nenhum nó foi removido. A varredura de secrets usa fronteira de
-palavra: uma versão anterior da regex acusou "senha" dentro de "Desenha", falso positivo.
-As gerações anteriores (433 e 840 nós) estão em backups verificados por hash no diretório
-de baseline.
+A validação desta geração (943 nós, 1647 arestas, 39 fontes): `path montar → capa_e_rosto`
+devolveu 1 salto, `calls [EXTRACTED]`, conferido em `scripts/montar_documento.py` L453 — script
+criado na mesma rodada, o que prova que o grafo reflete o código atual. A varredura de secrets
+usa fronteira de palavra: uma versão anterior da regex acusou "senha" dentro de "Desenha",
+falso positivo. As gerações anteriores (433, 840, 862, 863 e 877 nós) estão em backups
+verificados por hash no diretório de baseline.
