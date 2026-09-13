@@ -81,3 +81,81 @@ recorte em `[0,1]` limita o resultado — o teste media o recorte, não o realce
 3. Rodar o pipeline em imagem real e recalibrar R1.
 4. Fase Intermediária I: Cap. 1 + filtragem dos Caps. 2 e 3.
 5. Interface Streamlit; depois a etapa de modelo.
+
+---
+
+## Marco 2 — programa completo, imagem real, trabalho escrito e apresentação
+
+_Commits `4d1d672` a `317fc3e`._
+
+### Decisões
+
+| # | Decisão | Onde está o raciocínio |
+|---|---------|------------------------|
+| D8 | Detecção não confiável **não reporta área**: o resumo devolve vazio em vez de um número | `pipeline/deteccao.py` |
+| D9 | Recortes ambíguos descartados na rotulagem, não arredondados para a classe majoritária | `pipeline/amostras.py` |
+| D10 | Divisão treino/teste por **blocos espaciais**, nunca por sorteio de recorte | `decisions/004` |
+| D11 | Floresta aleatória em vez de rede convolucional, pela defesa oral | `modelo/classificador.py` |
+| D12 | Vermelho e NIR do **mesmo** produto do GIBS: os realces de 8 bits diferem entre produtos | `data/raw/FONTES.md` |
+| D13 | Resultado negativo em imagem real mantido; o limiar **não** foi ajustado para a cena passar | `decisions/005` |
+| D14 | NDMI e NBR fora do modo automático; sobre MODIS via GIBS o índice correto é o NBR | `pdi/cor.py` |
+| D15 | Bibliografia só com fontes lidas; o que não pôde ser lido saiu do texto | `trabalho-escrito/BIBLIOGRAFIA.md` |
+
+### Aprendizados
+
+**Resolução de 250 m não sustenta detecção por limiar global numa frente de desmatamento.**
+Pixel misto: as distribuições das duas datas se sobrepõem e o vale entre as classes é raso.
+O sistema recusou-se a quantificar — e estava certo. Testadas antes de concluir: outro índice
+(melhora, não basta), limiarizar a diferença (piora), resolução (confirmado).
+
+**Fumaça de queimada passou no controle de nuvem medido sobre a composição com SWIR.** A cena
+de agosto foi aprovada com 0% de nuvem e inverteu a comparação entre as datas. Bruma passou a
+ser medida no azul da composição visível. Regra prática: não escolher datas de agosto e
+setembro na Amazônia.
+
+**Nome de índice é afirmação de fato.** O índice NIR − SWIR sobre a banda 7 do MODIS é o NBR,
+não o NDMI (que exige a banda 6). A conta estava certa e o nome errado por várias rodadas;
+só apareceu ao conferir as definições oficiais para a bibliografia.
+
+**Descrever um gráfico sem desenhá-lo gera exagero.** O texto dizia "unimodal, sem vale"; o
+histograma desenhado mostrou vale raso. Corrigido em 11 documentos.
+
+**Toda afirmação técnica "óbvia" pediu fonte e várias caíram**: "NDVI satura em dossel
+denso", "ExG é mais sensível à iluminação", "PRODES usa Landsat a 20–30 m" (a nota do INPE de
+2025 diz Sentinel-2 e Sentinel-1). Também: o SWIR do MODIS tem 500 m nativos, não 250 m; o do
+Sentinel-2 tem 20 m, não 10 m.
+
+**Escala do índice.** O pipeline mapeia `[-1,1]` para `[0,1]`, o que divide diferenças pela
+metade; relatar sempre na escala nativa.
+
+**Interface e evidência:** o servidor Streamlit mantém os módulos do pacote importados e
+serve código antigo mesmo com os testes passando — reiniciar antes de capturar telas.
+Emoji como ícone vira quadrado sem fonte de emoji. O screenshot achou um bug que a suíte não
+pegava: aviso de "desempenho perfeito" com teste de uma classe só.
+
+**Operação:** `pkill -f <padrão>` casou com o próprio shell que o executava; ancorar o padrão
+no início da linha de comando.
+
+### Testes
+
+301 testes. Além dos casos analíticos: cadeia completa contra verdade de terreno sintética
+(erro 0,0%), controle negativo que exige a recusa, prova por enumeração de que treino e teste
+não compartilham pixel, equivalência dos filtros separáveis inclusive nas bordas, teste de
+fumaça da interface e do gerador de apêndice. Evidência sintética é sempre rotulada como tal.
+
+### Riscos
+
+| # | Risco | Mitigação |
+|---|-------|-----------|
+| R1 | `DISTINGUIBILIDADE_MINIMA = 4.0` calibrada em cena sintética; em imagem real ficou provado que precisa de recalibração | Só por procedimento independente (controles negativo e positivo), nunca ajustando para uma cena |
+| R3 | Quantificação em imagem real bloqueada pela resolução | Exige Sentinel-2 ou Landsat — cadastro de um integrante |
+| R6 | Desempenho do classificador medido só em cena sintética (F1 = 1,0 não valida nada) | O próprio programa emite o aviso |
+| R7 | Documento final ABNT inexistente; margens superior e inferior indefinidas (Q4) | Gerar por comando com as margens como parâmetro explícito |
+| R8 | Texto acadêmico escrito com apoio de IA; política institucional desconhecida (Q8) | O grupo precisa revisar e assumir cada parágrafo antes da arguição |
+
+### Próximos passos
+
+1. Grupo: definir integrantes (Q7), revisar o texto, ensaiar a apresentação.
+2. Professor: Q1–Q8, em especial Q4 (margens), Q5 (escopo do modelo) e Q8 (uso de IA).
+3. Cadastro no Copernicus ou USGS para obter imagem de 10–30 m.
+4. Montar o documento final formatado e preencher a ficha de APS.

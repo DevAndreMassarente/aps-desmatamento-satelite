@@ -26,19 +26,19 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 | R002 | Cap. 1.b — Contexto: importância da resolução, impacto ecológico, implicações sociais | MUST | PDF p.3, item 1.b | `docs/trabalho-escrito/01-introducao.md` §1.b | rascunho completo | IN_PROGRESS |
 | R003 | Cap. 1.c — Objetivos principais da solução proposta | MUST | PDF p.3, item 1.c | `docs/trabalho-escrito/01-introducao.md` §1.c | rascunho completo | IN_PROGRESS |
 | R004 | Cap. 2 — Descrição **formal** do problema computacional | MUST | PDF p.3, item 2.d | `docs/trabalho-escrito/02-referencial-teorico.md` §2.d | rascunho completo | IN_PROGRESS |
-| R005 | Cap. 2 — Conceito de **Aquisição** | MUST | PDF p.3, item 2.e.i | `sentinela/dataio/` | `tests/test_dataio.py` | IN_PROGRESS |
-| R006 | Cap. 2 — Conceito de **Manipulação das imagens** | MUST | PDF p.3, item 2.e.ii | `sentinela/pdi/cor.py` | `tests/test_cor.py` | IN_PROGRESS |
+| R005 | Cap. 2 — Conceito de **Aquisição** | MUST | PDF p.3, item 2.e.i | `sentinela/dataio/` + `02-referencial-teorico.md` §2.e.i | `tests/test_dataio.py`, `test_aquisicao.py` | IN_PROGRESS |
+| R006 | Cap. 2 — Conceito de **Manipulação das imagens** | MUST | PDF p.3, item 2.e.ii | `sentinela/pdi/cor.py` + `02-referencial-teorico.md` §2.e.ii | `tests/test_cor.py` | IN_PROGRESS |
 | R007 | Cap. 2 — Conceito de **Filtragem** | MUST | PDF p.3, item 2.e.iii | `pdi/filtros.py` + `02-referencial-teorico.md` §2.e.iii | `tests/test_filtros.py` — seção escrita | IN_PROGRESS |
-| R008 | Cap. 2 — Conceito de **Segmentação** | MUST | PDF p.3, item 2.e.iv | `sentinela/pdi/{limiar,morfologia,segmentacao}.py` | `tests/test_segmentacao.py` | IN_PROGRESS |
-| R009 | Cap. 2 — Proposta **teórica** do modelo adequado de visão computacional | MUST | PDF p.3, item 2.e.v | `docs/` | — | NOT_STARTED |
+| R008 | Cap. 2 — Conceito de **Segmentação** | MUST | PDF p.3, item 2.e.iv | `pdi/{limiar,morfologia,segmentacao}.py` + `02-referencial-teorico.md` §2.e.iv | `tests/test_segmentacao.py` | IN_PROGRESS |
+| R009 | Cap. 2 — Proposta **teórica** do modelo adequado de visão computacional | MUST | PDF p.3, item 2.e.v | `02-referencial-teorico.md` §2.e.v | rascunho completo, com citações conferidas | IN_PROGRESS |
 | R010 | Cap. 3.a — Proposta de PDI: escolha de filtros que apoiem a solução | MUST | PDF p.3, item 3.a | `docs/trabalho-escrito/03-proposta.md` §3.a | `docs/evidence/results/` | IN_PROGRESS |
-| R011 | Cap. 3.b — Proposta de modelagem + escolha de algoritmos de inteligência | MUST | PDF p.3, item 3.b | `sentinela/modelo/` | `docs/decisions/004-divisao-espacial.md` | IN_PROGRESS |
+| R011 | Cap. 3.b — Proposta de modelagem + escolha de algoritmos de inteligência | MUST | PDF p.3, item 3.b | `03-proposta.md` §3.b + `sentinela/modelo/` | `tests/test_modelo.py`, `docs/decisions/004-divisao-espacial.md` | IN_PROGRESS |
 | R012 | Cap. 4.a — Descrever como os métodos foram implantados | MUST | PDF p.3, item 4.a | `docs/trabalho-escrito/04-desenvolvimento.md` §4.a | rascunho completo | IN_PROGRESS |
 | R013 | Cap. 4.b — Listar as ferramentas utilizadas | MUST | PDF p.3, item 4.b | `docs/trabalho-escrito/04-desenvolvimento.md` §4.b | versões conferidas no ambiente | IN_PROGRESS |
 | R014 | Cap. 4.c — Descrever como foram feitos os testes | MUST | PDF p.3, item 4.c | `docs/trabalho-escrito/04-desenvolvimento.md` §4.c | `tests/` — 301 testes | IN_PROGRESS |
 | R015 | Cap. 4.d — Mostrar os resultados obtidos | MUST | PDF p.3, item 4.d | `docs/trabalho-escrito/04-desenvolvimento.md` §4.d | `docs/evidence/` | IN_PROGRESS |
 | R016 | Cap. 5 — Conclusão | MUST | PDF p.3, item 5 | `docs/trabalho-escrito/05-conclusao.md` | rascunho completo | IN_PROGRESS |
-| R017 | Cap. 6 — Bibliografia (fontes reais, ABNT) | MUST | PDF p.3, item 6 | `docs/trabalho-escrito/BIBLIOGRAFIA.md` | 13 pendências mapeadas, nenhuma inventada | IN_PROGRESS |
+| R017 | Cap. 6 — Bibliografia (fontes reais, ABNT) | MUST | PDF p.3, item 6 | `docs/trabalho-escrito/BIBLIOGRAFIA.md` | 28 referências conferidas na fonte; 0 pendências; 10 descartadas com motivo | IMPLEMENTED |
 | R018 | Cap. 7 — Apêndice com o código-fonte do programa | MUST | PDF p.3, item 7 | `sentinela apendice` → `07-apendice.md` | `tests/test_cli.py` | IMPLEMENTED |
 | R019 | Cap. 8 — Ficha de Atividades Práticas Supervisionadas | MUST | PDF p.4, item 8 | — | — | NOT_STARTED |
 
@@ -69,7 +69,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 | R035 | Processo de modelagem + algoritmos de inteligência adequados para imagens | MUST | PDF p.3, item 3.b | `modelo/caracteristicas.py`, `modelo/classificador.py` | `tests/test_modelo.py` — 25 testes | IN_PROGRESS |
 | R036 | **Tratamento de erros** — citado como fator de impacto direto na nota | SHOULD | PDF p.4, item II.2 | `dataio/imagem.py`, `pipeline/deteccao.py` | `test_dataio.py`, `TestValidacaoDeEntrada` — 18 casos | VERIFIED |
 | R037 | Nível de refinamento e funcionalidade do sistema | SHOULD | PDF p.4, item II.2 | `sentinela/app/`, `sentinela/cli.py` | `tests/test_app.py` | IN_PROGRESS |
-| R038 | Funções extras implementadas | MAY | PDF p.4, item II.2 | — | — | NOT_STARTED |
+| R038 | Funções extras implementadas | MAY | PDF p.4, item II.2 | CLI; aquisição com controle de qualidade; NDMI e NBR; apêndice e telas por comando; filtros separáveis | `tests/test_cli.py`, `test_aquisicao.py`, `test_cor.py` | IMPLEMENTED |
 | R039 | Complexidade da técnica escolhida | SHOULD | PDF p.4, item II.2 | floresta aleatória + divisão espacial por blocos | `docs/decisions/004-divisao-espacial.md` | IN_PROGRESS |
 
 ## D. Etapas intermediárias
@@ -77,7 +77,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 | ID | Requisito | Tipo | Fonte | Implementação | Evidência/Teste | Status |
 |----|-----------|------|-------|---------------|-----------------|--------|
 | R040 | Fase Intermediária I (Qualificação): Cap. 1 + itens de **filtragem** dos caps. 2 e 3 — concluída **antes** do desenvolvimento prático. Entrega na aula anterior à P1 | MUST | PDF p.5, item 1 | Cap. 1 + filtragem dos caps. 2 e 3 | `docs/trabalho-escrito/` | IN_PROGRESS |
-| R041 | Fase Intermediária II (Defesa): finalização do plano de projeto + **protótipo**. Entrega na aula anterior à P2 | MUST | PDF p.5, item 2 | — | — | NOT_STARTED |
+| R041 | Fase Intermediária II (Defesa): finalização do plano de projeto + **protótipo**. Entrega na aula anterior à P2 | MUST | PDF p.5, item 2 | protótipo funcional: `sentinela app` e `sentinela detectar` | `docs/evidence/screenshots/`; entrega pendente de data (Q3) | IN_PROGRESS |
 
 ## E. Apresentação (30% da nota — ver Q1)
 
@@ -88,7 +88,7 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 | R044 | Apresentação inclui **demonstração da aplicação** | MUST | PDF p.4, item III.2 | `sentinela/app/` + `ROTEIRO.md` bloco 4 | `tests/test_app.py`, `docs/evidence/screenshots/` | IN_PROGRESS |
 | R045 | Apresentação inclui discussão dos resultados obtidos | MUST | PDF p.4, item III.2 | `ROTEIRO.md` blocos 5–6 | `figuras/histogramas-ndvi-nbr.png` + tabela | IN_PROGRESS |
 | R046 | Grupo preparado para responder perguntas da turma e dos professores | MUST | PDF p.4, item III.3 | `ROTEIRO.md` — 14 perguntas prováveis com resposta e local no código | depende do grupo | IN_PROGRESS |
-| R047 | **Participação de todos os membros** na apresentação (20% da nota de apresentação) | MUST | PDF p.5, item 3 | — | — | NOT_STARTED |
+| R047 | **Participação de todos os membros** na apresentação (20% da nota de apresentação) | MUST | PDF p.5, item 3 | `ROTEIRO.md` — blocos distribuídos entre quatro papéis | depende de Q7 (integrantes) | IN_PROGRESS |
 | R048 | Clareza e estrutura da apresentação (30% da nota de apresentação) | SHOULD | PDF p.5, item 3 | `ROTEIRO.md` — ordem fixa, tempos por bloco, checklist | ensaio pendente | IN_PROGRESS |
 | R049 | Grupo composto de **até 4 alunos** | MUST | PDF p.4, item III.4 | — | — | NOT_STARTED |
 | R050 | Demonstração do programa no seminário | MUST | PDF p.4, item III.7 | `sentinela/app/` + plano B `sentinela demo` | `docs/evidence/screenshots/` — 4 telas | IN_PROGRESS |
@@ -112,11 +112,16 @@ Rastreabilidade entre o enunciado oficial, a implementação e a evidência.
 
 | Status | Qtd |
 |--------|-----|
-| NOT_STARTED | 13 |
-| IN_PROGRESS | 32 |
-| IMPLEMENTED | 3 |
+| NOT_STARTED | 9 |
+| IN_PROGRESS | 34 |
+| IMPLEMENTED | 5 |
 | VERIFIED | 2 |
 | BLOCKED (perguntas) | 8 |
+
+> **Auditoria de 12 set. 2026.** A matriz foi conferida contra o repositório: R009, R017,
+> R038 e R041 estavam com estado desatualizado em relação ao que existe. Os `NOT_STARTED`
+> restantes dependem de documento final formatado (R020–R024), de integrantes (R019, R026,
+> R049) ou de ação do grupo (R027, postagem).
 
 > **Os Capítulos 1 a 5 e o 7 têm rascunho.** Faltam as seções 2.e.i, 2.e.ii, 2.e.iv,
 > 2.e.v e 3.b — sem bloqueio, o conteúdo existe no repositório. O Capítulo 8 depende
