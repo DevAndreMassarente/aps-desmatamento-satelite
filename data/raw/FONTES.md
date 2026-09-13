@@ -60,6 +60,13 @@ A correção foi medir bruma no **canal azul da composição visível**, onde o 
 aparece (`scripts/baixar_imagens.py::avaliar_qualidade`). As datas atuais são de início de
 julho nas duas pontas: mesma estação e, medido, o mesmo nível de bruma.
 
+### Resolução nativa das bandas
+
+A grade de ≈253 m/pixel é a da renderização do GIBS, não a do sensor. No MODIS, as bandas 1
+(vermelho) e 2 (NIR) têm 250 m; as bandas 3 (azul), 4 (verde) e 7 (SWIR 2) têm **500 m**
+(NASA, [s. d.]). A banda SWIR destas imagens foi, portanto, reamostrada — e, por ser SWIR 2,
+o índice NIR − SWIR calculado com ela é o **NBR**, não o NDMI.
+
 ### Limitação do produto
 
 Corrected Reflectance é produto de **visualização**, com realce não linear para 8 bits. O

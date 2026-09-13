@@ -27,7 +27,7 @@ formatação ABNT exigida; aqui ficam o texto e a rastreabilidade.
 | 3 | Proposta: a) PDI, b) modelagem | `03-proposta.md` | Rascunho completo |
 | 4 | Desenvolvimento: a) implantação, b) ferramentas, c) testes, d) resultados | `04-desenvolvimento.md` | Rascunho completo |
 | 5 | Conclusão | `05-conclusao.md` | Rascunho completo |
-| 6 | Bibliografia | `BIBLIOGRAFIA.md` | Lista de pendências |
+| 6 | Bibliografia | `BIBLIOGRAFIA.md` | 28 referências conferidas na fonte; nenhuma pendência |
 | 7 | Apêndice — código-fonte | `07-apendice.md` | **Gerado automaticamente** por `sentinela apendice` |
 | 8 | Ficha de APS | — | Bloqueado por Q7 (integrantes) |
 

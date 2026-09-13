@@ -51,7 +51,7 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
   diferente (média 88 contra 62), e **fumaça de queimada atravessa o SWIR** — o controle
   de qualidade original aprovou uma cena tomada por fumaça, que inverteu a comparação
   entre as datas.
-- **NDMI implementado** (`pdi.cor.ndmi`), exposto na CLI (`--metodo ndmi`) e na
+- **NDMI implementado** (`pdi.cor.ndmi`) — *revisto depois: sobre MODIS o índice calculado é o NBR, ver as correções abaixo*, exposto na CLI (`--metodo ndmi`) e na
   interface; a cena sintética ganhou banda SWIR para que ele seja demonstrável.
 - **Trabalho escrito** (`docs/trabalho-escrito/`): Capítulos 1, 3.a, 4 e 5 com rascunho
   completo, Capítulo 2 com a parte de filtragem completa, Capítulo 7 gerado por comando.
@@ -72,7 +72,7 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
   a parte exigida pelo enunciado em cada um, passo a passo da demonstração ao vivo, plano B,
   checklist e 14 perguntas prováveis com onde está a resposta no código.
 - **Figuras da apresentação** geradas dos dados reais: comparativo 2002 × 2024 e histogramas
-  NDVI/NDMI com tabela equivalente. A paleta foi validada por script (daltonismo e contraste).
+  NDVI/NBR com tabela equivalente. A paleta foi validada por script (daltonismo e contraste).
 - **Screenshots da interface por comando** (`scripts/capturar_telas.mjs`): quatro telas,
   incluindo a recusa. Regerar antes da entrega — o `AGENTS.md` exige telas da versão entregue.
 - **Interface revisada** a partir dos screenshots: ícones que dependiam de fonte de emoji
@@ -83,8 +83,16 @@ Próxima fase: Fase Intermediária I — Qualificação (R040), que o enunciado 
 - **Bug no aviso de "desempenho perfeito"**, achado pelo screenshot: disparava com teste de uma
   classe só, ao lado de precisão, revocação e F1 iguais a zero. Corrigido, com teste de
   regressão.
+- **Bibliografia conferida na fonte** (`docs/trabalho-escrito/BIBLIOGRAFIA.md`): 27 referências
+  com metadados pelo DOI ou pela página oficial e o trecho que sustenta cada afirmação lido no
+  documento. Dez obras descartadas por não poderem ser lidas, com registro do motivo.
+- **Três correções de fato que a verificação encontrou**: (1) o índice calculado com a banda 7
+  do MODIS é o **NBR**, não o NDMI — criado `pdi.cor.nbr`, NDMI corrigido para a banda 6;
+  (2) a linha "NBR" da tabela de hipóteses media outra razão; (3) o PRODES 2025 usou
+  Sentinel-2 e Sentinel-1, e não "Landsat a 20–30 m" como estava escrito. Também removidas
+  afirmações sem fonte verificável ("NDVI satura", "ExG é mais sensível à iluminação").
 - Graphify regenerado e validado — `READY`.
-- Suíte de testes: **294 passando**, incluindo os caminhos de erro, um teste de fumaça da
+- Suíte de testes: **301 passando**, incluindo os caminhos de erro, um teste de fumaça da
   interface e a verificação por força bruta de que treino e teste não compartilham pixel.
 - Verificado que `pdi/` não importa `cv2`, `skimage`, `scipy` nem `PIL`, e não depende de
   nenhuma camada superior — a restrição central do enunciado continua de pé.
@@ -161,7 +169,8 @@ Em ordem de prioridade:
 | D11 | Floresta aleatória em vez de rede convolucional, pela explicabilidade na banca | `modelo/classificador.py` |
 | D12 | Vermelho e NIR extraídos do **mesmo** produto GIBS, porque os realces de 8 bits diferem entre produtos | `data/raw/FONTES.md` |
 | D13 | Resultado negativo em imagem real mantido como resultado; limiar **não** ajustado para fazê-lo passar | `docs/decisions/005-resolucao-espacial.md` |
-| D14 | NDMI disponível mas **fora** do modo automático: ele mede água, não verde | `pdi/cor.py` |
+| D14 | NDMI e NBR disponíveis, **fora** do modo automático; sobre MODIS via GIBS o índice correto é o NBR (banda 7 = SWIR 2) | `pdi/cor.py` |
+| D15 | Bibliografia só com fontes lidas; o que não pôde ser lido saiu do texto ou foi substituído | `docs/trabalho-escrito/BIBLIOGRAFIA.md` |
 
 ## Graphify
 

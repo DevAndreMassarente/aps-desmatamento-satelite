@@ -1,6 +1,6 @@
 {
   "confiavel": false,
-  "metodo_indice": "ndmi",
+  "metodo_indice": "nbr",
   "limiar": 0.8145,
   "distinguibilidade": 3.509,
   "separabilidade_otsu": 0.7505,

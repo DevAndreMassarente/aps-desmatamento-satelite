@@ -162,7 +162,7 @@ imagem bimodal sintética cai entre os dois modos.
 Ao implementar um filtro novo, escrever o teste **junto**. Um filtro sem teste não pode ser
 marcado `VERIFIED` na matriz de requisitos.
 
-A suíte tem **294 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
+A suíte tem **301 testes**. `tests/test_app.py` usa o `AppTest` do Streamlit e é pulado
 automaticamente quando o extra `app` não está instalado.
 
 ---
@@ -262,8 +262,10 @@ delas, registrar a suposição explicitamente.
 > **T2 (interface Streamlit) foi resolvido.** `app/principal.py` está implementado e
 > coberto por teste de fumaça em `tests/test_app.py`.
 >
-> **T8 (NDMI) foi resolvido.** `pdi.cor.ndmi` está implementado, exposto na CLI e na
-> interface, e coberto por teste. Não entra no modo automático de propósito.
+> **T8 (NDMI) foi resolvido.** `pdi.cor.ndmi` (SWIR 1) e `pdi.cor.nbr` (SWIR 2) estão
+> implementados, expostos na CLI e na interface, e cobertos por teste. **Sobre as imagens do
+> GIBS o índice correto é o NBR**: a composição traz a banda 7 do MODIS, que é SWIR 2.
+> Nenhum dos dois entra no modo automático.
 >
 > **T3 (etapa de modelo) foi resolvido.** `modelo/` está implementado pela leitura
 > conservadora do §14, com 25 testes. Q5 continua em aberto, mas deixou de bloquear.

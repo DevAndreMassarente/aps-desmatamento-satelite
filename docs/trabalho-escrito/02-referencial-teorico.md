@@ -103,12 +103,15 @@ do caso real **abaixo** do caso homogêneo, invertendo o critério. O tamanho de
 não carrega o fator, ordena os dois casos corretamente. O teste que demonstra essa
 inversão está em `tests/test_integracao.py`.
 
-> `[NEEDS_SOURCE: OTSU, N. A threshold selection method from gray-level histograms.
-> Localizar a referência completa (periódico, volume, ano, páginas) e conferir a definição
-> de η no texto original antes de citar.]`
+O limiar de Otsu é escolhido pelo critério discriminante, de modo a maximizar a
+separabilidade das classes resultantes; η é definida no artigo original como a razão entre
+a variância entre classes e a variância total dos níveis de cinza (OTSU, 1979, eq. 12–15).
 
-> `[NEEDS_SOURCE: definição formal de tamanho de efeito padronizado e a convenção de
-> interpretação de magnitude. Conferir antes de citar.]`
+O tamanho de efeito usado é da família do *d* de Cohen: diferença entre médias dividida por
+um desvio-padrão combinado (LAKENS, 2013). **A variante deste trabalho combina as duas
+variâncias por média simples**, sem ponderar pelo número de pixels de cada classe — é o que
+está implementado em `pdi/limiar.py`, e é por isso que o piso de 2,65 é derivado aqui, e não
+tomado de uma tabela.
 
 ---
 
@@ -125,11 +128,16 @@ terreno e não diferença nas condições de captação.
 A resolução espacial é o tamanho, no terreno, do lado de um pixel. Ela determina o que o
 sistema consegue distinguir:
 
-| Sensor | Resolução | Área de um pixel |
-|--------|-----------|------------------|
-| MODIS | 250 m | 6,25 ha |
-| Landsat 8/9 | 30 m | 0,09 ha |
-| Sentinel-2 | 10 m | 0,01 ha |
+| Sensor | Vermelho e NIR | SWIR | Fonte |
+|--------|----------------|------|-------|
+| MODIS | 250 m (bandas 1 e 2) | 500 m (bandas 6 e 7) | NASA, [s. d.] |
+| Landsat 8/9 | 30 m (bandas 4 e 5) | 30 m (bandas 6 e 7) | USGS, [s. d.]c |
+| Sentinel-2 | 10 m (B4 e B8) | 20 m (B11 e B12) | ESA, [s. d.] |
+
+Um pixel de 250 m cobre 6,25 ha; um de 30 m, 0,09 ha; um de 10 m, 0,01 ha. A tabela mostra
+também que **a resolução não é única por sensor**: no MODIS e no Sentinel-2, as bandas de
+infravermelho de ondas curtas têm pixel maior que o vermelho e o infravermelho próximo — um
+índice que combine as duas faixas herda a resolução pior.
 
 A consequência não é apenas de detalhe. Quando o alvo é menor que o pixel, o valor
 registrado é uma **mistura** das refletâncias de tudo o que cabe dentro dele — o chamado
@@ -158,11 +166,17 @@ Três defeitos invalidam uma cena, e cada um se manifesta de forma diferente:
 | Bruma e fumaça | espalhamento que levanta o piso da cena | desloca o índice da cena inteira |
 
 **A fumaça é o caso traiçoeiro, e este trabalho aprendeu isso por medição.** O espalhamento
-atmosférico é fortemente dependente do comprimento de onda: intenso no azul, fraco no
-infravermelho. A consequência prática é que **a fumaça é quase invisível no infravermelho
-de ondas curtas**. Uma cena de agosto na Amazônia, tomada por fumaça de queimada, pode
-passar sem alteração aparente numa composição que use essa faixa — e ao mesmo tempo ter o
-seu NDVI severamente deprimido, porque o NDVI usa a banda vermelha, que a fumaça afeta.
+atmosférico depende da relação entre o tamanho da partícula e o comprimento de onda.
+Partículas muito menores que o comprimento de onda, como as moléculas do ar, espalham mais
+os comprimentos de onda curtos, como o azul — é o espalhamento Rayleigh; aerossóis de
+tamanho comparável ao comprimento de onda, como poeira, produzem o espalhamento Mie
+(UNIVERSITY OF TWENTE, [s. d.]a).
+
+A consequência prática apareceu nesta cena, e é relatada como observação, não como regra
+geral: uma imagem de agosto sobre a Amazônia, tomada por fumaça de queimada, **passou com 0%
+de nuvem** no controle feito sobre a composição com infravermelho de ondas curtas, enquanto
+o canal azul da composição visível mostrava bruma intensa — e o NDVI da cena ficou
+deprimido, porque o NDVI usa a banda vermelha.
 
 Daí a regra adotada: **a bruma é medida nas bandas visíveis, não na composição de análise**.
 O indicador é o percentil 5 do canal azul, porque a fumaça elimina os pixels escuros da
@@ -178,12 +192,9 @@ licença e a URL exata da requisição registrados em manifesto.
 A escolha de um serviço de acesso **sem credencial** foi deliberada: ela mantém a aquisição
 reproduzível por qualquer integrante do grupo e por quem avalia o trabalho.
 
-> `[NEEDS_SOURCE: dependência do espalhamento atmosférico com o comprimento de onda —
-> espalhamento Rayleigh e Mie. Livro-texto de sensoriamento remoto. Conferir antes de
-> citar.]`
-
-> `[NEEDS_SOURCE: problema do pixel misto e o efeito da resolução espacial na
-> classificação. Mesma referência serve. Ver também B10.]`
+O conceito de pixel misto está ligado a uma limitação mais geral: o pixel é uma unidade
+da imagem, e não um objeto geográfico verdadeiro, e a modelagem de mistura é uma das linhas
+de pesquisa que tratam isso (FISHER, 1997).
 
 ### 2.e.ii. Manipulação das imagens
 
@@ -236,28 +247,54 @@ a cena, em vez de algo que o índice resolveria.
 NDVI = (NIR − V) / (NIR + V)
 ```
 
-A base física: a clorofila absorve fortemente no vermelho, para fotossíntese, enquanto a
-estrutura celular da folha reflete fortemente no infravermelho próximo. Vegetação sadia
-combina, portanto, vermelho baixo e infravermelho alto — e o índice fica alto. Solo exposto
-reflete de forma semelhante nas duas faixas, e o índice cai para perto de zero. Água
-absorve mais no infravermelho que no vermelho, e o índice fica negativo.
+A base física: o azul e o vermelho são pouco refletidos pela vegetação porque são
+absorvidos principalmente pela clorofila para a fotossíntese, e a reflectância no
+infravermelho próximo é a mais alta, em quantidade que depende do desenvolvimento da folha
+e da estrutura celular (UNIVERSITY OF TWENTE, [s. d.]b). Vegetação sadia combina, portanto,
+vermelho baixo e infravermelho alto — e o índice fica alto. O solo exposto não tem uma
+curva típica única, porque sua reflectância depende de cor, umidade e composição
+(UNIVERSITY OF TWENTE, [s. d.]b); o que o índice mede é o afastamento em relação à
+assinatura da vegetação.
 
-**Limitação.** O NDVI satura em dossel denso: acima de certa biomassa ele para de
-responder. E, por medir "verde", ele distingue mal floresta de pastagem vigorosa — as duas
-são verdes.
+A diferença normalizada entre as duas faixas foi apresentada por Rouse et al. (1974) com o
+nome de *Band Ratio Parameter*: a diferença entre as radiâncias medidas nas bandas 5 e 7 do
+ERTS-1, dividida pela soma. Os autores adotaram a normalização para eliminar diferenças de
+ângulo solar entre as datas e minimizar o efeito da atenuação atmosférica — a mesma
+propriedade que torna o índice comparável entre as duas cenas deste trabalho.
 
-#### NDMI — índice de umidade por diferença normalizada
+**Limitação medida neste trabalho.** Sobre a cena real de São Félix do Xingu, o NDVI separou
+as classes menos que o índice com infravermelho de ondas curtas descrito a seguir: 2,994
+contra 3,509.
+
+#### NDMI e NBR — o infravermelho de ondas curtas
+
+Os dois índices fazem a mesma conta. O que muda é **qual faixa do infravermelho de ondas
+curtas (SWIR)** entra nela:
 
 ```text
-NDMI = (NIR − SWIR) / (NIR + SWIR)
+NDMI = (NIR − SWIR₁) / (NIR + SWIR₁)
+NBR  = (NIR − SWIR₂) / (NIR + SWIR₂)
 ```
 
-Mede o conteúdo de água do dossel. Folha viva é cheia de água, que **absorve** no
-infravermelho de ondas curtas; pastagem seca e solo exposto refletem bem nessa faixa.
+O NDMI é usado para determinar o conteúdo de água da vegetação e, no Landsat 4–7, é
+calculado com as bandas 4 e 5 (USGS, [s. d.]a); a banda 5 é o SWIR 1, de 1,55 a 1,75 µm
+(USGS, [s. d.]c). O NBR usa a banda 7, o SWIR 2, de 2,08 a 2,35 µm (USGS, [s. d.]c), e serve
+para identificar áreas queimadas e medir a severidade da queimada (USGS, [s. d.]b; KEY;
+BENSON, 2006). A razão física para usar o SWIR em vegetação é que, nessa faixa, a
+reflectância é determinada principalmente pela água livre no tecido foliar: mais água,
+menos reflectância (UNIVERSITY OF TWENTE, [s. d.]b).
 
-É onde o NDMI ganha do NDVI: a diferença de água entre um dossel florestal e um capim é
-grande mesmo quando a diferença de verde é pequena. Neste trabalho o efeito foi medido
-sobre a cena real — o NDMI elevou a separabilidade entre as classes de 2,994 para 3,509.
+**Este trabalho calculou o NBR, não o NDMI.** A composição de imagens utilizada traz as
+bandas 7, 2 e 1 do MODIS, e a banda 7 do MODIS, de 2105 a 2155 nm, é um SWIR 2; o NDMI
+exigiria a banda 6, de 1628 a 1652 nm, ausente da composição (NASA, [s. d.]). Uma versão
+anterior deste trabalho chamava o resultado de NDMI — o nome estava errado; a conta e os
+números, não.
+
+Sobre a cena real, o NBR elevou a separabilidade entre as classes de 2,994 (NDVI) para
+3,509. Duas ressalvas acompanham o número. A banda 7 do MODIS tem resolução nativa de 500 m
+(NASA, [s. d.]), reamostrada na grade de ≈253 m do serviço de imagens. E numa frente de
+desmatamento acompanhado de queimada, o NBR responde também à cicatriz do fogo, e não só à
+remoção da vegetação.
 
 #### ExG e VARI — quando só há bandas visíveis
 
@@ -269,10 +306,11 @@ ExG  = 2g − v − a          sobre as bandas normalizadas pela soma
 VARI = (G − V) / (G + V − A)
 ```
 
-O ExG é mais sensível a variação de iluminação. O VARI inclui o termo do azul, que compensa
-parte do espalhamento atmosférico, e por isso é mais estável em cena de satélite com bruma
-leve. Nenhum dos dois substitui o NDVI: ambos medem "quão verde", não a assinatura
-estrutural que o infravermelho revela.
+O índice 2g − r − b, sobre as coordenadas cromáticas, esteve entre os que melhor
+distinguiram plantas de um fundo de solo e resíduo no estudo de Woebbecke et al. (1995). O
+VARI foi proposto por Gitelson et al. (2002), que o encontraram minimamente sensível a
+efeitos atmosféricos. Os dois operam só com o visível: servem quando não há banda
+infravermelha.
 
 #### Normalização de faixa
 
@@ -284,15 +322,9 @@ original.
 **Atenção ao relatar valores:** a conversão divide qualquer diferença pela metade. Toda
 diferença de índice citada neste trabalho está na escala nativa `[-1, 1]`.
 
-> `[NEEDS_SOURCE: NDVI — definição original e faixas típicas por tipo de cobertura.
-> Ver B8.]`
-
-> `[NEEDS_SOURCE: NDMI — definição e aplicação a umidade de dossel. Ver B9.]`
-
-> `[NEEDS_SOURCE: ExG e VARI — proposição original de cada um. Conferir antes de citar.]`
-
-> `[NEEDS_SOURCE: coeficientes de luminância da conversão RGB para tons de cinza —
-> recomendação que os define. Conferir antes de citar.]`
+Os coeficientes de luminância usados na conversão para tons de cinza são os da
+Recomendação ITU-R BT.601 para a construção do sinal de luminância a partir dos sinais
+vermelho, verde e azul (ITU, 2011, item 2.5.1).
 
 ### 2.e.iii. Filtragem
 
@@ -468,13 +500,13 @@ A restrição foi aplicada de forma verificável: dentro de `src/sentinela/pdi/`
 dependência permitida é `numpy`, e a ausência de `cv2`, `skimage`, `scipy` e `PIL` é
 conferida por inspeção do código.
 
-> `[NEEDS_SOURCE: livro-texto de processamento digital de imagens para os operadores
-> clássicos — convolução, Sobel, Prewitt, Laplaciano, filtro de mediana. Uma referência
-> consolidada cobre todos. Conferir edição, capítulo e páginas antes de citar.]`
+As operações desta seção seguem as definições consolidadas em Gonzalez e Woods (2018):
+correlação e convolução espaciais (p. 178), núcleos separáveis (p. 185), filtros de
+suavização por caixa e gaussianos (p. 189–190), filtros de estatística de ordem, como a
+mediana (p. 198), o laplaciano (p. 202) e os operadores de gradiente (p. 208 e 779).
 
-> `[NEEDS_SOURCE: proposição original dos operadores de Sobel e de Prewitt. Verificar se
-> as fontes primárias são acessíveis; se não forem, citar pelo livro-texto e deixar isso
-> explícito no texto.]`
+Não foi possível consultar as publicações em que os operadores de Sobel e de Prewitt foram
+originalmente apresentados; eles são citados aqui a partir do livro-texto.
 
 ### 2.e.iv. Segmentação
 
@@ -564,13 +596,18 @@ O filtro por área descarta regiões abaixo de um mínimo. Ele é preferível a 
 sucessivas por duas razões: o critério fica explícito em unidade física, e a erosão
 encolheria as regiões sobreviventes, enviesando a quantificação para baixo.
 
-> `[NEEDS_SOURCE: método de Otsu — formulação da variância entre classes. Ver B4.]`
+O critério de limiarização é o de Otsu (1979). O limiar variável por vizinhança é tratado
+em Gonzalez e Woods (2018, p. 823), e a limiarização com histerese foi usada por Canny
+(1986) para eliminar a fragmentação dos contornos de borda.
 
-> `[NEEDS_SOURCE: morfologia matemática — definição dos operadores e a propriedade de
-> idempotência de abertura e fechamento. Livro-texto de PDI. Ver B6.]`
+A definição dos operadores morfológicos está em Gonzalez e Woods (2018, p. 702). As
+propriedades usadas como caso de teste — abertura e fechamento idempotentes, a abertura
+antiextensiva e o fechamento extensivo — seguem Breen, Jones e Talbot (2000).
 
-> `[NEEDS_SOURCE: rotulagem de componentes conexos por varredura em duas passagens com
-> união-busca. Conferir antes de citar.]`
+A rotulagem de componentes conexos por varredura sequencial remonta a Rosenfeld e Pfaltz
+(1966). As operações FIND e UNION sobre conjuntos disjuntos, que a implementação usa para
+resolver as equivalências entre rótulos, foram analisadas por Tarjan (1975); a extração de
+componentes conexos também é tratada em Gonzalez e Woods (2018, p. 713).
 
 ### 2.e.v. Proposta teórica do modelo de visão computacional
 
@@ -635,11 +672,15 @@ O trabalho reporta precisão, revocação e F1, além da matriz de confusão com
 erro nomeados — falso alarme e desmatamento não detectado. A distinção importa porque os
 dois custam coisas diferentes, como o Capítulo 1 argumenta.
 
-> `[NEEDS_SOURCE: floresta aleatória — formulação original e a medida de importância de
-> variáveis. Conferir antes de citar.]`
+A floresta aleatória foi formulada por Breiman (2001), que também apresenta estimativas
+internas de importância de variáveis. **A importância exibida por este trabalho não é
+essa**: a biblioteca utilizada expõe a importância baseada em impureza (SCIKIT-LEARN,
+[s. d.]a), uma medida diferente da descrita por Breiman — e é a da biblioteca que aparece na
+interface.
 
-> `[NEEDS_SOURCE: validação cruzada espacial e autocorrelação em dados geoespaciais.
-> Ver B12.]`
+A divisão por blocos segue Roberts et al. (2017): ignorar a estrutura dos dados na validação
+cruzada leva a subestimar seriamente o erro de predição, e a validação cruzada por blocos,
+em que os dados são separados estrategicamente e não aleatoriamente, pode corrigir isso.
 
-> `[NEEDS_SOURCE: métricas para classificação com classes desbalanceadas — definição de
-> precisão, revocação e F1. Conferir antes de citar.]`
+As métricas seguem as definições da biblioteca utilizada: precisão = tp/(tp + fp),
+revocação = tp/(tp + fn), e F1 como média harmônica das duas (SCIKIT-LEARN, [s. d.]b).

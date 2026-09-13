@@ -184,7 +184,7 @@ def detectar_desmatamento(
 
     if (swir_antes is None) != (swir_depois is None):
         raise ErroImagem(
-            "SWIR precisa estar presente nas duas datas ou em nenhuma: o NDMI de uma "
+            "SWIR precisa estar presente nas duas datas ou em nenhuma: o índice com SWIR de uma "
             "data não é comparável ao NDVI da outra"
         )
 

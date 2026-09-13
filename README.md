@@ -60,7 +60,7 @@ enunciado, e não um fim em si.
 src/sentinela/
 ├── pdi/              núcleo de processamento — só NumPy
 │   ├── nucleo.py         convolução, borda, normalização, histograma
-│   ├── cor.py            espaços de cor, NDVI, NDMI, ExG, VARI
+│   ├── cor.py            espaços de cor, NDVI, NDMI, NBR, ExG, VARI
 │   ├── filtros.py        gaussiano e média (separáveis), mediana, Sobel, Prewitt, Laplaciano
 │   ├── limiar.py         Otsu, limiar adaptativo, histerese
 │   ├── morfologia.py     erosão, dilatação, abertura, fechamento, preenchimento
@@ -79,7 +79,7 @@ src/sentinela/
 ├── app/principal.py  interface Streamlit
 └── cli.py            linha de comando (app, detectar, demo, apendice)
 
-tests/                294 testes contra casos analíticos
+tests/                301 testes contra casos analíticos
 docs/                 enunciado, especificação, requisitos, arquitetura, decisões, evidências
 data/                 imagens (não versionadas — ver docs/decisions/002)
 ```
@@ -211,7 +211,7 @@ imagens reais.
 | Etapa | Situação |
 |-------|----------|
 | Estrutura e documentação | Concluído |
-| Núcleo de PDI (filtros próprios) | Implementado, 294 testes passando |
+| Núcleo de PDI (filtros próprios) | Implementado, 301 testes passando |
 | Aquisição e I/O de imagem | Implementado |
 | Pipeline de orquestração | Implementado |
 | Interface Streamlit e linha de comando | Implementado |

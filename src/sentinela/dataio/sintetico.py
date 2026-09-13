@@ -70,7 +70,7 @@ def banda_swir(
     tamanho: tuple[int, int] = (80, 80),
     ruido: float = RUIDO_PADRAO,
 ) -> np.ndarray:
-    """Banda de infravermelho de ondas curtas, para permitir NDMI na demonstração.
+    """Banda de infravermelho de ondas curtas, para permitir NDMI e NBR na demonstração.
 
     Fica **fora** de ``cena_sintetica`` de propósito: aquela função tem saída fixada por
     semente e é usada como verdade de terreno em dezenas de testes. Mudar o que ela
@@ -78,7 +78,7 @@ def banda_swir(
     um primo para não correlacionar com o ruído das outras bandas.
 
     Dossel fechado é cheio de água e **absorve** no SWIR; solo exposto e pasto seco
-    refletem. É a inversão do NIR, e é o que dá ao NDMI o poder de separar floresta de
+    refletem. É a inversão do NIR, e é o que dá aos índices com SWIR o poder de separar floresta de
     pastagem vigorosa, que o NDVI confunde por serem as duas verdes.
     """
     gerador = np.random.default_rng(semente + 7919)

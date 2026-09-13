@@ -85,12 +85,13 @@ def barra_lateral() -> dict:
     st.sidebar.subheader("Parâmetros do processamento")
     metodo = st.sidebar.selectbox(
         "Índice de vegetação",
-        ("auto", "ndvi", "ndmi", "vari", "exg"),
+        ("auto", "ndvi", "ndmi", "nbr", "vari", "exg"),
         help=(
             "auto usa NDVI quando há banda infravermelha e VARI quando só há o visível. "
-            "O NDMI mede água do dossel em vez de verde e exige banda SWIR — separa "
-            "melhor floresta de pastagem, mas não entra no automático porque troca a "
-            "grandeza medida."
+            "NDMI e NBR comparam o infravermelho próximo com o SWIR: o NDMI usa o SWIR 1 "
+            "(banda 6 do MODIS), o NBR usa o SWIR 2 (banda 7 do MODIS). As imagens do GIBS "
+            "trazem só a banda 7 — para elas, use NBR. Nenhum dos dois entra no automático, "
+            "porque trocam a grandeza medida."
         ),
     )
     suavizacao = st.sidebar.slider(
@@ -153,14 +154,14 @@ def obter_imagens(opcoes: dict) -> dict | None:
         rgb_antes = st.file_uploader("RGB antes", type=["png", "jpg", "jpeg", "tif"])
         nir_antes = st.file_uploader("Infravermelho antes (opcional)",
                                      type=["png", "jpg", "jpeg", "tif"])
-        swir_antes = st.file_uploader("SWIR antes (opcional — habilita NDMI)",
+        swir_antes = st.file_uploader("SWIR antes (opcional — habilita NDMI ou NBR)",
                                       type=["png", "jpg", "jpeg", "tif"])
     with col2:
         st.markdown("**Data 2 — depois**")
         rgb_depois = st.file_uploader("RGB depois", type=["png", "jpg", "jpeg", "tif"])
         nir_depois = st.file_uploader("Infravermelho depois (opcional)",
                                       type=["png", "jpg", "jpeg", "tif"])
-        swir_depois = st.file_uploader("SWIR depois (opcional — habilita NDMI)",
+        swir_depois = st.file_uploader("SWIR depois (opcional — habilita NDMI ou NBR)",
                                        type=["png", "jpg", "jpeg", "tif"])
 
     if rgb_antes is None or rgb_depois is None:

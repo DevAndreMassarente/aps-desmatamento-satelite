@@ -14,7 +14,7 @@ que o enunciado cobra quando pede que os resultados sejam demonstráveis.
 O GIBS publica duas composições da mesma cena:
 
 - `..._TrueColor`  = bandas 1, 4, 3  (vermelho, verde, azul)
-- `..._Bands721`   = bandas 7, 2, 1  (SWIR, **NIR**, vermelho)
+- `..._Bands721`   = bandas 7, 2, 1  (SWIR 2, **NIR**, vermelho)
 
 A tentação é pegar o vermelho da primeira e o NIR da segunda. **Medimos e não funciona:**
 a banda 1 sai com média 88 na TrueColor e 62 na Bands721 — correlação 0,97, mas com

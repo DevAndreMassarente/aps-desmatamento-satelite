@@ -225,8 +225,8 @@ interseção é conferida.
 |---------|-------:|-------|
 | `test_segmentacao.py` | 53 | rotulagem, regiões, mudança bi-temporal |
 | `test_filtros.py` | 44 | núcleos, suavização, bordas, separabilidade |
-| `test_cor.py` | 38 | espaços de cor e índices espectrais |
-| `test_pipeline.py` | 36 | orquestração, validação, amostras |
+| `test_cor.py` | 44 | espaços de cor e índices espectrais |
+| `test_pipeline.py` | 37 | orquestração, validação, amostras |
 | `test_nucleo.py` | 30 | convolução, bordas, histograma |
 | `test_dataio.py` | 25 | entrada e saída, cena sintética, visualização |
 | `test_modelo.py` | 26 | descritores, divisão espacial, classificador |
@@ -234,7 +234,7 @@ interseção é conferida.
 | `test_integracao.py` | 10 | cadeia completa contra verdade de terreno |
 | `test_app.py` | 11 | interface |
 | `test_cli.py` | 9 | linha de comando e apêndice |
-| **Total** | **294** | |
+| **Total** | **301** | |
 
 Reprodução:
 
@@ -304,7 +304,7 @@ comportamento, justamente para impedir que sejam apresentados como validados.
 |---|---|
 | Área | São Félix do Xingu (PA) |
 | Datas | 2002-07-01 e 2024-07-05 |
-| Resolução | ≈253 m/pixel |
+| Resolução | grade de ≈253 m/pixel; vermelho e NIR nativos em 250 m, SWIR 2 nativo em 500 m |
 | Qualidade | 0,0% de nuvem nas duas datas; bruma equiparada |
 
 **O sistema recusou-se a quantificar.**
@@ -312,13 +312,13 @@ comportamento, justamente para impedir que sejam apresentados como validados.
 | Índice | Tamanho de efeito | Veredito |
 |--------|-------------------|----------|
 | NDVI | 2,994 | recusado |
-| NDMI | 3,509 | recusado |
+| NBR (NIR − SWIR 2) | 3,509 | recusado |
 | Limiarização da imagem de diferença | 2,788 | recusado |
 | *Mínimo exigido* | *4,000* | — |
 | *Piso sem duas classes* | *2,650* | — |
 
 A perda de vegetação existe e tem a direção correta. Na escala nativa dos índices,
-`[-1, 1]`, a mediana cai de +0,944 para +0,794 no NDVI e de +0,799 para +0,504 no NDMI. O
+`[-1, 1]`, a mediana cai de +0,944 para +0,794 no NDVI e de +0,799 para +0,504 no NBR. O
 problema é a separação: a 253 m/pixel quase todo pixel da frente de desmatamento contém
 floresta, pastagem, regeneração e estrada simultaneamente, o índice de um pixel misto cai
 entre as classes puras, e as distribuições das duas datas se sobrepõem fortemente. Há um
@@ -351,7 +351,7 @@ detecção do erro veio de medição, não de inspeção visual.
 
 | O que foi demonstrado | Como |
 |-----------------------|------|
-| Os filtros são do grupo e estão corretos | 294 testes contra propriedades analíticas |
+| Os filtros são do grupo e estão corretos | 301 testes contra propriedades analíticas |
 | A cadeia quantifica corretamente | erro de 0,0% contra verdade de terreno construída |
 | O sistema reconhece quando não sabe | recusa acionada em cena homogênea e em imagem real |
 | A preparação de dados alimenta um modelo | conjunto rotulado, divisão espacial, classificador treinado |

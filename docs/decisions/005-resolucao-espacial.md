@@ -23,7 +23,7 @@ Três hipóteses foram testadas, em ordem:
 
 | Hipótese | Teste | Resultado |
 |----------|-------|-----------|
-| O índice está errado | NDVI × NDMI (NIR-SWIR) × NBR | NDMI é melhor — distinguibilidade 3,51 contra 2,99 — mas ainda abaixo de 4,0 |
+| O índice está errado | NDVI, NBR (NIR − SWIR 2) e a razão SWIR 2 − vermelho | NBR é melhor — distinguibilidade 3,51 contra 2,99 — mas ainda abaixo de 4,0 |
 | A abordagem está errada | Limiarizar a imagem de **diferença** em vez de classificar cada data | Pior: 2,79, colado no piso unimodal, e marcaria 40% da cena como perda |
 | A resolução não permite | Inspeção das distribuições | **Confirmado** — ver abaixo |
 
@@ -34,14 +34,14 @@ pastagem, regeneração e estrada dentro do mesmo pixel. O índice de vegetaçã
 misto cai entre as duas classes puras, e as distribuições das duas datas se sobrepõem.
 
 O sinal existe e tem a direção certa: na escala nativa do índice, `[-1, 1]`, a mediana cai
-de +0,944 para +0,794 no NDVI (0,150) e de +0,799 para +0,504 no NDMI (0,295). O que falta é
+de +0,944 para +0,794 no NDVI (0,150) e de +0,799 para +0,504 no NBR (0,295). O que falta é
 **separação**. Há vale entre as classes — no NDVI de 2024 aparecem dois montes, perto de
 0,72 e de 0,99, e o de 2002 concentra 24% dos pixels na última faixa, saturado — mas o vale
 é **raso**, e nenhum corte global atinge o tamanho de efeito exigido.
 
 > **Correção registrada.** Uma versão anterior deste documento dizia que os histogramas
 > eram "unimodais" e que "não há vale onde cortar". O gráfico
-> `docs/apresentacao/figuras/histogramas-ndmi.png` mostrou que isso exagera: o vale existe
+> `docs/apresentacao/figuras/histogramas-ndvi-nbr.png` mostrou que isso exagera: o vale existe
 > e é raso. A conclusão não muda — a métrica é a mesma, 2,99 e 3,51 contra 4,00 — mas a
 > descrição precisa corresponder ao que a figura mostra.
 
@@ -49,8 +49,13 @@ de +0,944 para +0,794 no NDVI (0,150) e de +0,799 para +0,504 no NDMI (0,295). O
 > para `[0, 1]` por `(x+1)/2` antes de limiarizar, o que reduz qualquer diferença à
 > metade. As quedas acima estão na escala nativa do índice.
 
-Não é limitação do código. É a razão pela qual o PRODES, do INPE, mapeia desmatamento com
-Landsat a 20–30 m e não com MODIS.
+Não é limitação do código. Para comparação, o PRODES mapeou 2025 com Sentinel-2 e
+Sentinel-1 e só contabiliza polígonos maiores que 6,25 ha (INPE, 2025) — menos que um pixel
+da grade de ≈253 m usada aqui.
+
+> **Correção registrada.** Uma versão anterior dizia que o PRODES mapeia com "Landsat a
+> 20–30 m". Essa afirmação não foi encontrada em nenhuma fonte consultada; a nota técnica do
+> INPE de 2025 informa Sentinel-2 e Sentinel-1.
 
 ## Decisão
 
@@ -67,16 +72,27 @@ Landsat a 20–30 m e não com MODIS.
    As duas exigem cadastro, que precisa ser feito por um integrante do grupo. O NASA GIBS,
    usado aqui por não exigir credencial, não serve essa resolução: as camadas HLS existem
    no catálogo mas com janela de demonstração (S30 cobre 2015-11-28 a 2015-12-11).
-4. **Adotar NDMI quando houver banda SWIR.** Medido: separa melhor que o NDVI nesta cena
-   (3,51 contra 2,99). **Implementado** em `pdi.cor.ndmi`, exposto por `--metodo ndmi` e
-   pela interface. Não entra no modo automático: ele mede água do dossel, não verde, e
-   trocar a grandeza sem o usuário pedir mudaria a interpretação do resultado sem aviso.
+4. **Usar o índice NIR − SWIR quando houver a banda.** Medido: separa melhor que o NDVI
+   nesta cena (3,51 contra 2,99). **O nome correto sobre estas imagens é NBR, não NDMI**: a
+   composição do GIBS traz a banda 7 do MODIS (2105–2155 nm, SWIR 2), e o NDMI exige o
+   SWIR 1, a banda 6 (NASA, [s. d.]; USGS, [s. d.]a; USGS, [s. d.]b). Implementados os dois,
+   `pdi.cor.ndmi` e `pdi.cor.nbr`, expostos por `--metodo` e pela interface. Nenhum entra
+   no modo automático.
+
+> **Correção registrada.** Versões anteriores desta decisão, do código e do trabalho
+> escrito chamavam de NDMI o índice calculado com a banda 7. A conta e os números não
+> mudaram; o nome estava errado. A mesma revisão encontrou que a terceira linha da tabela
+> de hipóteses, rotulada "NBR", media na verdade a razão normalizada SWIR 2 − vermelho,
+> que não é o NBR.
 
 ## Achado secundário: fumaça atravessa o SWIR
 
 A primeira tentativa usou 2001-08-20, auge da estação de queimadas. O controle de
-qualidade mediu nuvem na composição Bands721 e aprovou a cena com 0%. A banda 7 é
-infravermelho de ondas curtas e **atravessa a fumaça**; a banda 1, usada pelo NDVI, não.
+qualidade mediu nuvem na composição Bands721 e aprovou a cena com 0%. **Nesta cena**, a
+composição com a banda 7 (infravermelho de ondas curtas) não evidenciou a fumaça, enquanto
+o canal azul da composição visível mostrava bruma intensa — e a banda 1, usada pelo NDVI,
+foi afetada. A observação é empírica, desta cena; nenhuma das fontes consultadas foi citada
+para generalizá-la.
 
 O resultado foi uma inversão: a floresta de 2001 apareceu **menos** vegetada que a
 pastagem de 2024. O sistema recusou a detecção e emitiu o aviso de ganho de vegetação
@@ -98,10 +114,8 @@ cena. O próprio programa se recusa a produzi-la.
 
 ## Referências
 
-`NEEDS_SOURCE` — antes de citar no trabalho escrito, localizar e conferir:
+Conferidas na fonte; referências completas em `docs/trabalho-escrito/BIBLIOGRAFIA.md`:
 
-- Metodologia PRODES/INPE e a justificativa da escolha de sensor e resolução.
-- Literatura sobre o problema do pixel misto em sensoriamento remoto.
-- Definição formal do NDMI e sua aplicação a estresse hídrico e cobertura florestal.
-
-**Não citar nenhuma dessas de memória.**
+- INPE (2025) — sensores do PRODES 2025 e área mínima de 6,25 ha.
+- Fisher (1997) — o pixel como unidade da imagem, e não objeto geográfico.
+- USGS [s. d.]a e [s. d.]b — definições de NDMI e NBR; NASA [s. d.] — bandas do MODIS.

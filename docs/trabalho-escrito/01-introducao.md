@@ -38,14 +38,13 @@ mudança **opticamente observável**: a assinatura espectral de um dossel flores
 diferente da de solo exposto ou pastagem, e essa diferença é mensurável a partir do
 espaço.
 
-> `[NEEDS_SOURCE: dados quantitativos de área desmatada na Amazônia Legal — taxa anual e
-> acumulado. Fonte primária: INPE/PRODES via TerraBrasilis (terrabrasilis.dpi.inpe.br).
-> Baixar a série, citar o ano de referência e a data de acesso. NÃO citar número de
-> memória nem de notícia.]`
+A escala do problema é medida oficialmente. A taxa consolidada de desmatamento da
+Amazônia Legal em 2025 — período de 1º de agosto de 2024 a 31 de julho de 2025 — foi de
+5.731 km², redução de 12,07% em relação aos 6.518 km² de 2024 (INPE, 2026).
 
-> `[NEEDS_SOURCE: relação entre desmatamento e emissão de gases de efeito estufa no
-> Brasil. Sugestão de fonte primária: inventários nacionais de emissões ou SEEG. Conferir
-> antes de citar.]`
+O vínculo com o clima também é quantificado. Em 2024, o setor de mudança de uso da terra,
+que abarca sobretudo o desmatamento, respondeu por 42% das emissões brutas de gases de
+efeito estufa do Brasil: 906 MtCO₂e (SEEG, 2025).
 
 ## 1.b. Contexto
 
@@ -97,9 +96,8 @@ Esse último ponto deixou de ser retórico neste trabalho: o sistema implementad
 a reportar área quando a cena não sustenta a separação entre as classes, e essa recusa
 foi acionada na primeira imagem real processada (Capítulo 4).
 
-> `[NEEDS_SOURCE: conflitos fundiários associados a frentes de desmatamento. Fonte
-> possível: relatórios de entidades que compilam esses dados. Conferir a metodologia da
-> fonte antes de citar.]`
+A dimensão social aparece nos registros: dos 1.593 conflitos no campo contabilizados
+pela Comissão Pastoral da Terra em 2025, 824 ocorreram na Amazônia Legal (CPT, 2026).
 
 ## 1.c. Objetivos
 

@@ -1,8 +1,12 @@
-# Tabela do gráfico `histogramas-ndmi.png`
+# Tabela do gráfico `histogramas-ndvi-nbr.png`
 
 Percentual dos pixels da cena por faixa do índice, escala nativa `[-1, 1]`, após
-suavização gaussiana 5×5. Faixas de 0,02. Só as faixas entre 0,20 e 1,00 aparecem no
-gráfico; fora dela ficam menos de 0,05% dos pixels.
+suavização gaussiana 5×5. Faixas de 0,02; só as faixas entre 0,20 e 1,00 aparecem no
+gráfico, e fora dela ficam menos de 0,05% dos pixels.
+
+> O segundo índice é o **NBR** (NIR − SWIR 2), porque a composição do GIBS traz a banda 7
+> do MODIS (SWIR 2). Uma versão anterior desta tabela o chamava de NDMI; o nome estava
+> errado, os valores não.
 
 ## NDVI
 
@@ -51,7 +55,7 @@ Mediana 2002: +0.944 · Mediana 2024: +0.794 · Limiar de Otsu conjunto: +0.816 
 | 0.96 a 0.98 | 16.38 | 6.31 |
 | 0.98 a 1.00 | 24.13 | 7.68 |
 
-## NDMI
+## NBR
 
 Mediana 2002: +0.799 · Mediana 2024: +0.504 · Limiar de Otsu conjunto: +0.629 · Tamanho de efeito: 3.509
 

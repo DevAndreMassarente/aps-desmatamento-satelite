@@ -13,7 +13,7 @@ Prewitt e Laplaciano, realce de nitidez, textura por desvio padrão local, limia
 Otsu, morfologia binária e rotulagem de componentes conexos por união-busca.
 
 O sistema é operável por três caminhos — biblioteca, linha de comando e interface web — e é
-verificado por 294 testes construídos contra propriedades matemáticas conhecidas, e não
+verificado por 301 testes construídos contra propriedades matemáticas conhecidas, e não
 contra a saída de outra biblioteca.
 
 ## O resultado principal não foi o esperado, e é o mais importante

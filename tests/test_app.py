@@ -78,6 +78,7 @@ class TestInterface:
         """A cena sintética traz banda SWIR, então o NDMI é demonstrável na tela."""
         seletor = next(s for s in app.sidebar.selectbox if "Índice" in s.label)
         assert "ndmi" in seletor.options
+        assert "nbr" in seletor.options
 
         seletor.set_value("ndmi").run()
 

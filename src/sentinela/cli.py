@@ -344,11 +344,11 @@ def construir_parser() -> argparse.ArgumentParser:
     detectar.add_argument("--nir-antes", dest="nir_antes")
     detectar.add_argument("--nir-depois", dest="nir_depois")
     detectar.add_argument("--swir-antes", dest="swir_antes",
-                          help="banda SWIR da primeira data — necessária para --metodo ndmi")
+                          help="banda SWIR da primeira data — necessária para --metodo ndmi (SWIR 1) ou nbr (SWIR 2)")
     detectar.add_argument("--swir-depois", dest="swir_depois")
     detectar.add_argument("--saida", help="diretório para gravar as imagens e o resumo")
     detectar.add_argument("--metodo", default="auto",
-                          choices=("auto", "ndvi", "ndmi", "vari", "exg"))
+                          choices=("auto", "ndvi", "ndmi", "nbr", "vari", "exg"))
     detectar.add_argument("--suavizacao", type=int, default=5)
     detectar.add_argument("--area-minima", dest="area_minima", type=int, default=25)
     detectar.add_argument("--metros-por-pixel", dest="metros_por_pixel", type=float,

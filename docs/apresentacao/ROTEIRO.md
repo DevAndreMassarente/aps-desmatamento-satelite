@@ -102,7 +102,7 @@ e mostrar as imagens de `docs/evidence/demo-sintetica/`. Treinar o plano B uma v
 
 - Imagem real: MODIS/Terra, São Félix do Xingu, 2002 × 2024, ≈253 m/pixel.
 - A perda é visível a olho nu. **O sistema recusou-se a quantificar.**
-- Mostrar `figuras/histogramas-ndmi.png`: as duas datas **se sobrepõem demais**. Existe
+- Mostrar `figuras/histogramas-ndvi-nbr.png`: as duas datas **se sobrepõem demais**. Existe
   vale entre as classes — no NDVI de 2024 dá para ver dois montes — mas é **raso**: nenhum
   corte atinge o tamanho de efeito exigido.
 - Não dizer que "não há vale": a figura mostra que há, e alguém da banca vai apontar.
@@ -111,7 +111,7 @@ e mostrar as imagens de `docs/evidence/demo-sintetica/`. Treinar o plano B uma v
 
 | Hipótese | Resultado |
 |----------|-----------|
-| Índice errado? | NDMI melhora (3,51 contra 2,99), ainda abaixo de 4,0 |
+| Índice errado? | NBR melhora (3,51 contra 2,99), ainda abaixo de 4,0 |
 | Abordagem errada? | Limiarizar a diferença é **pior** (2,79) |
 | Resolução? | **Confirmado** |
 
@@ -163,7 +163,7 @@ respostas precisam ser entendidas, não decoradas.
 | Por que MODIS e não Sentinel-2? | Não exige cadastro — qualquer um reproduz. Custo: resolução. | `data/raw/FONTES.md` |
 | A textura ajuda o modelo? | **Não sabemos.** Na cena sintética ela não separa as classes. | `modelo/caracteristicas.py` |
 | Como a fumaça passou no controle de nuvem? | Medíamos no infravermelho de ondas curtas, que atravessa fumaça. Hoje medimos no azul. | `scripts/baixar_imagens.py` |
-| O que é o NDMI? | Mede água do dossel. Separa floresta de pasto melhor que o NDVI. | `pdi/cor.py` — `ndmi` |
+| Por que NBR e não NDMI? | Mesma conta, SWIR diferente. O GIBS só traz a banda 7 do MODIS, que é SWIR 2 — isso dá o NBR. O NDMI precisa da banda 6. Já chamamos de NDMI por engano e corrigimos. | `pdi/cor.py` — `nbr` |
 
 ## O que **não** dizer
 

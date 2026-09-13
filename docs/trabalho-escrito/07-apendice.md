@@ -10,7 +10,7 @@ com NumPy apenas, conforme exige o enunciado (p.3, item 3.a).
 ## Índice
 
 - `sentinela/pdi/nucleo.py` — 262 linhas
-- `sentinela/pdi/cor.py` — 248 linhas
+- `sentinela/pdi/cor.py` — 287 linhas
 - `sentinela/pdi/filtros.py` — 307 linhas
 - `sentinela/pdi/limiar.py` — 292 linhas
 - `sentinela/pdi/morfologia.py` — 174 linhas
@@ -22,11 +22,11 @@ com NumPy apenas, conforme exige o enunciado (p.3, item 3.a).
 - `sentinela/pipeline/deteccao.py` — 259 linhas
 - `sentinela/pipeline/amostras.py` — 196 linhas
 - `sentinela/modelo/caracteristicas.py` — 118 linhas
-- `sentinela/modelo/classificador.py` — 312 linhas
-- `sentinela/app/principal.py` — 535 linhas
+- `sentinela/modelo/classificador.py` — 317 linhas
+- `sentinela/app/principal.py` — 569 linhas
 - `sentinela/cli.py` — 399 linhas
 
-**Total: 16 arquivos, 3802 linhas.**
+**Total: 16 arquivos, 3880 linhas.**
 
 ---
 
@@ -434,13 +434,11 @@ def ndmi(infravermelho: np.ndarray, swir: np.ndarray) -> np.ndarray:
     verdes. O NDMI continua separando, porque a diferença de água entre um dossel
     florestal e um capim é grande mesmo quando a diferença de verde é pequena.
 
-    Medido neste projeto sobre MODIS/Terra em São Félix do Xingu (2002 × 2024): o NDMI
-    elevou a distinguibilidade entre as classes de 2,99 para 3,51 sobre a mesma cena
-    (`docs/decisions/005-resolucao-espacial.md`). Não foi suficiente para atingir o
-    critério de confiabilidade naquela resolução, mas é a melhor leitura disponível
-    quando há banda SWIR.
-
-    Requer a banda SWIR — no Sentinel-2 é a B11 (1610 nm); no MODIS, a banda 7 (2130 nm).
+    **O SWIR precisa ser o de ondas mais curtas (SWIR 1, perto de 1,6 µm).** É a
+    definição da USGS: no Landsat 4–7, ``(banda 4 − banda 5) / (banda 4 + banda 5)``; a
+    banda 5 é o SWIR 1, de 1,55 a 1,75 µm. No Sentinel-2 isso é a B11; no MODIS, a
+    **banda 6** (1628–1652 nm). A mesma conta com o SWIR 2 (perto de 2,2 µm) tem outro
+    nome e outra leitura — ver ``nbr``.
     """
     infravermelho = validar_imagem(infravermelho, bandas_aceitas=(2,))
     swir = validar_imagem(swir, bandas_aceitas=(2,))
@@ -452,6 +450,41 @@ def ndmi(infravermelho: np.ndarray, swir: np.ndarray) -> np.ndarray:
         )
 
     return _divisao_segura(infravermelho - swir, infravermelho + swir)
+
+
+def nbr(infravermelho: np.ndarray, swir2: np.ndarray) -> np.ndarray:
+    """Razão Normalizada de Queimada — a diferença normalizada entre NIR e **SWIR 2**.
+
+    ``NBR = (NIR - SWIR2) / (NIR + SWIR2)``, resultado em ``[-1, 1]``.
+
+    A conta é a mesma do NDMI; o que muda é a faixa do SWIR. Pela definição da USGS, no
+    Landsat 4–7 o NBR é ``(banda 4 − banda 7) / (banda 4 + banda 7)``, e a banda 7 é o
+    SWIR 2, de 2,08 a 2,35 µm. É o índice usado para mapear área queimada e severidade de
+    queimada. No MODIS, o SWIR 2 é a **banda 7** (2105–2155 nm).
+
+    **Por que este projeto precisa dele.** A composição Bands721 do NASA GIBS, única fonte
+    sem credencial usada aqui, traz as bandas 7, 2 e 1 do MODIS — não traz a banda 6. O
+    índice NIR − SWIR calculado sobre ela é, portanto, um NBR, e não um NDMI. Uma versão
+    anterior deste projeto chamava esse resultado de NDMI; o nome estava errado, a conta
+    não.
+
+    Medido sobre MODIS/Terra em São Félix do Xingu (2002 × 2024): elevou a
+    distinguibilidade entre as classes de 2,99 (NDVI) para 3,51, abaixo ainda do critério
+    de confiabilidade (`docs/decisions/005-resolucao-espacial.md`). Duas ressalvas: a banda
+    7 do MODIS tem resolução nativa de 500 m, reamostrada na grade de ~253 m do GIBS; e
+    numa frente de desmatamento com queimada o NBR responde também à cicatriz de fogo, não
+    só à remoção da vegetação.
+    """
+    infravermelho = validar_imagem(infravermelho, bandas_aceitas=(2,))
+    swir2 = validar_imagem(swir2, bandas_aceitas=(2,))
+
+    if infravermelho.shape != swir2.shape:
+        raise ErroImagem(
+            f"bandas com formatos diferentes: infravermelho {infravermelho.shape}, "
+            f"swir2 {swir2.shape}"
+        )
+
+    return _divisao_segura(infravermelho - swir2, infravermelho + swir2)
 
 
 def exg(imagem: np.ndarray) -> np.ndarray:
@@ -499,32 +532,38 @@ def indice_vegetacao(
     """Calcula o índice de vegetação disponível para a imagem dada.
 
     Com ``metodo="auto"`` usa NDVI se houver banda infravermelha e VARI caso contrário.
-    O NDMI **não** entra no automático mesmo quando há SWIR: ele mede água do dossel, não
-    verde, e trocar de grandeza sem o usuário pedir mudaria a interpretação do resultado
-    sem aviso. Quem quiser NDMI pede ``metodo="ndmi"``.
+    NDMI e NBR **não** entram no automático mesmo quando há SWIR: medem outra grandeza que
+    o verde, e trocar de grandeza sem o usuário pedir mudaria a interpretação do resultado
+    sem aviso. Quem quiser pede ``metodo="ndmi"`` (SWIR 1) ou ``metodo="nbr"`` (SWIR 2) — a
+    escolha depende de qual SWIR foi entregue em ``swir``, e só quem chama sabe.
 
     Devolve ``(indice, nome_do_metodo_usado)`` — o nome é propagado até a interface para
     que fique explícito qual índice está em uso na demonstração.
     """
-    metodos_validos = ("auto", "ndvi", "ndmi", "exg", "vari")
+    metodos_validos = ("auto", "ndvi", "ndmi", "nbr", "exg", "vari")
     if metodo not in metodos_validos:
         raise ErroImagem(f"método '{metodo}' desconhecido; use um de {metodos_validos}")
 
     if metodo == "auto":
         metodo = "ndvi" if infravermelho is not None else "vari"
 
-    if metodo == "ndmi":
+    if metodo in ("ndmi", "nbr"):
         if infravermelho is None or swir is None:
             faltando = []
             if infravermelho is None:
                 faltando.append("infravermelho")
             if swir is None:
                 faltando.append("SWIR")
+            if metodo == "ndmi":
+                dica = "O NDMI usa o SWIR 1: banda 6 no MODIS, B11 no Sentinel-2."
+            else:
+                dica = "O NBR usa o SWIR 2: banda 7 no MODIS, B12 no Sentinel-2."
             raise ErroImagem(
-                f"NDMI requer as bandas {' e '.join(faltando)}. "
-                "No MODIS a banda 7 é o SWIR; no Sentinel-2, a B11."
+                f"{metodo.upper()} requer as bandas {' e '.join(faltando)}. {dica}"
             )
-        return ndmi(infravermelho, swir), "ndmi"
+        if metodo == "ndmi":
+            return ndmi(infravermelho, swir), "ndmi"
+        return nbr(infravermelho, swir), "nbr"
 
     if metodo == "ndvi":
         if infravermelho is None:
@@ -2024,7 +2063,7 @@ def banda_swir(
     tamanho: tuple[int, int] = (80, 80),
     ruido: float = RUIDO_PADRAO,
 ) -> np.ndarray:
-    """Banda de infravermelho de ondas curtas, para permitir NDMI na demonstração.
+    """Banda de infravermelho de ondas curtas, para permitir NDMI e NBR na demonstração.
 
     Fica **fora** de ``cena_sintetica`` de propósito: aquela função tem saída fixada por
     semente e é usada como verdade de terreno em dezenas de testes. Mudar o que ela
@@ -2032,7 +2071,7 @@ def banda_swir(
     um primo para não correlacionar com o ruído das outras bandas.
 
     Dossel fechado é cheio de água e **absorve** no SWIR; solo exposto e pasto seco
-    refletem. É a inversão do NIR, e é o que dá ao NDMI o poder de separar floresta de
+    refletem. É a inversão do NIR, e é o que dá aos índices com SWIR o poder de separar floresta de
     pastagem vigorosa, que o NDVI confunde por serem as duas verdes.
     """
     gerador = np.random.default_rng(semente + 7919)
@@ -2272,7 +2311,7 @@ def detectar_desmatamento(
 
     if (swir_antes is None) != (swir_depois is None):
         raise ErroImagem(
-            "SWIR precisa estar presente nas duas datas ou em nenhuma: o NDMI de uma "
+            "SWIR precisa estar presente nas duas datas ou em nenhuma: o índice com SWIR de uma "
             "data não é comparável ao NDVI da outra"
         )
 
@@ -2929,7 +2968,12 @@ class ClassificadorDesmatamento:
             )
 
         acuracia = float((previsto == real).mean())
-        if acuracia == 1.0:
+        # "Perfeito" só faz sentido com as duas classes no teste. Com uma classe só, acurácia
+        # 1,0 convive com precisão e revocação zero — o desempenho é degenerado, não perfeito,
+        # e dizer "perfeito" ali seria o próprio aviso enganando.
+        contagens_teste = conjunto.contagem_por_classe
+        duas_classes = contagens_teste[INTACTO] > 0 and contagens_teste[DESMATADO] > 0
+        if acuracia == 1.0 and duas_classes:
             avisos.append(
                 "desempenho perfeito — em imagem real isso praticamente não acontece. "
                 "Em cena sintética é esperado, porque a separação radiométrica entre as "
@@ -2945,7 +2989,7 @@ class ClassificadorDesmatamento:
             )
         elif conjunto.equilibrio < 0.3:
             avisos.append(
-                f"conjunto de teste desbalanceado (equilíbrio {conjunto.equilibrio:.2f}) "
+                f"conjunto de teste desbalanceado (equilíbrio {format(conjunto.equilibrio, '.2f').replace('.', ',')}) "
                 "— leia a revocação e o F1, não a acurácia"
             )
 
@@ -3037,7 +3081,7 @@ from sentinela.dataio import (  # noqa: E402
     resolucao_do_satelite,
     sobrepor_mascara,
 )
-from sentinela.pdi import filtros  # noqa: E402
+from sentinela.pdi import filtros, limiar  # noqa: E402
 from sentinela.pdi.nucleo import ErroImagem, para_uint8  # noqa: E402
 from sentinela.pipeline import (  # noqa: E402
     detectar_desmatamento,
@@ -3048,10 +3092,17 @@ from sentinela.pipeline import (  # noqa: E402
 st.set_page_config(page_title="Sentinela — detecção de desmatamento", layout="wide")
 
 
+def _br(valor: float, casas: int) -> str:
+    """Número com vírgula decimal — a apresentação e o trabalho escrito são em português."""
+    return f"{valor:.{casas}f}".replace(".", ",")
+
+
 def mostrar(imagem: np.ndarray, legenda: str) -> None:
     """Exibe um array como imagem, convertendo para ``uint8`` na fronteira."""
     if imagem.dtype == np.bool_:
-        imagem = imagem.astype(np.float32)
+        # Máscara toda branca (cena inteira vegetada) desaparece no fundo da página e
+        # parece imagem faltando. A moldura cinza delimita a área sem alterar o dado.
+        imagem = np.pad(imagem.astype(np.float32), 2, constant_values=0.55)
     st.image(para_uint8(imagem), caption=legenda, width="stretch")
 
 
@@ -3079,12 +3130,13 @@ def barra_lateral() -> dict:
     st.sidebar.subheader("Parâmetros do processamento")
     metodo = st.sidebar.selectbox(
         "Índice de vegetação",
-        ("auto", "ndvi", "ndmi", "vari", "exg"),
+        ("auto", "ndvi", "ndmi", "nbr", "vari", "exg"),
         help=(
             "auto usa NDVI quando há banda infravermelha e VARI quando só há o visível. "
-            "O NDMI mede água do dossel em vez de verde e exige banda SWIR — separa "
-            "melhor floresta de pastagem, mas não entra no automático porque troca a "
-            "grandeza medida."
+            "NDMI e NBR comparam o infravermelho próximo com o SWIR: o NDMI usa o SWIR 1 "
+            "(banda 6 do MODIS), o NBR usa o SWIR 2 (banda 7 do MODIS). As imagens do GIBS "
+            "trazem só a banda 7 — para elas, use NBR. Nenhum dos dois entra no automático, "
+            "porque trocam a grandeza medida."
         ),
     )
     suavizacao = st.sidebar.slider(
@@ -3124,7 +3176,7 @@ def obter_imagens(opcoes: dict) -> dict | None:
             "**Cena sintética.** Floresta simulada com uma área de corte de tamanho "
             "conhecido, usada para demonstrar o programa e conferir a quantificação. "
             "Não é imagem de satélite e não entra no trabalho escrito como evidência.",
-            icon="🧪",
+            icon=":material/science:",
         )
         col1, col2 = st.columns(2)
         lado = col1.slider("Tamanho da cena (pixels)", 40, 200, 80, step=20)
@@ -3147,21 +3199,21 @@ def obter_imagens(opcoes: dict) -> dict | None:
         rgb_antes = st.file_uploader("RGB antes", type=["png", "jpg", "jpeg", "tif"])
         nir_antes = st.file_uploader("Infravermelho antes (opcional)",
                                      type=["png", "jpg", "jpeg", "tif"])
-        swir_antes = st.file_uploader("SWIR antes (opcional — habilita NDMI)",
+        swir_antes = st.file_uploader("SWIR antes (opcional — habilita NDMI ou NBR)",
                                       type=["png", "jpg", "jpeg", "tif"])
     with col2:
         st.markdown("**Data 2 — depois**")
         rgb_depois = st.file_uploader("RGB depois", type=["png", "jpg", "jpeg", "tif"])
         nir_depois = st.file_uploader("Infravermelho depois (opcional)",
                                       type=["png", "jpg", "jpeg", "tif"])
-        swir_depois = st.file_uploader("SWIR depois (opcional — habilita NDMI)",
+        swir_depois = st.file_uploader("SWIR depois (opcional — habilita NDMI ou NBR)",
                                        type=["png", "jpg", "jpeg", "tif"])
 
     if rgb_antes is None or rgb_depois is None:
         st.warning(
             "Envie as duas datas da **mesma área**, recortadas sobre o mesmo extent. "
             "Sem infravermelho o sistema usa VARI, que trabalha só com o visível.",
-            icon="📂",
+            icon=":material/folder_open:",
         )
         return None
 
@@ -3183,31 +3235,32 @@ def painel_resultado(resultado, opcoes: dict) -> None:
         st.error(
             f"**Detecção não confiável — nenhuma área é reportada.**\n\n"
             f"A distinguibilidade entre as duas classes ficou em "
-            f"`{resumo['distinguibilidade']}`, abaixo do mínimo de `4.0`. Isso acontece "
+            f"`{_br(resumo['distinguibilidade'], 2)}`, abaixo do mínimo de "
+            f"`{_br(limiar.DISTINGUIBILIDADE_MINIMA, 1)}`. Isso acontece "
             f"quando a cena é homogênea: sem duas classes reais para separar, o limiar "
             f"automático corta o ruído do dossel ao meio e produziria desmatamento onde "
             f"não houve. Recusar o número é a resposta correta.",
-            icon="🚫",
+            icon=":material/block:",
         )
     else:
         colunas = st.columns(4)
         colunas[0].metric("Área desmatada", f"{resumo['area_pixels']} px")
         colunas[1].metric(
             "Em hectares",
-            f"{resumo['area_hectares']:.2f} ha"
+            f"{_br(resumo['area_hectares'], 2)} ha"
             if resumo["area_hectares"] is not None
             else "—",
             help="Requer resolução espacial conhecida.",
         )
         colunas[2].metric("Regiões detectadas", resumo["regioes_detectadas"])
-        colunas[3].metric("Da cena", f"{resumo['proporcao_da_cena'] * 100:.2f}%")
+        colunas[3].metric("Da cena", f"{_br(resumo['proporcao_da_cena'] * 100, 2)}%")
 
         esperada = st.session_state.get("area_esperada")
         if esperada:
             erro = abs(resumo["area_pixels"] - esperada) / esperada * 100
             st.caption(
                 f"Verdade de terreno da cena sintética: **{esperada} px**. "
-                f"Detectado: **{resumo['area_pixels']} px** — erro de {erro:.1f}%."
+                f"Detectado: **{resumo['area_pixels']} px** — erro de {_br(erro, 1)}%."
             )
 
     if resultado.alerta_de_registro:
@@ -3215,7 +3268,7 @@ def painel_resultado(resultado, opcoes: dict) -> None:
             "**Ganho de vegetação alto demais.** As duas datas podem não estar "
             "alinhadas, ou a diferença pode ser sazonal e não desmatamento. "
             "Inspecione o mapa de mudança antes de usar este resultado.",
-            icon="⚠️",
+            icon=":material/warning:",
         )
 
 
@@ -3255,23 +3308,48 @@ def aba_etapas(imagens: dict, resultado, opcoes: dict) -> None:
 
     st.subheader("4 · Segmentação")
     st.caption(
-        f"Limiar de Otsu **único** para as duas datas: `{resultado.valor_limiar:.4f}`. "
+        f"Limiar de Otsu **único** para as duas datas: `{_br(resultado.valor_limiar, 4)}`. "
         "Calcular um limiar por data daria réguas diferentes, e a comparação mediria a "
         "diferença entre os limiares, não a mudança no terreno."
     )
     col1, col2, col3 = st.columns(3)
     with col1:
-        mostrar(resultado.vegetacao_antes, "Vegetação — antes")
+        mostrar(resultado.vegetacao_antes, "Vegetação — antes (branco = vegetação)")
     with col2:
-        mostrar(resultado.vegetacao_depois, "Vegetação — depois")
+        mostrar(resultado.vegetacao_depois, "Vegetação — depois (branco = vegetação)")
     with col3:
         mostrar(mapa_de_mudanca(resultado.mudanca), "Mapa de mudança")
 
     st.markdown(
-        "<small>🟥 perda de vegetação &nbsp;·&nbsp; 🟩 ganho &nbsp;·&nbsp; "
-        "🌲 vegetação estável &nbsp;·&nbsp; ⬜ solo exposto nas duas datas</small>",
+        _legenda_mudanca(),
         unsafe_allow_html=True,
     )
+
+
+def _legenda_mudanca() -> str:
+    """Legenda do mapa de mudança com as cores exatas usadas em ``mapa_de_mudanca``.
+
+    Amostra de cor desenhada em HTML, não emoji: emoji depende de fonte instalada e, sem
+    ela, a legenda vira uma fila de quadrados vazios — exatamente o que um screenshot da
+    versão entregue mostraria.
+    """
+    from sentinela.dataio import visual
+
+    def hexa(cor):
+        return "#" + "".join(f"{round(c * 255):02x}" for c in cor)
+
+    itens = (
+        (visual.COR_PERDA, "perda de vegetação"),
+        (visual.COR_GANHO, "ganho"),
+        (visual.COR_ESTAVEL_VEGETADO, "vegetação estável"),
+        (visual.COR_ESTAVEL_EXPOSTO, "solo exposto nas duas datas"),
+    )
+    amostras = " &nbsp;·&nbsp; ".join(
+        f'<span style="display:inline-block;width:0.8em;height:0.8em;'
+        f'background:{hexa(cor)};border-radius:2px;vertical-align:-0.05em"></span> {rotulo}'
+        for cor, rotulo in itens
+    )
+    return f"<small>{amostras}</small>"
 
 
 def _indice_sem_suavizar(imagens: dict, opcoes: dict):
@@ -3293,7 +3371,7 @@ def aba_deteccao(imagens: dict, resultado) -> None:
         st.info(
             "A máscara abaixo é exibida para inspeção, mas **não deve ser usada como "
             "resultado** enquanto a detecção estiver marcada como não confiável.",
-            icon="ℹ️",
+            icon=":material/info:",
         )
 
     col1, col2 = st.columns([3, 2])
@@ -3326,7 +3404,7 @@ def aba_deteccao(imagens: dict, resultado) -> None:
             if len(resultado.regioes) > 15:
                 st.caption(f"Mostrando as 15 maiores de {len(resultado.regioes)} regiões.")
         else:
-            st.success("Nenhuma região de desmatamento acima da área mínima.", icon="🌳")
+            st.success("Nenhuma região de desmatamento acima da área mínima.", icon=":material/forest:")
 
     with st.expander("Métricas de decisão do limiar"):
         st.json(resultado.resumo())
@@ -3349,7 +3427,7 @@ def aba_amostras(imagens: dict, resultado) -> None:
             imagens["rgb_depois"], resultado.perda, lado=lado, passo=passo
         )
     except ErroImagem as erro:
-        st.error(f"Não foi possível extrair amostras: {erro}", icon="🚫")
+        st.error(f"Não foi possível extrair amostras: {erro}", icon=":material/block:")
         return
 
     equilibrado = equilibrar(conjunto)
@@ -3359,7 +3437,7 @@ def aba_amostras(imagens: dict, resultado) -> None:
     colunas[1].metric("Intacto", conjunto.contagem_por_classe[0])
     colunas[2].metric("Desmatado", conjunto.contagem_por_classe[1])
     colunas[3].metric(
-        "Equilíbrio", f"{conjunto.equilibrio:.2f}",
+        "Equilíbrio", _br(conjunto.equilibrio, 2),
         help="Razão entre a classe minoritária e a majoritária. Perto de 0 = desbalanceado.",
     )
 
@@ -3383,7 +3461,7 @@ def aba_amostras(imagens: dict, resultado) -> None:
         st.info(
             "Sem amostras das duas classes não há conjunto de treino. Aumente a área "
             "desmatada, reduza o lado do recorte ou diminua o passo.",
-            icon="ℹ️",
+            icon=":material/info:",
         )
 
 
@@ -3408,7 +3486,7 @@ def aba_modelo(imagens: dict, resultado) -> None:
             imagens["rgb_depois"], resultado.perda, lado=lado, passo=lado // 2
         )
     except ErroImagem as erro:
-        st.error(f"Não foi possível extrair amostras: {erro}", icon="🚫")
+        st.error(f"Não foi possível extrair amostras: {erro}", icon=":material/block:")
         return
 
     st.info(
@@ -3416,7 +3494,7 @@ def aba_modelo(imagens: dict, resultado) -> None:
         "recorte.** Os recortes se sobrepõem: sortear individualmente colocaria o mesmo "
         "pedaço de terreno nos dois lados e a acurácia medida seria vazamento. Recortes "
         "que cruzam fronteira de bloco são descartados.",
-        icon="🧭",
+        icon=":material/explore:",
     )
 
     try:
@@ -3424,21 +3502,21 @@ def aba_modelo(imagens: dict, resultado) -> None:
             conjunto, proporcao_teste=proporcao, semente=int(semente)
         )
     except ErroModelo as erro:
-        st.warning(f"**Modelo não treinado.** {erro}", icon="⚠️")
+        st.warning(f"**Modelo não treinado.** {erro}", icon=":material/warning:")
         return
 
     resumo = avaliacao.resumo()
     colunas = st.columns(4)
-    colunas[0].metric("Acurácia", f"{resumo['acuracia']:.3f}")
-    colunas[1].metric("Precisão", f"{resumo['precisao']:.3f}")
+    colunas[0].metric("Acurácia", _br(resumo['acuracia'], 3))
+    colunas[1].metric("Precisão", _br(resumo['precisao'], 3))
     colunas[2].metric(
-        "Revocação", f"{resumo['revocacao']:.3f}",
+        "Revocação", _br(resumo['revocacao'], 3),
         help="Fração do desmatamento real que o modelo encontrou.",
     )
-    colunas[3].metric("F1", f"{resumo['f1']:.3f}")
+    colunas[3].metric("F1", _br(resumo['f1'], 3))
 
     for aviso in avaliacao.avisos:
-        st.warning(aviso, icon="⚠️")
+        st.warning(aviso, icon=":material/warning:")
 
     col1, col2 = st.columns(2)
 
@@ -3494,7 +3572,7 @@ def principal() -> None:
     try:
         imagens = obter_imagens(opcoes)
     except (ErroArquivo, ErroImagem) as erro:
-        st.error(str(erro), icon="🚫")
+        st.error(str(erro), icon=":material/block:")
         return
 
     if imagens is None:
@@ -3514,7 +3592,7 @@ def principal() -> None:
             metros_por_pixel=opcoes["metros_por_pixel"],
         )
     except ErroImagem as erro:
-        st.error(f"**Não foi possível processar:** {erro}", icon="🚫")
+        st.error(f"**Não foi possível processar:** {erro}", icon=":material/block:")
         return
 
     painel_resultado(resultado, opcoes)
@@ -3887,11 +3965,11 @@ def construir_parser() -> argparse.ArgumentParser:
     detectar.add_argument("--nir-antes", dest="nir_antes")
     detectar.add_argument("--nir-depois", dest="nir_depois")
     detectar.add_argument("--swir-antes", dest="swir_antes",
-                          help="banda SWIR da primeira data — necessária para --metodo ndmi")
+                          help="banda SWIR da primeira data — necessária para --metodo ndmi (SWIR 1) ou nbr (SWIR 2)")
     detectar.add_argument("--swir-depois", dest="swir_depois")
     detectar.add_argument("--saida", help="diretório para gravar as imagens e o resumo")
     detectar.add_argument("--metodo", default="auto",
-                          choices=("auto", "ndvi", "ndmi", "vari", "exg"))
+                          choices=("auto", "ndvi", "ndmi", "nbr", "vari", "exg"))
     detectar.add_argument("--suavizacao", type=int, default=5)
     detectar.add_argument("--area-minima", dest="area_minima", type=int, default=25)
     detectar.add_argument("--metros-por-pixel", dest="metros_por_pixel", type=float,

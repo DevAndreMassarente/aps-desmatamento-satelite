@@ -130,13 +130,11 @@ def ndmi(infravermelho: np.ndarray, swir: np.ndarray) -> np.ndarray:
     verdes. O NDMI continua separando, porque a diferença de água entre um dossel
     florestal e um capim é grande mesmo quando a diferença de verde é pequena.
 
-    Medido neste projeto sobre MODIS/Terra em São Félix do Xingu (2002 × 2024): o NDMI
-    elevou a distinguibilidade entre as classes de 2,99 para 3,51 sobre a mesma cena
-    (`docs/decisions/005-resolucao-espacial.md`). Não foi suficiente para atingir o
-    critério de confiabilidade naquela resolução, mas é a melhor leitura disponível
-    quando há banda SWIR.
-
-    Requer a banda SWIR — no Sentinel-2 é a B11 (1610 nm); no MODIS, a banda 7 (2130 nm).
+    **O SWIR precisa ser o de ondas mais curtas (SWIR 1, perto de 1,6 µm).** É a
+    definição da USGS: no Landsat 4–7, ``(banda 4 − banda 5) / (banda 4 + banda 5)``; a
+    banda 5 é o SWIR 1, de 1,55 a 1,75 µm. No Sentinel-2 isso é a B11; no MODIS, a
+    **banda 6** (1628–1652 nm). A mesma conta com o SWIR 2 (perto de 2,2 µm) tem outro
+    nome e outra leitura — ver ``nbr``.
     """
     infravermelho = validar_imagem(infravermelho, bandas_aceitas=(2,))
     swir = validar_imagem(swir, bandas_aceitas=(2,))
@@ -148,6 +146,41 @@ def ndmi(infravermelho: np.ndarray, swir: np.ndarray) -> np.ndarray:
         )
 
     return _divisao_segura(infravermelho - swir, infravermelho + swir)
+
+
+def nbr(infravermelho: np.ndarray, swir2: np.ndarray) -> np.ndarray:
+    """Razão Normalizada de Queimada — a diferença normalizada entre NIR e **SWIR 2**.
+
+    ``NBR = (NIR - SWIR2) / (NIR + SWIR2)``, resultado em ``[-1, 1]``.
+
+    A conta é a mesma do NDMI; o que muda é a faixa do SWIR. Pela definição da USGS, no
+    Landsat 4–7 o NBR é ``(banda 4 − banda 7) / (banda 4 + banda 7)``, e a banda 7 é o
+    SWIR 2, de 2,08 a 2,35 µm. É o índice usado para mapear área queimada e severidade de
+    queimada. No MODIS, o SWIR 2 é a **banda 7** (2105–2155 nm).
+
+    **Por que este projeto precisa dele.** A composição Bands721 do NASA GIBS, única fonte
+    sem credencial usada aqui, traz as bandas 7, 2 e 1 do MODIS — não traz a banda 6. O
+    índice NIR − SWIR calculado sobre ela é, portanto, um NBR, e não um NDMI. Uma versão
+    anterior deste projeto chamava esse resultado de NDMI; o nome estava errado, a conta
+    não.
+
+    Medido sobre MODIS/Terra em São Félix do Xingu (2002 × 2024): elevou a
+    distinguibilidade entre as classes de 2,99 (NDVI) para 3,51, abaixo ainda do critério
+    de confiabilidade (`docs/decisions/005-resolucao-espacial.md`). Duas ressalvas: a banda
+    7 do MODIS tem resolução nativa de 500 m, reamostrada na grade de ~253 m do GIBS; e
+    numa frente de desmatamento com queimada o NBR responde também à cicatriz de fogo, não
+    só à remoção da vegetação.
+    """
+    infravermelho = validar_imagem(infravermelho, bandas_aceitas=(2,))
+    swir2 = validar_imagem(swir2, bandas_aceitas=(2,))
+
+    if infravermelho.shape != swir2.shape:
+        raise ErroImagem(
+            f"bandas com formatos diferentes: infravermelho {infravermelho.shape}, "
+            f"swir2 {swir2.shape}"
+        )
+
+    return _divisao_segura(infravermelho - swir2, infravermelho + swir2)
 
 
 def exg(imagem: np.ndarray) -> np.ndarray:
@@ -195,32 +228,38 @@ def indice_vegetacao(
     """Calcula o índice de vegetação disponível para a imagem dada.
 
     Com ``metodo="auto"`` usa NDVI se houver banda infravermelha e VARI caso contrário.
-    O NDMI **não** entra no automático mesmo quando há SWIR: ele mede água do dossel, não
-    verde, e trocar de grandeza sem o usuário pedir mudaria a interpretação do resultado
-    sem aviso. Quem quiser NDMI pede ``metodo="ndmi"``.
+    NDMI e NBR **não** entram no automático mesmo quando há SWIR: medem outra grandeza que
+    o verde, e trocar de grandeza sem o usuário pedir mudaria a interpretação do resultado
+    sem aviso. Quem quiser pede ``metodo="ndmi"`` (SWIR 1) ou ``metodo="nbr"`` (SWIR 2) — a
+    escolha depende de qual SWIR foi entregue em ``swir``, e só quem chama sabe.
 
     Devolve ``(indice, nome_do_metodo_usado)`` — o nome é propagado até a interface para
     que fique explícito qual índice está em uso na demonstração.
     """
-    metodos_validos = ("auto", "ndvi", "ndmi", "exg", "vari")
+    metodos_validos = ("auto", "ndvi", "ndmi", "nbr", "exg", "vari")
     if metodo not in metodos_validos:
         raise ErroImagem(f"método '{metodo}' desconhecido; use um de {metodos_validos}")
 
     if metodo == "auto":
         metodo = "ndvi" if infravermelho is not None else "vari"
 
-    if metodo == "ndmi":
+    if metodo in ("ndmi", "nbr"):
         if infravermelho is None or swir is None:
             faltando = []
             if infravermelho is None:
                 faltando.append("infravermelho")
             if swir is None:
                 faltando.append("SWIR")
+            if metodo == "ndmi":
+                dica = "O NDMI usa o SWIR 1: banda 6 no MODIS, B11 no Sentinel-2."
+            else:
+                dica = "O NBR usa o SWIR 2: banda 7 no MODIS, B12 no Sentinel-2."
             raise ErroImagem(
-                f"NDMI requer as bandas {' e '.join(faltando)}. "
-                "No MODIS a banda 7 é o SWIR; no Sentinel-2, a B11."
+                f"{metodo.upper()} requer as bandas {' e '.join(faltando)}. {dica}"
             )
-        return ndmi(infravermelho, swir), "ndmi"
+        if metodo == "ndmi":
+            return ndmi(infravermelho, swir), "ndmi"
+        return nbr(infravermelho, swir), "nbr"
 
     if metodo == "ndvi":
         if infravermelho is None:

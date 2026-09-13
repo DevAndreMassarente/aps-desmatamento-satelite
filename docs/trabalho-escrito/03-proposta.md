@@ -11,7 +11,7 @@ que aparece na cadeia, e sai um passo antes de onde ele atrapalharia.
 
 | Etapa | Filtro | Por que está aqui |
 |-------|--------|-------------------|
-| Realce espectral | Índice de vegetação (NDVI / NDMI) | Reduz as bandas a um mapa escalar onde vegetação e solo exposto ficam em extremos opostos |
+| Realce espectral | Índice de vegetação (NDVI; NBR quando há SWIR 2) | Reduz as bandas a um mapa escalar onde vegetação e solo exposto ficam em extremos opostos |
 | Suavização | Gaussiano 5×5 | Impede que o ruído do sensor atravesse o limiar pixel a pixel |
 | Limiarização | Otsu sobre o histograma **conjunto** | Separa vegetação de não-vegetação com a mesma régua nas duas datas |
 | Limpeza | Abertura seguida de fechamento | Remove respingos isolados e fecha buracos internos |
@@ -100,7 +100,7 @@ floresta contínua; a de 2024 apresenta clareiras extensas.
 | Índice | Tamanho de efeito | Veredito |
 |--------|-------------------|----------|
 | NDVI | 2,994 | recusado |
-| NDMI | 3,509 | recusado |
+| NBR (NIR − SWIR 2) | 3,509 | recusado |
 | Limiarização da imagem de diferença | 2,788 | recusado |
 | *Mínimo exigido* | *4,000* | — |
 | *Piso de uma distribuição sem duas classes* | *2,650* | — |
@@ -116,7 +116,7 @@ sobrepõem fortemente.
 
 O sinal de perda existe e tem a direção correta. Na escala nativa dos índices, `[-1, 1]`,
 a mediana cai de +0,944 para +0,794 no NDVI (queda de 0,150) e de +0,799 para +0,504 no
-NDMI (queda de 0,295). São quedas grandes. O que falta é **separação**: há um vale entre as
+NBR (queda de 0,295). São quedas grandes. O que falta é **separação**: há um vale entre as
 classes — no NDVI de 2024 aparecem dois montes, perto de 0,72 e de 0,99 — mas ele é raso,
 e a limiarização global precisa de um vale profundo para separar duas populações com
 confiança. A Figura de histogramas da apresentação mostra as duas distribuições.
@@ -125,12 +125,13 @@ Três hipóteses foram testadas antes de chegar a essa conclusão:
 
 | Hipótese | Teste | Resultado |
 |----------|-------|-----------|
-| O índice é inadequado | NDVI × NDMI × NBR | NDMI é o melhor (3,509 contra 2,994), ainda insuficiente |
+| O índice é inadequado | NDVI, NBR e a razão normalizada SWIR 2 − vermelho | NBR é o melhor (3,509 contra 2,994), ainda insuficiente |
 | A abordagem é inadequada | Limiarizar a diferença em vez de classificar cada data | **Pior**: 2,788, e marcaria 40% da cena como perda |
 | A resolução é insuficiente | Inspeção das distribuições | **Confirmado** |
 
-É a mesma razão pela qual sistemas oficiais de monitoramento de desmatamento operam com
-imagens de 20 a 30 metros e não com MODIS.
+O contraste com o sistema oficial é instrutivo. O PRODES mapeou 2025 com imagens
+Sentinel-2 e Sentinel-1, e só contabiliza na taxa os polígonos maiores que 6,25 ha
+(INPE, 2025) — área menor que um único pixel da grade de ≈253 m usada aqui.
 
 #### Uma decisão metodológica deliberada
 

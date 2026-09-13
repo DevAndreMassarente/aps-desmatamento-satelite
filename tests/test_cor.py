@@ -261,3 +261,43 @@ class TestNdmiPorIndiceVegetacao:
 
         _, metodo = cor.indice_vegetacao(imagem, banda, metodo="auto", swir=banda)
         assert metodo == "ndvi"
+
+
+class TestNbr:
+    """NBR: a mesma conta do NDMI, com o SWIR 2 — outro índice, outro nome."""
+
+    def test_tem_a_mesma_matematica_do_ndmi(self):
+        """O que muda entre os dois é qual banda entra, não a fórmula."""
+        gerador = np.random.default_rng(11)
+        nir = gerador.random((16, 16)).astype(np.float32)
+        swir = gerador.random((16, 16)).astype(np.float32)
+        assert cor.nbr(nir, swir) == pytest.approx(cor.ndmi(nir, swir))
+
+    def test_fica_na_faixa_valida_e_sem_nan(self):
+        zeros = np.zeros((5, 5), dtype=np.float32)
+        assert np.isfinite(cor.nbr(zeros, zeros)).all()
+
+    def test_formatos_diferentes_sao_recusados(self):
+        with pytest.raises(ErroImagem, match="formatos diferentes"):
+            cor.nbr(np.zeros((4, 4), np.float32), np.zeros((5, 5), np.float32))
+
+    def test_indice_vegetacao_devolve_o_nome_nbr(self):
+        imagem = np.zeros((8, 8, 3), dtype=np.float32)
+        banda = np.full((8, 8), 0.5, dtype=np.float32)
+        _, metodo = cor.indice_vegetacao(imagem, banda, metodo="nbr", swir=banda)
+        assert metodo == "nbr"
+
+    def test_mensagem_de_erro_aponta_a_banda_certa_do_modis(self):
+        """A versão anterior dizia que o SWIR do NDMI no MODIS era a banda 7 — errado."""
+        imagem = np.zeros((8, 8, 3), dtype=np.float32)
+        banda = np.zeros((8, 8), dtype=np.float32)
+        with pytest.raises(ErroImagem, match="banda 6 no MODIS"):
+            cor.indice_vegetacao(imagem, banda, metodo="ndmi")
+        with pytest.raises(ErroImagem, match="banda 7 no MODIS"):
+            cor.indice_vegetacao(imagem, banda, metodo="nbr")
+
+    def test_automatico_nunca_escolhe_nbr(self):
+        imagem = np.zeros((8, 8, 3), dtype=np.float32)
+        banda = np.full((8, 8), 0.5, dtype=np.float32)
+        _, metodo = cor.indice_vegetacao(imagem, banda, metodo="auto", swir=banda)
+        assert metodo == "ndvi"

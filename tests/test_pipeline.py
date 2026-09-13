@@ -74,6 +74,17 @@ class TestDeteccao:
         assert com_ndmi.confiavel
         assert com_ndmi.area_pixels == pytest.approx(400, rel=0.10)
 
+    def test_nbr_e_ndmi_dao_o_mesmo_resultado_com_a_mesma_banda(self):
+        """Mesma conta: com a mesma banda SWIR, só o nome do método muda."""
+        par = par_bitemporal(corte=CORTE)
+        comum = dict(swir_antes=par["swir_antes"], swir_depois=par["swir_depois"], metros_por_pixel=10.0)
+        a = detectar_desmatamento(par["rgb_antes"], par["rgb_depois"], par["nir_antes"], par["nir_depois"], metodo="ndmi", **comum)
+        b = detectar_desmatamento(par["rgb_antes"], par["rgb_depois"], par["nir_antes"], par["nir_depois"], metodo="nbr", **comum)
+
+        assert b.metodo_indice == "nbr"
+        assert b.area_pixels == a.area_pixels
+        assert b.valor_limiar == pytest.approx(a.valor_limiar)
+
     def test_o_limiar_e_unico_para_as_duas_datas(self, resultado):
         """A régua única é o que torna as duas máscaras comparáveis."""
         from sentinela.pdi import limiar
