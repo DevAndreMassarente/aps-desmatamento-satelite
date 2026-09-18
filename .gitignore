@@ -22,11 +22,12 @@ htmlcov/
 *.pem
 credenciais*.json
 
-# Dados — ver docs/decisions/002-dados-nao-versionados.md
+# Imagens de satélite não são versionadas: são grandes, regeneráveis pelo script de
+# aquisição, e a licença de cada uma está registrada em data/raw/FONTES.md. Os diretórios
+# são criados pelo próprio download.
 data/raw/*
-data/interim/*
-data/processed/*
-!data/**/.gitkeep
+data/interim/
+data/processed/
 !data/raw/FONTES.md
 # Manifestos de aquisição são metadado de procedência, não dado: pequenos e
 # necessários para reproduzir o download.

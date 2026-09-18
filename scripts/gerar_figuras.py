@@ -47,7 +47,6 @@ TELAS = RAIZ / "docs" / "resultados" / "telas"
 # base), conferidas contra as capturas de `scripts/capturar_telas.mjs`.
 RECORTES_DE_TELA = {
     "tela-filtragem.png": ("01-etapas", (360, 1810, 1345, 2775)),
-    "tela-aquisicao.png": ("01-etapas", (360, 640, 1345, 1805)),
     "tela-deteccao.png": ("02-deteccao", (360, 440, 1345, 1240)),
     "tela-modelo.png": ("03-modelo", (360, 690, 1345, 1400)),
     "tela-recusa.png": ("04-recusa", (360, 370, 1345, 700)),

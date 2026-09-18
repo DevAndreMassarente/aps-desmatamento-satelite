@@ -1,412 +1,601 @@
 # Falas — Fase Intermediária I (Qualificação)
 
-Enunciado, p. 5: *"Fase Intermediária I — Qualificação do Projeto. Conteúdo: **Capítulo 1
-e os itens relativos a filtragem dos capítulos 2 e 3**. Esta etapa deve ser concluída
-antes do desenvolvimento prático."*
+Enunciado, p. 5: *"Fase Intermediária I — Qualificação do Projeto. Conteúdo: **Capítulo 1 e
+os itens relativos a filtragem dos capítulos 2 e 3**. Esta etapa deve ser concluída antes do
+desenvolvimento prático."*
 
-> **O que fica de fora desta apresentação:** segmentação, quantificação, modelo,
-> demonstração do protótipo e discussão de resultados. Tudo isso é da Fase Intermediária II
-> — a defesa — e está em `FALAS-DEFESA.md`.
+> **Fica de fora:** separar as áreas, medir hectares, o modelo, a demonstração do programa e
+> qualquer resultado. Tudo isso é da próxima entrega, e está em `FALAS-DEFESA.md`.
 
-Este é o texto impresso das falas. As mesmas falas estão nas **notas do apresentador** de
-cada slide de `entrega/apresentacao-qualificacao.pptx` — no PowerPoint, *Exibir → Modo de
-Exibição do Apresentador*.
+São **11 slides**, sendo o último de reserva. As mesmas falas estão nas notas do apresentador
+em `entrega/apresentacao-qualificacao.pptx`.
 
-> As falas abaixo são um guia, não um texto para ler em voz alta. A regra do projeto vale
-> aqui: se o integrante não consegue explicar com as próprias palavras, o trecho ainda não
-> está pronto.
+## Como usar este documento
 
-## Divisão — 13 minutos, com folga
+Cada pessoa tem duas partes:
 
-| Slides | Bloco | Quem | Tempo |
-|--------|-------|------|------:|
-| 1–2 | Abertura e escopo da qualificação | André Massarente | 0:45 |
-| 3–4 | Cap. 1.a — o problema e a relevância ambiental | André Massarente | 2:40 |
-| 5–7 | Cap. 1.b e 1.c — contexto, impacto ecológico e objetivos | Enzo Consani | 3:00 |
-| 8–11 | Cap. 2.e.iii — os conceitos de filtragem | Isabel Da Silva | 4:25 |
-| 12–15 | Cap. 3.a — os filtros escolhidos e o encerramento | Jonathan Aparecido X Martins | 3:15 |
-| 16 | Reserva: os filtros rodando — **só se pedirem** | Isabel Da Silva | +1:00 |
-| | **Total** | | **≈14:05** |
+1. **Antes de apresentar** — o que você precisa entender para falar com segurança. Leia isso
+   com calma, é para estudar, não para decorar.
+2. **A fala** — o que dizer em cada slide. É um guia; fale com as suas palavras.
 
-> Se o tempo apertar, os cortes na ordem: o slide 16 (reserva), depois a coluna "fora do
-> escopo" do slide 7, depois o laplaciano no slide 11.
+> Se você não consegue explicar com as suas palavras, ainda não está pronto. Decorar não
+> resolve, porque a pergunta da banca nunca é igual ao slide.
+
+## Divisão — cerca de 11 minutos
+
+| Slides | Quem | Assunto | Tempo |
+|--------|------|---------|------:|
+| 1–2 | André Massarente | Abertura e o problema | 2:00 |
+| 3–4 | Enzo Consani | Por que importa e o que vamos construir | 2:30 |
+| 5–7 | Isabel Da Silva | O que é filtragem | 3:30 |
+| 8–10 | Jonathan Aparecido X Martins | Os filtros que escolhemos e o fecho | 3:00 |
+| 11 | Isabel Da Silva | Reserva — **só se perguntarem** | +1:00 |
 
 ---
 
-# André Massarente — slides 1 a 4
+# André Massarente — slides 1 e 2
 
-## Slide 1 · Capa — 20 s
+## Antes de apresentar
 
-"Boa noite. Nós somos o grupo do tema de sustentabilidade ambiental: detecção e
-quantificação de desmatamento em imagens de satélite."
+**O que é uma imagem de satélite.** O satélite não tira "foto" como um celular. Ele mede
+quanta luz o chão devolve, em várias faixas separadas: vermelho, verde, azul, e também faixas
+que o olho humano não vê — o infravermelho. Cada faixa dessas é chamada de **banda**, e chega
+como uma imagem em tons de cinza. Juntando as bandas de vermelho, verde e azul você monta a
+imagem colorida normal. Juntando outras bandas você monta uma imagem em **falsa cor**, que é o
+que aparece na parte de baixo do slide 2: as cores não são reais, foram escolhidas para
+destacar o que interessa.
+
+**Por que o infravermelho ajuda.** Folha viva reflete muito infravermelho e pouco vermelho.
+Terra exposta faz quase o contrário. Então, combinando essas duas bandas numa conta simples, dá
+para separar mata de solo muito melhor do que olhando só a cor normal. Essa conta é o
+**índice de vegetação** — o Jonathan fala dele no slide 8. Você não precisa saber a fórmula;
+precisa saber que ela existe e para que serve.
+
+**Por que duas datas, e não uma.** Esse é o coração do trabalho, e é o que você tem que
+conseguir defender. Numa imagem só, um pasto que existe há trinta anos e uma área cortada mês
+passado aparecem do mesmo jeito: os dois são claros, sem mata. Não dá para distinguir. O que
+identifica desmatamento é a **mudança** entre duas datas da mesma área. Por isso todo o
+programa é construído em cima de comparar um par de imagens.
+
+**De onde vieram as nossas imagens.** Satélite Terra, da NASA, instrumento MODIS, pelo serviço
+público GIBS. São de domínio público. A região é São Félix do Xingu, no Pará, nas datas
+01/07/2002 e 05/07/2024 — as duas em julho de propósito, para a época do ano não atrapalhar a
+comparação. Tudo isso está registrado no trabalho: produto, data, coordenadas, licença e
+endereço de download.
+
+**Se perguntarem por que não usaram uma imagem melhor:** existem satélites com muito mais
+detalhe, como o Sentinel-2, mas eles exigem cadastro. A gente escolheu uma fonte que qualquer
+pessoa consegue baixar sem conta, para o trabalho ser reproduzível. O custo dessa escolha
+aparece na próxima entrega.
+
+## Slide 1 · Capa — 30 s
+
+"Boa noite. Nosso tema é detecção de desmatamento em imagens de satélite."
 
 "Eu sou o André, e comigo estão o Enzo, a Isabel e o Jonathan."
 
-"Esta é a apresentação da Fase Intermediária I, a qualificação do projeto. Então o que a
-gente traz hoje é o capítulo 1 — o problema, o contexto e os objetivos — e os itens de
-filtragem dos capítulos 2 e 3: o que é filtragem e quais filtros a nossa solução usa."
+"Hoje é a qualificação do projeto. Então a gente apresenta o capítulo 1 — qual é o problema e
+o que queremos fazer — e a parte de filtragem dos capítulos 2 e 3."
 
-## Slide 2 · O que esta qualificação cobre — 25 s
+"A demonstração do programa e os resultados ficam para a próxima entrega."
 
-"A apresentação segue o conteúdo que o manual define para esta fase."
+## Slide 2 · O problema — 1:30
 
-"Primeiro o capítulo 1: eu apresento o problema e a relevância ambiental, e o Enzo continua
-no contexto e nos objetivos. Depois a Isabel apresenta a teoria de filtragem do capítulo 2.
-E o Jonathan fecha com os filtros que a nossa proposta escolheu, no capítulo 3."
+"Essa é a mesma região da Amazônia em duas datas. Em cima, 2002 e 2024 na cor normal. Embaixo,
+as mesmas imagens com cores realçadas: verde escuro é mata fechada, amarelo é terra exposta."
 
-"A demonstração do programa e os resultados ficam para a Fase II, que é a defesa."
+"O ponto principal do nosso trabalho é esse: se eu olhar só a imagem de 2024, eu não consigo
+dizer o que é pasto antigo e o que é corte recente. Os dois aparecem claros. O que mostra
+desmatamento é a **diferença** entre as duas datas."
 
-> Se perguntarem se já existe código: sim, o protótipo já roda. Oferecer mostrar no fim,
-> se houver tempo — o slide 16 existe para isso.
+"Por isso o problema que a gente resolve é esse da caixa: duas imagens da mesma área em datas
+diferentes, achar o que perdeu vegetação e medir quanto isso dá."
 
-## Slide 3 · 1.a — O problema é bi-temporal por definição — 1:30
+"E por que satélite: a região é enorme e de difícil acesso. Não dá para mandar gente olhar
+tudo."
 
-"Desmatamento é a remoção da cobertura vegetal nativa de uma área. Detectar e quantificar
-isso em escala regional não dá para fazer em campo: as frentes ficam em lugar de difícil
-acesso, avançam o tempo todo e cobrem área grande demais. Satélite é o único instrumento
-que acompanha isso de forma sistemática."
-
-"O problema, formalmente, é esse da caixa: dado um **par** de imagens da mesma área em
-datas diferentes, identificar as regiões que perderam cobertura vegetal e quantificar essa
-perda em área."
-
-"E o 'par' não é detalhe, é a definição. Olhem a imagem: 2002 à esquerda, 2024 à direita,
-em cor natural em cima e no índice em falsa cor embaixo. Se eu mostrasse só a de 2024, eu
-não conseguiria dizer o que é pasto de trinta anos e o que é corte do mês passado — as duas
-coisas são claras na imagem. A informação está na **diferença**."
-
-"As imagens são reais, do satélite Terra da NASA, pelo serviço GIBS, de domínio público, e
-a procedência está registrada: produto, data, coordenadas, licença e URL."
-
-## Slide 4 · 1.a — Relevância em termos de sustentabilidade — 1:10
-
-"Por que esse problema importa para sustentabilidade. A supressão de vegetação age por
-quatro caminhos ao mesmo tempo: carbono, habitat, ciclo da água e solo."
-
-"Carbono: a floresta guarda carbono na biomassa; derrubar e queimar joga isso na atmosfera.
-Habitat: espécies que dependem de dossel contínuo perdem o ambiente, e a fragmentação isola
-o que sobra. Água: a floresta bombeia umidade pela evapotranspiração. E solo: exposto, ele
-erode e perde fertilidade."
-
-"A escala é medida oficialmente. O INPE consolidou 5.731 km² na Amazônia Legal no período
-de agosto de 2024 a julho de 2025 — 12% a menos que no ano anterior. E o SEEG mostra que em
-2024 o uso da terra respondeu por 42% das emissões brutas de gases de efeito estufa do
-Brasil, 906 milhões de toneladas."
-
-"Mas o ponto que liga tudo isso à nossa disciplina é o quadro da direita: todos esses
-efeitos vêm de uma mudança **opticamente observável**. Dossel florestal reflete diferente
-de solo exposto. É essa diferença que os nossos filtros vão realçar."
-
-> Não citar número de desmatamento sem ser um destes dois — eles estão conferidos na
-> bibliografia (INPE, 2026; SEEG, 2025).
+"As imagens são reais, do satélite Terra da NASA. São públicas e a gente registrou a origem de
+cada uma no trabalho: data, coordenada, licença e endereço."
 
 **→ passa para o Enzo.**
 
 ---
 
-# Enzo Consani — slides 5 a 7
+# Enzo Consani — slides 3 e 4
 
-## Slide 5 · 1.b — Por que resolver este problema importa — 1:15
+## Antes de apresentar
 
-"Três razões pelas quais resolver isso importa."
+**Os quatro efeitos do desmatamento.** Você vai citar quatro, e é bom entender cada um em uma
+frase:
 
-"Primeira: **saber onde olhar**. Fiscalização ambiental não tem efetivo para percorrer a
-frente inteira. O que ela precisa é de um sistema que diga quais polígonos mudaram desde a
-última vez. Detecção automática não substitui o fiscal — ela transforma um problema de
-vigilância impossível num problema de priorização."
+- **Carbono** — a árvore guarda carbono enquanto está viva. Quando a mata é derrubada e
+  queimada, esse carbono vai para a atmosfera como gás de efeito estufa.
+- **Bichos** — muitas espécies só vivem em mata fechada e contínua. Quando a floresta é
+  cortada em pedaços, esses grupos ficam ilhados e não conseguem se misturar.
+- **Água** — a floresta puxa água do solo e devolve para o ar pelas folhas. Isso alimenta a
+  chuva em outras regiões. Vegetação baixa não faz isso na mesma medida.
+- **Solo** — sem a copa segurando, a chuva bate direto no chão e leva a camada fértil embora.
 
-"Segunda: **conferir compromissos**. Embargo, acordo de restauração, rastreabilidade de
-cadeia produtiva, desmatamento zero — nada disso tem efeito se não dá para verificar. E
-verificar é, na prática, comparar duas datas. É o mesmo problema."
+**Os dois números, e o que eles significam.**
 
-"Terceira: **assimetria de informação**. Sem monitoramento independente, quem sabe o que
-acontece numa frente de expansão é só quem está lá. Dado orbital aberto e método
-reproduzível são um contrapeso. E isso não é abstrato: a Comissão Pastoral da Terra
-registrou 1.593 conflitos no campo em 2025, dos quais 824 na Amazônia Legal."
+- **5.731 km²** é a área derrubada na Amazônia Legal entre agosto de 2024 e julho de 2025,
+  medida pelo INPE. Foi 12% menos que no ano anterior. Se perguntarem: é o sistema PRODES, que
+  é o monitoramento oficial do Brasil.
+- **42%** é a fatia das emissões brutas de gases de efeito estufa do Brasil em 2024 que veio de
+  mudança de uso da terra — basicamente desmatamento. São 906 milhões de toneladas. A fonte é
+  o SEEG.
 
-"E embaixo, uma ideia que volta no fim: errar custa caro dos **dois** lados. Falso positivo
-pune quem não desmatou; falso negativo deixa passar. Por isso a gente acha que um sistema
-honesto precisa saber dizer 'não tenho informação suficiente'."
+Só cite esses dois. Qualquer outro número sem fonte na mão é um risco desnecessário.
 
-## Slide 6 · 1.b — Impacto ecológico: a geometria importa — 50 s
+**Por que a forma do corte importa.** Duas áreas do mesmo tamanho não fazem o mesmo estrago. Um
+corte comprido e estreito ao longo de uma estrada tem muito mais **borda** do que um corte
+quadrado da mesma área. E borda é onde a floresta sofre: fica mais seca, mais quente e pega
+fogo mais fácil. Isso teve consequência direta no nosso programa: não basta dar um número
+total de área. O sistema precisa listar **cada região separada**, com tamanho e posição. É por
+isso que ele identifica regiões uma a uma em vez de só somar pixels.
 
-"Uma coisa que a gente aprendeu escrevendo o capítulo 1 e que mudou o desenho do projeto: o
-impacto do desmatamento não depende só de **quanto** foi removido, mas da **forma**."
+**O que significa "preparar dados para um modelo de visão computacional".** Essa é a frase mais
+importante do slide 4, e a que mais confunde. Um modelo de visão computacional é um programa
+que aprende a reconhecer coisas em imagens. Para aprender, ele precisa de exemplos já marcados:
+"este pedaço aqui é desmatado", "este aqui é mata". Marcar isso na mão, em milhares de pedaços,
+é inviável.
 
-"Olhem a imagem: o corte acompanha as estradas. É o padrão que chamam de espinha de peixe.
-Um corte alongado desse tipo produz muito mais borda por unidade de área do que um corte
-compacto do mesmo tamanho."
+O que o nosso trabalho faz é usar processamento de imagens para **produzir essas marcações
+automaticamente**. Comparando as duas datas, o programa descobre onde houve perda, e usa essa
+descoberta para rotular pedaços da imagem. Esses pedaços rotulados é que alimentam o modelo
+depois.
 
-"E borda importa porque é onde o microclima muda: a floresta de borda é mais seca, mais
-quente e mais vulnerável ao fogo. Além disso a fragmentação isola espécies que não
-atravessam área aberta."
+Ou seja: o processamento de imagens aqui **não é o produto final** — ele é a fábrica de dados
+de treino. É exatamente isso que o enunciado pede.
 
-"A consequência para o nosso sistema está no quadro escuro: **não basta** um número de área
-total. O sistema precisa entregar as regiões uma a uma, com forma e localização. É por isso
-que a nossa solução rotula componentes conexos e descreve cada região, em vez de só somar
-pixels. O requisito ecológico virou requisito de software."
+**O oitavo objetivo.** "Saber recusar quando a imagem não permite responder." Ele não estava no
+plano original. A gente acrescentou depois de o programa recusar uma imagem de verdade — e a
+recusa estar certa. O motivo completo é da próxima entrega. Hoje basta dizer que foi
+acrescentado depois e que a gente explica na defesa.
 
-## Slide 7 · 1.c — Objetivos — 55 s
+## Slide 3 · Por que isso importa — 1:15
 
-"O objetivo geral é a frase da caixa escura, e ela foi escrita colada no enunciado: uma
-aplicação em Python que aplica processamento de imagens sobre um par de datas para detectar
-e quantificar perda de cobertura, **produzindo dados preparados** para alimentar um modelo
-de visão computacional. O processamento de imagens aqui é preparação de dados, não é o
-produto final."
+"Três motivos para resolver isso."
 
-"Os oito objetivos específicos: adquirir imagem real com procedência; implementar os filtros
-por conta própria; realçar a diferença com índices; segmentar; quantificar; preparar
-recortes rotulados; treinar e avaliar sem superestimar; e o oitavo, reconhecer os próprios
-limites."
+"O primeiro é o que se perde. A mata guarda carbono, e derrubar joga esse carbono no ar. Os
+bichos que dependem de mata fechada perdem o lugar. A floresta ajuda a mover umidade pelo
+continente. E o solo, exposto, erode."
 
-"Esse oitavo não estava na versão inicial. A gente acrescentou depois — e explica por quê na
-defesa."
+"E a escala é grande: o INPE mediu 5.731 km² derrubados na Amazônia no último ano. O uso da
+terra sozinho responde por 42% das emissões do Brasil."
 
-"E a coluna da direita é tão importante quanto: o que a gente **não** se propõe a fazer. Não
-substituímos o INPE, não processamos cena inteira em escala operacional, não classificamos o
-uso que veio depois da floresta e não produzimos índice comparável com a literatura.
-Delimitar isso é o que torna os objetivos verificáveis."
+"O segundo motivo é por que precisa ser automático: ninguém tem gente para percorrer a floresta
+inteira. A fiscalização precisa saber onde olhar **primeiro**. E embargo, acordo ambiental,
+essas coisas só valem se der para conferir depois — e conferir é comparar duas datas."
+
+"O terceiro é que errar custa caro dos dois lados. Se o sistema aponta desmatamento onde não
+houve, alguém é punido injustamente. Se deixa passar, a floresta não volta. Por isso a gente
+acha que o sistema precisa conseguir dizer 'não tenho certeza'."
+
+"E o quadro da direita mudou o nosso projeto: um corte comprido do lado de uma estrada faz
+muito mais estrago que um corte quadrado do mesmo tamanho, porque tem muito mais borda. Então
+não basta dar um número total — o sistema tem que mostrar cada área separada."
+
+## Slide 4 · O que queremos construir — 1:15
+
+"O objetivo é a frase da caixa, e ela vem do enunciado: um programa que compara duas imagens,
+acha e mede o que perdeu vegetação, e **deixa os dados prontos** para treinar um modelo de
+visão computacional."
+
+"Essa última parte é importante: o processamento de imagens aqui não é o produto final. Ele
+prepara os dados. O modelo vem depois, e só existe porque essa preparação acontece."
+
+"Os oito passos estão aí em ordem: baixar imagem real, escrever os filtros por conta própria,
+realçar a diferença entre mata e terra, separar as áreas, medir em hectares, recortar e rotular
+pedaços, treinar o classificador, e o oitavo — saber recusar quando a imagem não permite
+responder."
+
+"Esse oitavo a gente acrescentou depois de começar, e explica o motivo na defesa."
+
+"E à direita está o que a gente **não** se propõe a fazer. Isso é tão importante quanto, porque
+é o que deixa o objetivo possível de conferir."
 
 **→ passa para a Isabel.**
 
 ---
 
-# Isabel Da Silva — slides 8 a 11
+# Isabel Da Silva — slides 5, 6 e 7
 
-## Slide 8 · 2.e.iii — Convolução e tratamento de borda — 1:15
+## Antes de apresentar
 
-"O capítulo 2 é a base teórica. E o ponto de partida é que todos os filtros espaciais que a
-gente usa são casos particulares de **uma** operação: a convolução."
+Esta é a parte mais técnica da apresentação. Leia com calma — depois que a ideia central cai a
+ficha, o resto vem junto.
 
-"A fórmula está aí: para cada pixel, você percorre a vizinhança, multiplica pelo peso
-correspondente do núcleo e soma. Mudar o filtro é mudar o núcleo."
+### 1. Uma imagem é uma tabela de números
 
-"Logo abaixo está a correlação cruzada, que é a mesma soma sem a inversão dos índices. Essa
-distinção é muito ignorada, e a gente faz questão dela: para núcleo simétrico — média,
-gaussiano, laplaciano — dá exatamente o mesmo resultado. Para núcleo antissimétrico, como o
-Sobel, muda o **sinal**: uma borda de claro para escuro inverte em relação a uma de escuro
-para claro."
+Para o computador, uma imagem em tons de cinza é uma tabela: cada posição guarda um número que
+diz o quanto aquele ponto é claro ou escuro. Uma imagem colorida é três tabelas dessas
+empilhadas — uma para vermelho, uma para verde, uma para azul.
 
-"No nosso caso interessa a magnitude, então o sinal não muda a conclusão — mas a
-implementação precisa saber qual das duas está rodando. Por isso as duas estão implementadas
-separadamente no código."
+Tudo que a gente faz com imagem é conta com esses números.
 
-"À direita, o tratamento de borda. No pixel da margem, parte da vizinhança cai fora da
-imagem. Dá para encolher a imagem, inventar valor, ou estender por uma regra. A gente
-estende, com quatro regras."
+### 2. Filtrar é trocar cada número por uma conta com os vizinhos
 
-"E isso não é detalhe cosmético — está no quadro de baixo: se você preenche com **zero** numa
-cena de floresta, cria uma faixa escura na margem. O índice de vegetação lê faixa escura como
-solo exposto, e a segmentação marcaria desmatamento na borda da imagem. Por isso o padrão é
-reflexão."
+Um filtro percorre a imagem ponto a ponto. Em cada ponto, ele olha os vizinhos em volta, faz
+uma conta com eles, e o resultado dessa conta vira o novo valor daquele ponto.
 
-## Slide 9 · 2.e.iii — Filtros de suavização — 1:00
+Exemplo concreto, o mais simples de todos. Suponha que num pedaço da imagem os valores sejam:
 
-"Três filtros de suavização, e eles não são intercambiáveis."
+```text
+10  12  11
+13  90  12      ← o 90 no meio é ruído: um ponto isolado esquisito
+11  12  10
+```
 
-"A **média** é o mais simples: todos os vizinhos com o mesmo peso. Reduz ruído, mas borra a
-borda com a mesma força com que borra o ruído — justamente porque trata todo mundo igual."
+Se o filtro for "tire a média dos nove", o 90 vira 20 e alguma coisa — o pico sumiu, a imagem
+ficou mais lisa. É isso que suavizar significa.
 
-"O **gaussiano** resolve isso fazendo o peso decair com a distância ao centro. E ele é
-normalizado para somar 1, o que preserva o brilho médio da imagem. É esse que a gente usa
-antes da limiarização."
+### 3. O que muda de um filtro para outro é só a matriz de pesos
 
-"A **mediana** é diferente dos dois: ela nem é uma convolução. Ela troca o pixel pela mediana
-da vizinhança. Como mediana é estatística de ordem, um pixel isolado com valor absurdo não
-muda o resultado — então ela remove ruído impulsivo **sem** borrar a borda. O preço é ser
-mais cara."
+Essa matriz de pesos se chama **núcleo** (ou *kernel*). É quase sempre pequena, 3×3 ou 5×5.
 
-"E o quadro de baixo é a justificativa de tudo isso. Se a gente não suaviza, o ruído do
-sensor faz pixel individual atravessar o limiar, e a máscara sai cheia de buraco. Aí a
-contagem de componentes conexos explode: o sistema ia reportar centenas de 'áreas
-desmatadas' de três pixels onde existe uma só. E a análise por região é exatamente o que o
-capítulo 1 disse que era necessário."
+A conta é: encosta o núcleo em cima do ponto, multiplica cada vizinho pelo peso que está em
+cima dele, e soma tudo. Essa operação tem nome: **convolução**. É a fórmula do slide 5.
 
-## Slide 10 · 2.e.iii — Separabilidade — 1:00
+- Se todos os pesos forem iguais, você tem o filtro de **média**.
+- Se os pesos do centro forem maiores que os das pontas, você tem o **gaussiano**.
+- Se os pesos de um lado forem positivos e do outro negativos, você tem um detector de
+  **borda**.
 
-"Essa é a parte mais bonita do capítulo 2, na nossa opinião, porque é álgebra pura com efeito
-medido."
+O núcleo muda; a conta é a mesma. **Por isso a gente escreveu essa conta uma vez só no
+programa, e todos os filtros usam ela.** Se alguém perguntar como os filtros foram
+implementados, é essa a resposta.
 
-"Convolução 2D direta custa *k*² multiplicações por pixel. Para o gaussiano dá para baixar
-isso para 2*k*. E não é aproximação — é identidade."
+### 4. O problema da beirada
 
-"A conta está aí: o expoente da gaussiana é uma **soma**, *x*² mais *y*². E exponencial de
-soma é produto de exponenciais. Então o núcleo 2D é exatamente o produto externo de dois
-núcleos 1D iguais. Convoluir pelo 2D é a mesma coisa que passar o 1D na horizontal e depois
-na vertical."
+No ponto que está na margem da imagem, metade dos vizinhos que a conta pede simplesmente não
+existe. Três saídas possíveis:
 
-"O gráfico é a medição no nosso código, numa imagem de 440 por 440. Numa janela 3 por 3 o
-ganho é pequeno, 1,4 vezes. Numa 21 por 21 chega a 9,4 vezes. Faz sentido: o ganho cresce
-com *k*."
+- cortar a margem, e a imagem encolhe;
+- inventar um valor, geralmente zero (preto);
+- **espelhar** a imagem para fora da borda — é o que a gente faz.
 
-"E a diferença entre os dois caminhos foi de 10⁻⁶ — isso é arredondamento de ponto flutuante,
-não diferença de método. A gente tem teste que confere essa equivalência inclusive nas bordas
-e nos quatro modos de margem, porque é lá que ela poderia falhar."
+Por que isso importa no nosso caso: se a gente preenchesse com preto, criaria uma faixa escura
+em volta da imagem. Como o programa lê escuro-nesse-índice como terra exposta, ele ia marcar
+desmatamento na moldura de toda cena. Um detalhe de implementação virando resultado errado.
 
-"A média também é separável. A mediana **não** é: a mediana de uma janela 2D não é a mediana
-das medianas das linhas, porque estatística de ordem não se decompõe assim."
+### 5. Os três filtros de suavização, e por que eles são diferentes
 
-## Slide 11 · 2.e.iii — Realce de borda e textura — 1:10
+| Filtro | Como funciona | Ponto forte | Ponto fraco |
+|---|---|---|---|
+| Média | soma os vizinhos e divide | simples e rápido | borra a borda tanto quanto o ruído |
+| Gaussiano | vizinho perto pesa mais | tira ruído preservando melhor a borda | ainda borra um pouco |
+| Mediana | pega o valor do meio, não a média | mata pixel isolado sem borrar nada | mais lento; não é convolução |
 
-"Bordas são descontinuidades. Detectar borda é estimar derivada espacial."
+Sobre a mediana: "valor do meio" significa colocar os nove valores em ordem e pegar o quinto.
+No exemplo lá de cima, os valores em ordem são 10, 10, 11, 11, 12, 12, 12, 13, 90 — o do meio é
+12. O 90 simplesmente não influencia. Por isso ela é tão boa contra ponto isolado.
 
-"O **Sobel** é a primeira derivada. São dois núcleos: um para a direção *x* e outro para *y*.
-E tem um detalhe que vale explicar: o peso 2 na linha do meio não é enfeite — é suavização na
-direção perpendicular. É isso que faz o Sobel ser menos sensível a ruído do que uma diferença
-simples. O Prewitt é a mesma estrutura sem esse peso, e a gente implementou para poder
-comparar."
+### 6. Por que suavizar é obrigatório no nosso caso
 
-"Dos dois sai a **magnitude do gradiente**, que é a raiz da soma dos quadrados. A magnitude é
-invariante à orientação — e isso importa muito aqui, porque o corte pode estar em qualquer
-direção. A magnitude acende o contorno de qualquer jeito."
+Depois da filtragem, o programa faz um corte: acima de certo valor é mata, abaixo não é. Isso
+transforma a imagem em preto e branco.
 
-"O **laplaciano** é segunda derivada, isotrópico. Como ele responde a mudança de taxa, é muito
-sensível a detalhe fino e a ruído. Repara que a soma dos pesos é zero: isso significa que
-região constante vai a zero, e rampa linear também. A gente usa exatamente isso como caso de
-teste analítico."
+Se o ruído chegar nessa etapa, cada ponto de ruído que estiver perto do valor de corte vai para
+o lado errado. O resultado fica furado como uma peneira. E aí, quando o programa for contar as
+áreas, ele vai achar centenas de manchinhas de três pontos onde existe uma área só.
 
-"E o último quadro é a **textura**: desvio-padrão de uma janela deslizante. A ideia é que
-dossel fechado é irregular, com sombra, então tem desvio alto; pasto é homogêneo, desvio
-baixo. Eu preciso ser honesta: isso é hipótese da literatura e **ainda não foi validada** por
-nós. Está declarado assim no trabalho."
+Lembrando o que o Enzo falou: a gente precisa listar cada área separada. Uma máscara furada
+destrói exatamente isso.
+
+### 7. A otimização do gaussiano (o gráfico do slide 6)
+
+O gaussiano 2D pode ser feito em duas passadas simples: uma na horizontal e outra na vertical.
+O resultado é **exatamente o mesmo**, e é muito mais rápido, porque numa janela de lado *k* você
+faz *2k* contas em vez de *k×k*.
+
+Por que dá o mesmo: o peso do gaussiano num ponto depende da distância, e a fórmula dele se
+separa no produto de um pedaço que só depende de *x* por outro que só depende de *y*. É
+identidade matemática, não aproximação.
+
+Na nossa medição, numa janela 21×21 ficou **9,4 vezes** mais rápido, e a diferença entre os dois
+caminhos foi da ordem de 0,000001 — o que é só arredondamento do computador.
+
+**Cuidado:** o filtro de média também tem essa propriedade. A mediana **não** tem, porque "o
+valor do meio de um quadrado" não é "o valor do meio dos valores do meio de cada linha".
+
+### 8. Achar borda é achar mudança brusca
+
+Onde a mata acaba e o corte começa, o valor da imagem muda de repente. Achar borda é achar essa
+mudança.
+
+O **Sobel** faz isso com dois núcleos: um com pesos negativos de um lado e positivos do outro na
+horizontal, outro igual na vertical. Onde não há mudança, os lados se cancelam e o resultado dá
+zero. Onde há mudança, sobra um valor alto.
+
+Como são dois resultados (horizontal e vertical), a gente combina os dois pela raiz da soma dos
+quadrados — como a hipotenusa de um triângulo. Isso se chama **magnitude**, e a vantagem é que
+ela não depende da direção da borda: o corte pode estar torto que o filtro acha do mesmo jeito.
+
+Um detalhe que rende pergunta: no Sobel, o peso do meio é 2 e não 1. Esse peso maior no centro
+é uma suavização na direção perpendicular, e é o que faz o Sobel ser menos sensível a ruído que
+uma subtração pura. O filtro de **Prewitt** é a mesma coisa sem esse peso — a gente implementou
+os dois para poder comparar.
+
+### 9. Laplaciano
+
+Se o Sobel mede a mudança, o laplaciano mede a **mudança da mudança**. Consequência prática: ele
+responde muito a detalhe fino, e também muito a ruído.
+
+Ele tem uma propriedade que a gente usa como teste: os pesos dele somam zero. Então, numa área
+de valor constante, o resultado tem que dar zero. Numa rampa suave também. A gente escreveu um
+teste que passa uma rampa e confere se o resultado é zero — é assim que sabemos que a nossa
+implementação está certa, **sem comparar com biblioteca nenhuma**. Esse ponto é forte: mostra
+que os testes verificam matemática, não coincidência com o OpenCV.
+
+### 10. Textura
+
+Ideia diferente das anteriores: em vez de olhar a borda, mede o quanto os valores oscilam
+dentro de um quadradinho. Isso é o **desvio padrão local**.
+
+A hipótese é: mata fechada tem copa irregular e cheia de sombra, então os valores variam muito;
+pasto é liso, varia pouco.
+
+**Seja honesta sobre isso:** é hipótese da literatura, e nós ainda não confirmamos que funciona
+no nosso caso. Está escrito assim no trabalho. Se perguntarem, a resposta certa é "ainda não
+sabemos".
+
+### Se der branco
+
+A frase que salva qualquer momento deste bloco é: *"todos os filtros são a mesma conta — a
+convolução — com pesos diferentes. Muda a matriz de pesos, muda o efeito."*
+
+## Slide 5 · O que é filtrar uma imagem — 1:15
+
+"Agora a parte de filtragem, que é o conteúdo da nossa disciplina."
+
+"Começando pelo básico: uma imagem, para o computador, é uma tabela de números. Cada pixel é um
+número. Filtrar é trocar cada número por uma conta feita com ele e com os vizinhos em volta."
+
+"E o que muda de um filtro para outro é só a conta. A conta se chama convolução, e é essa
+fórmula. Parece complicada, mas o que ela diz é simples: pega uma matriz pequena de pesos, o K,
+encosta ela em cima do pixel, multiplica cada vizinho pelo peso correspondente e soma tudo."
+
+"Trocar o K é trocar o filtro. Todos os filtros que eu vou mostrar agora são a **mesma** conta,
+só com pesos diferentes. Por isso a gente escreveu essa conta uma vez só."
+
+"Do lado direito tem um detalhe que parece bobo e não é: o pixel da beirada. Nele, metade dos
+vizinhos que a conta pede não existe. A gente resolve espelhando a imagem para fora."
+
+"Se em vez disso a gente preenchesse com preto, ia criar uma moldura escura na imagem. E o
+programa leria essa moldura como terra exposta — ou seja, ia marcar desmatamento na borda de
+toda cena."
+
+## Slide 6 · Filtros que tiram o ruído — 1:15
+
+"Três filtros que tiram ruído, e eles não são iguais."
+
+"A **média** é a mais simples: soma os vizinhos e divide. Só que ela trata todo mundo igual,
+então borra a borda com a mesma força com que tira o ruído."
+
+"O **gaussiano** resolve isso: vizinho perto pesa mais que vizinho longe. É esse que a gente
+usa."
+
+"A **mediana** é diferente: em vez de somar, ela pega o valor do meio da vizinhança. Um pixel
+isolado com valor absurdo não muda o valor do meio, então ela limpa esse tipo de ruído sem
+borrar nada. O preço é ser mais lenta."
+
+"Por que isso é obrigatório: depois da filtragem o programa corta a imagem em duas — com mata e
+sem mata. Se o ruído ficar, pixel solto passa para o lado errado e o resultado sai furado como
+peneira. Aí o programa conta centenas de áreas minúsculas onde existe uma só. E a gente acabou
+de dizer que precisa mostrar cada área separada."
+
+"O gráfico é uma otimização nossa. O gaussiano dá para fazer em duas passadas simples em vez de
+uma passada pesada — e o resultado é exatamente o mesmo. Numa janela grande ficou 9 vezes mais
+rápido."
+
+## Slide 7 · Filtros que acham a borda — 1:00
+
+"Agora os filtros que acham a borda. A ideia: onde a mata acaba e o corte começa, o valor da
+imagem muda de repente. Achar borda é achar essa mudança brusca."
+
+"O **Sobel** faz isso com dois conjuntos de pesos: um procura mudança na horizontal, o outro na
+vertical. Juntando os dois, o filtro acende no contorno da área cortada — e funciona em
+qualquer direção, o corte pode estar torto que tanto faz."
+
+"A **textura** é outra ideia. Em vez de olhar a borda, ela mede o quanto os valores oscilam
+dentro de um quadradinho. Mata fechada é cheia de sombra e copa irregular, então varia muito.
+Pasto é liso, varia pouco."
+
+"E eu preciso ser honesta: isso é uma hipótese que a gente leu na literatura. Nós ainda **não**
+confirmamos. Está escrito assim no trabalho."
+
+"Por último o **laplaciano**. O Sobel responde à mudança; o laplaciano responde à mudança da
+mudança. Isso deixa ele ótimo para detalhe fino e muito sensível a ruído."
+
+"Ele tem uma propriedade que a gente aproveitou: numa área lisa, ou numa rampa suave, o
+resultado tem que dar zero. Então a gente escreveu um teste que passa uma rampa e confere se dá
+zero. É assim que a gente sabe que a nossa implementação está certa — sem comparar com
+biblioteca nenhuma."
 
 **→ passa para o Jonathan.**
 
 ---
 
-# Jonathan Aparecido X Martins — slides 12 a 15
+# Jonathan Aparecido X Martins — slides 8, 9 e 10
 
-## Slide 12 · 3.a — Os filtros escolhidos, e a função de cada um — 1:15
+## Antes de apresentar
 
-"Agora o capítulo 3, que é a nossa proposta. A Isabel mostrou o que existe; eu mostro o que a
-gente escolheu e por quê."
+Você apresenta a **escolha**: dos filtros que a Isabel explicou, quais entram no nosso programa,
+em que ordem, e por quê. Entenda cada um em uma frase.
 
-"E o 'por quê' importa: a escolha não foi por catálogo. Cada filtro entrou porque resolve um
-problema concreto que aparece na cadeia."
+### 1. Índice de vegetação
 
-"Primeiro o índice de vegetação, que reduz várias bandas a um mapa escalar onde vegetação e
-solo exposto ficam em extremos opostos. Depois o gaussiano 5 por 5, pelo motivo que a Isabel
-explicou: sem ele o ruído atravessa o limiar."
+Uma conta que junta duas bandas do satélite num valor só, escolhida de um jeito que mata e
+terra exposta caem em extremos opostos.
 
-"Aí vem o Otsu sobre o histograma **conjunto** das duas datas — e o 'conjunto' é uma decisão
-nossa, que eu explico no próximo slide. Depois a limpeza morfológica: abertura tira respingo
-isolado, fechamento tapa buraco interno."
+A mais conhecida é o **NDVI**: pega o infravermelho e o vermelho e calcula a diferença dividida
+pela soma. Folha viva reflete muito infravermelho e pouco vermelho, então dá um valor alto;
+terra exposta dá baixo.
 
-"O gradiente morfológico extrai o contorno das regiões para exibir. O Sobel torna visível a
-fronteira entre floresta e corte. E o desvio-padrão local é o descritor de textura que vai
-para a etapa de modelo."
+No nosso caso a gente usa o **NBR**, que é a mesma ideia com outra banda — o infravermelho de
+ondas curtas. Por que: as imagens que a gente baixou trazem essa banda, e não a do NDVI
+tradicional. Se perguntarem a diferença entre NBR e NDMI: é a mesma conta com uma banda
+vizinha; a que veio nas nossas imagens dá o NBR.
 
-"A lógica da ordem: cada filtro sai um passo antes de onde ele atrapalharia. A **ordem** faz
-parte da proposta, não é acidente."
+**O índice é a base de tudo.** Sem ele, os filtros estariam trabalhando em cima da cor normal,
+onde mata e pasto se confundem muito mais.
 
-## Slide 13 · 3.a — O efeito de cada filtro, na cena real — 1:00
+### 2. Limiar de Otsu
 
-"E aqui estão os filtros rodando de verdade, sobre um recorte da cena real de 2024. Isso não
-é ilustração de livro: é a saída do nosso código."
+Depois de filtrar, o programa precisa decidir: a partir de qual valor é mata, e abaixo de qual
+não é? Esse valor de corte se chama **limiar**.
 
-"Em cima, à esquerda, a cor natural. Ao lado, o índice NBR bruto: o amarelo é solo exposto, o
-verde é vegetação. O índice já separa bem — mas olhem o granulado. Aquilo é ruído do sensor,
-e é exatamente o que estragaria a limiarização."
+Escolher o limiar na mão seria arbitrário e diferente para cada imagem. O método de **Otsu**
+escolhe sozinho: ele testa todos os cortes possíveis e fica com aquele que deixa os dois grupos
+resultantes o mais separados possível.
 
-"O terceiro painel é o gaussiano 5 por 5. Comparem com o do lado: o granulado sumiu e a
-estrutura continua lá. Embaixo à esquerda, a mediana, que faz um trabalho parecido por outro
-caminho."
+**Uma decisão nossa, que vale citar:** a gente calcula **um limiar só** juntando as duas datas,
+e aplica o mesmo nas duas. Se calculasse um para cada, a comparação passaria a medir a
+diferença entre as duas regras, e não a diferença no terreno.
 
-"E os dois últimos são o realce de borda e a textura. O Sobel acende no contorno do corte e no
-rio. O desvio-padrão local responde ao mesmo contorno, mas por variação local em vez de
-derivada."
+### 3. Abertura e fechamento (morfologia)
 
-"O enunciado pede que o resultado dos filtros seja apresentado **e analisado**. É isso que
-este slide faz: cada painel tem uma razão de estar na cadeia, e dá para ver o efeito."
+São operações de limpeza que trabalham sobre a imagem já em preto e branco.
 
-## Slide 14 · 3.a — A ordem não é indiferente — 1:00
+- **Abertura** encolhe e depois engorda as manchas. Efeito: respingo pequeno demais some, e o
+  que é grande volta ao tamanho.
+- **Fechamento** faz o contrário — engorda e depois encolhe. Efeito: buraquinho dentro de uma
+  área grande é tapado.
 
-"Duas coisas para fechar a proposta."
+Juntas, elas deixam as áreas com formato limpo, sem mudar o tamanho geral.
 
-"A primeira é a **ordem**. Pode parecer indiferente suavizar antes ou depois do limiar, e não
-é. Suavizar depois estaria operando sobre uma máscara binária — aquilo já seria morfologia,
-não filtragem — e não recupera a informação que o limiar destruiu. O ruído tem que ser
-atenuado enquanto o dado ainda é contínuo."
+### 4. Por que a ordem importa
 
-"E o efeito de pular esse passo é mensurável: a máscara sai esburacada e a contagem de
-componentes conexos explode. Voltamos ao capítulo 1: a análise por região era um requisito
-ecológico, e ela morre se a máscara estiver cheia de buraco."
+Suavizar tem que vir **antes** do corte.
 
-"A segunda é **por que a gente implementou os filtros**. Primeiro porque o enunciado exige, na
-página 3. Mas tem uma razão prática que a gente sentiu: uma chamada a `cv2.GaussianBlur` não
-permite responder o que acontece na borda, por que o núcleo é normalizado, ou por que
-convolução difere de correlação. Com o código no repositório, cada uma dessas perguntas tem
-resposta em uma linha."
+Depois do corte a imagem só tem dois valores, preto e branco. A informação intermediária já foi
+jogada fora. Suavizar nesse ponto seria mexer numa imagem que já perdeu o que importava — e não
+recupera nada. Se alguém insistir: suavizar depois do corte já é morfologia, não é filtragem.
 
-"E a restrição é **verificável**, não é promessa: dentro da pasta `pdi` a única dependência
-permitida é o NumPy, e a ausência de `cv2`, `skimage`, `scipy` e `PIL` é conferida por
-inspeção."
+### 5. Por que escrevemos os filtros
 
-## Slide 15 · O que vem na Fase Intermediária II — 35 s
+Duas razões, e vale dar as duas.
 
-"Fechando: esta qualificação entrega o que precisa estar decidido **antes** do desenvolvimento
-prático."
+A primeira é que o enunciado exige, na página 3: *"Os filtros devem ser desenvolvidos pelo
+grupo."*
 
-"O capítulo 1 definiu o problema como bi-temporal, mostrou por que ele importa e — o que talvez
-seja o mais útil — mostrou que a análise precisa ser por **região**, não só por área total. O
-capítulo 2 fixou os conceitos de filtragem. E o 3.a escolheu quais filtros entram, em que
-ordem, e por quê."
+A segunda é prática, e é a que impressiona mais: se a gente chamasse uma função pronta de
+biblioteca, não saberia responder o que o programa faz na borda da imagem, nem por que o
+resultado é aquele. Com o código sendo nosso, cada uma dessas perguntas tem resposta
+localizável.
 
-"O que vem na Fase II é a execução: segmentação, quantificação em hectares, preparação dos
-recortes rotulados, e o modelo com a avaliação."
+E isso é verificável, não é promessa: dentro do núcleo do programa a única biblioteca permitida
+é a de contas com números (NumPy). Não entra OpenCV, nem scikit-image, nem scipy. Qualquer um
+pode abrir o repositório e conferir.
 
-"Obrigado. Estamos à disposição para perguntas — e qualquer um de nós responde sobre qualquer
-parte."
+### 6. O que fica para a próxima entrega
+
+Separar as áreas, medir em hectares, recortar e rotular os pedaços, treinar o modelo e discutir
+os resultados. Se perguntarem sobre resultado hoje, a resposta é: "é conteúdo da Fase II".
+
+## Slide 8 · Os filtros que escolhemos — 1:15
+
+"A Isabel mostrou os filtros que existem. Eu mostro quais a gente escolheu e por quê — porque a
+escolha não foi por catálogo, cada um resolve um problema."
+
+"Primeiro o **índice de vegetação**. Ele junta as cores da imagem num valor só, escolhido de um
+jeito que mata e terra exposta ficam em extremos opostos. É o que deixa o resto do trabalho
+possível."
+
+"Segundo o **gaussiano**, pelo motivo que a Isabel explicou: tirar o ruído antes do corte."
+
+"Terceiro o **limiar de Otsu**. Ele olha a imagem e decide sozinho qual valor separa mata de
+não-mata. E a gente usa o **mesmo** valor de corte nas duas datas — se usasse um para cada, a
+comparação ia medir a diferença entre as regras, não a diferença no terreno."
+
+"Quarto, abertura e fechamento: limpa respingo solto e tapa buraco dentro das áreas. Quinto, o
+Sobel, para realçar o contorno. Sexto, a variação local, que é a textura para o modelo."
+
+"E a frase de baixo é a regra de ouro: suavizar tem que vir **antes** do corte. Depois do corte
+a imagem já virou preto e branco, e o que se perdeu não volta."
+
+## Slide 9 · Os filtros rodando na imagem real — 1:00
+
+"E aqui estão esses filtros rodando de verdade, num pedaço da imagem de 2024. Isso não é figura
+de livro: é a saída do nosso programa."
+
+"O primeiro painel é a imagem como ela é. O segundo já é o índice de vegetação: o amarelo é
+terra exposta, o verde é mata. Só que olhem o granulado — aquilo é ruído."
+
+"O terceiro painel é o mesmo depois do gaussiano. Comparem os dois: o granulado sumiu e o
+desenho do terreno continuou lá. É exatamente isso que a gente precisava."
+
+"Embaixo, à esquerda, a mediana fazendo um trabalho parecido. E os dois últimos são o Sobel e a
+textura: repara que o contorno do corte e o rio acendem sozinhos."
+
+"O enunciado pede que o resultado dos filtros seja mostrado **e analisado**. É isso que este
+slide faz: cada painel tem um motivo de estar ali, e dá para ver o efeito."
+
+## Slide 10 · Para fechar — 40 s
+
+"Para fechar, três coisas."
+
+"A primeira: os filtros são nossos. O enunciado exige que o grupo escreva os filtros, e a gente
+escreveu. Dentro do núcleo do programa a única biblioteca que entra é a de contas com números.
+Não tem OpenCV, não tem nada pronto."
+
+"A segunda é por que isso foi bom para nós, além da exigência: se a gente chamasse uma função
+pronta, não saberia responder o que acontece na borda da imagem, nem por que o resultado é
+aquele. Com o código sendo nosso, cada pergunta dessas tem resposta."
+
+"E a terceira é o que vem na próxima entrega: separar as áreas, medir em hectares, recortar e
+rotular os pedaços, treinar o modelo e discutir os resultados."
+
+"O capítulo 1 disse qual é o problema. O capítulo 2 explicou como se filtra uma imagem. O
+capítulo 3 escolheu os filtros. O que falta é executar."
+
+"Obrigado. Qualquer um de nós responde perguntas sobre qualquer parte."
 
 ---
 
-# Slide 16 · Reserva — só se pedirem · Isabel Da Silva
+# Slide 11 · Reserva — Isabel Da Silva
 
-> **Não apresentar por padrão.** Este slide existe para o caso de sobrar tempo ou de alguém
-> pedir para ver o programa. A demonstração completa é da Fase II.
+> **Não apresentar.** Só abrir se perguntarem se já existe código.
 
-"O protótipo já existe e já aplica esses filtros. Aqui está a aba de etapas do processamento."
+"O programa já existe e já aplica esses filtros. Essa é a tela dele."
 
-"À esquerda o índice bruto, no meio o gaussiano 5 por 5, à direita o Sobel. É a mesma sequência
-que a gente acabou de descrever, rodando."
+"À esquerda o índice sem tratamento, no meio depois do gaussiano, à direita o Sobel. É a mesma
+sequência que a gente acabou de descrever, rodando."
 
-"Os painéis de baixo já são segmentação, que é conteúdo da próxima fase — estou mostrando só
-para situar onde a filtragem entra na cadeia."
+"Os painéis de baixo já são a etapa seguinte, que é conteúdo da próxima entrega — estou
+mostrando só para dar o contexto."
 
 ---
 
-# Checklist antes da apresentação
+# Checklist antes de apresentar
 
-- [ ] `entrega/apresentacao-qualificacao.pptx` aberto no modo apresentador, com as notas
-      visíveis
-- [ ] Ensaio cronometrado uma vez, do slide 1 ao 15 — sem o slide de reserva
-- [ ] Se o slide 16 for usado: `sentinela app` **já aberto** no navegador antes de começar,
-      na aba *Etapas do processamento*. Não subir o servidor ao vivo
-- [ ] Plano B do slide 16 testado: `sentinela demo --tamanho 200 --area 80`
-- [ ] **Cada integrante consegue responder as perguntas abaixo sem ler**
+- [ ] `entrega/apresentacao-qualificacao.pptx` aberto no **modo apresentador**, com as notas
+      visíveis (*Exibir → Modo de Exibição do Apresentador*)
+- [ ] Cada um leu a sua seção "Antes de apresentar" e consegue explicar sem ler
+- [ ] Um ensaio cronometrado, do slide 1 ao 10 — sem o slide de reserva
+- [ ] Se for usar o slide 11: navegador **já aberto** em `localhost:8501`, na aba *Etapas do
+      processamento*. Não subir o programa ao vivo
 
-# Perguntas prováveis — e onde está a resposta
+# Perguntas prováveis
 
-| Pergunta | Resposta curta | Onde mostrar |
-|----------|----------------|--------------|
-| Vocês usaram OpenCV? | Não. `pdi/` só importa NumPy, e a ausência de `cv2`, `skimage`, `scipy` e `PIL` é conferida por inspeção. | `src/sentinela/pdi/filtros.py` |
-| Qual a diferença entre convolução e correlação? | Convolução inverte os índices do núcleo. Igual para núcleo simétrico; muda o sinal no Sobel. | `pdi/nucleo.py` — `convoluir` e `correlacionar` |
-| O que acontece no pixel da borda? | A imagem é estendida por reflexão antes de convoluir. Preencher com zero criaria falso desmatamento na margem. | `pdi/nucleo.py` — `aplicar_borda` |
-| Por que gaussiano e não média? | A média borra a borda com o mesmo peso com que borra o ruído. O gaussiano decai com a distância. | slide 9 |
-| Por que não usar só a mediana? | Ela preserva a borda melhor, mas é mais cara e não é separável. O gaussiano basta para o ruído do sensor. | cap. 2.e.iii |
-| A separabilidade é uma aproximação? | Não. É identidade algébrica: o núcleo 2D é o produto externo de dois 1D. A diferença medida foi de 10⁻⁶. | slide 10 |
-| Por que Sobel e não Prewitt? | O peso 2 central do Sobel é suavização perpendicular, o que o torna menos sensível a ruído. Os dois estão implementados. | `pdi/filtros.py` — `gradiente` |
-| Para que serve o laplaciano aqui? | Realce de nitidez e caso de teste analítico: ele anula região constante e rampa linear. | slide 11 |
-| A textura ajuda? | **Ainda não sabemos.** É hipótese da literatura, declarada como não validada. | cap. 2.e.iii, fim |
-| Por que MODIS e não Sentinel-2? | Não exige cadastro — qualquer um reproduz. O custo é a resolução, e ele é discutido na Fase II. | `data/raw/FONTES.md` |
-| Por que NBR e não NDMI? | Mesma conta, SWIR diferente. O GIBS traz a banda 7 do MODIS, que é SWIR 2 — isso dá o NBR. O NDMI precisa da banda 6. | `pdi/cor.py` — `nbr` |
-| Já tem código pronto? | Sim, o protótipo roda. Mas o conteúdo desta fase é o que precisa estar decidido antes do desenvolvimento. | slide 16, se pedirem |
+| Pergunta | Resposta curta | Quem responde melhor |
+|----------|----------------|----------------------|
+| Vocês usaram OpenCV? | Não. No núcleo do programa só entra NumPy, e dá para conferir no repositório. | Jonathan |
+| Como vocês sabem que o filtro está certo, se não compararam com biblioteca? | Por propriedade matemática. Ex.: o laplaciano tem que dar zero numa rampa, e existe um teste que confere isso. | Isabel |
+| O que acontece no pixel da borda? | A imagem é espelhada para fora. Preencher com preto criaria desmatamento falso na moldura. | Isabel |
+| Por que gaussiano e não média? | A média borra a borda com a mesma força com que tira o ruído. | Isabel |
+| Por que duas datas? | Numa imagem só, pasto antigo e corte recente são iguais. Desmatamento é mudança. | André |
+| Por que MODIS e não um satélite melhor? | Os melhores exigem cadastro. A gente quis uma fonte que qualquer um baixa. O custo aparece na Fase II. | André |
+| Por que um limiar só para as duas datas? | Dois limiares mediriam a diferença entre as regras, não a diferença no terreno. | Jonathan |
+| A textura funciona? | **Ainda não sabemos.** É hipótese da literatura, declarada como não confirmada. | Isabel |
+| Já tem código pronto? | Sim, o protótipo roda. Mas o conteúdo desta fase é o que precisa estar decidido antes. | qualquer um |
+| Qual a diferença entre convolução e correlação? | O sinal dos índices. Igual para pesos simétricos; troca o sinal no detector de borda. As duas estão implementadas. | Isabel |
 
 # O que **não** dizer
 
-- Nenhum resultado de detecção, área em hectares ou métrica de modelo — é conteúdo da Fase II.
+- Nenhum resultado, área em hectares ou métrica de modelo — é conteúdo da próxima entrega.
 - "A textura melhora a classificação." — não foi medido.
-- Qualquer número de desmatamento da Amazônia que não seja um dos dois conferidos
-  (INPE, 2026 e SEEG, 2025).
-- "Os filtros são os do OpenCV, só que reescritos." — eles foram implementados a partir das
-  definições de Gonzalez e Woods (2018), e validados contra casos analíticos.
+- Número de desmatamento que não seja um dos dois conferidos (INPE e SEEG).
+- "Nossos filtros são os do OpenCV reescritos." — foram implementados a partir das definições
+  do livro-texto (Gonzalez e Woods) e validados contra propriedades matemáticas.
