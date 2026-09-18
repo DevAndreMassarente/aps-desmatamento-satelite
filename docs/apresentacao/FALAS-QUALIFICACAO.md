@@ -7,8 +7,8 @@ desenvolvimento prático."*
 > **Fica de fora:** separar as áreas, medir hectares, o modelo, a demonstração do programa e
 > qualquer resultado. Tudo isso é da próxima entrega, e está em `FALAS-DEFESA.md`.
 
-São **11 slides**, sendo o último de reserva. As mesmas falas estão nas notas do apresentador
-em `entrega/apresentacao-qualificacao.pptx`.
+São **10 slides**. As mesmas falas estão nas notas do apresentador em
+`entrega/apresentacao-qualificacao.pptx`.
 
 ## Como usar este documento
 
@@ -26,10 +26,10 @@ Cada pessoa tem duas partes:
 | Slides | Quem | Assunto | Tempo |
 |--------|------|---------|------:|
 | 1–2 | André Massarente | Abertura e o problema | 2:00 |
-| 3–4 | Enzo Consani | Por que importa e o que vamos construir | 2:30 |
+| 3–4 | Enzo Consani | Por que importa e o que o programa faz | 2:30 |
 | 5–7 | Isabel Da Silva | O que é filtragem | 3:30 |
-| 8–10 | Jonathan Aparecido X Martins | Os filtros que escolhemos e o fecho | 3:00 |
-| 11 | Isabel Da Silva | Reserva — **só se perguntarem** | +1:00 |
+| 8–9 | Jonathan Aparecido X Martins | Os filtros que escolhemos | 2:15 |
+| 10 | Isabel Da Silva | O programa aplicando os filtros, e encerramento | 1:00 |
 
 ---
 
@@ -148,10 +148,16 @@ depois.
 Ou seja: o processamento de imagens aqui **não é o produto final** — ele é a fábrica de dados
 de treino. É exatamente isso que o enunciado pede.
 
-**O oitavo objetivo.** "Saber recusar quando a imagem não permite responder." Ele não estava no
-plano original. A gente acrescentou depois de o programa recusar uma imagem de verdade — e a
-recusa estar certa. O motivo completo é da próxima entrega. Hoje basta dizer que foi
-acrescentado depois e que a gente explica na defesa.
+**Os cinco passos do slide 4, e o que separa hoje do resto.** Os três primeiros — receber as
+duas datas, calcular o índice e filtrar — são o conteúdo desta apresentação, e por isso estão
+destacados em verde escuro. Os dois últimos — separar e medir as áreas, e preparar os recortes
+rotulados — já estão implementados, mas são o conteúdo da próxima entrega. Se perguntarem sobre
+eles, responda em uma frase e diga que o detalhe vem na defesa.
+
+**Se perguntarem pelos objetivos do trabalho escrito:** o capítulo 1 lista oito, e esses cinco
+passos são a versão concreta deles. O oitavo é "saber recusar quando a imagem não permite
+responder" — ele não estava no plano original, e foi acrescentado depois de o programa recusar
+uma imagem de verdade, com razão. O motivo completo é da próxima entrega.
 
 ## Slide 3 · Por que isso importa — 1:15
 
@@ -176,24 +182,32 @@ acha que o sistema precisa conseguir dizer 'não tenho certeza'."
 muito mais estrago que um corte quadrado do mesmo tamanho, porque tem muito mais borda. Então
 não basta dar um número total — o sistema tem que mostrar cada área separada."
 
-## Slide 4 · O que queremos construir — 1:15
+## Slide 4 · O que o programa faz — 1:15
 
-"O objetivo é a frase da caixa, e ela vem do enunciado: um programa que compara duas imagens,
-acha e mede o que perdeu vegetação, e **deixa os dados prontos** para treinar um modelo de
-visão computacional."
+"Antes de entrar na parte técnica, o que o programa faz, em cinco passos."
 
-"Essa última parte é importante: o processamento de imagens aqui não é o produto final. Ele
-prepara os dados. O modelo vem depois, e só existe porque essa preparação acontece."
+"**Um:** ele recebe duas imagens da mesma área, tiradas com anos de diferença."
 
-"Os oito passos estão aí em ordem: baixar imagem real, escrever os filtros por conta própria,
-realçar a diferença entre mata e terra, separar as áreas, medir em hectares, recortar e rotular
-pedaços, treinar o classificador, e o oitavo — saber recusar quando a imagem não permite
-responder."
+"**Dois:** calcula o índice de vegetação. Isso junta as várias bandas do satélite num valor só,
+escolhido de um jeito que mata e terra exposta ficam bem separadas."
 
-"Esse oitavo a gente acrescentou depois de começar, e explica o motivo na defesa."
+"**Três:** filtra. Tira o ruído do sensor e realça o contorno — sem apagar a borda entre a mata
+e o corte, que é justamente o que a gente quer achar."
 
-"E à direita está o que a gente **não** se propõe a fazer. Isso é tão importante quanto, porque
-é o que deixa o objetivo possível de conferir."
+"**Quatro:** separa e mede. Marca o que perdeu vegetação, identifica cada área isolada e
+converte de pixel para hectare."
+
+"**Cinco:** prepara os dados. Recorta pedaços da imagem já marcados como desmatado ou intacto,
+no formato que um modelo de visão computacional consegue usar para aprender."
+
+"E é por isso que o enunciado fala em preparação de dados: o processamento de imagens não é o
+produto final aqui. Ele é a fábrica dos exemplos que treinam o modelo."
+
+"Os três primeiros passos, em verde escuro, são o que a gente detalha hoje. Os dois últimos são
+o conteúdo da próxima entrega."
+
+"À esquerda é a tela do programa: quem usa escolhe o índice, o tamanho da suavização e a área
+mínima de uma região. A gente deixou tudo à mostra de propósito."
 
 **→ passa para a Isabel.**
 
@@ -417,7 +431,7 @@ biblioteca nenhuma."
 
 ---
 
-# Jonathan Aparecido X Martins — slides 8, 9 e 10
+# Jonathan Aparecido X Martins — slides 8 e 9
 
 ## Antes de apresentar
 
@@ -532,39 +546,33 @@ textura: repara que o contorno do corte e o rio acendem sozinhos."
 "O enunciado pede que o resultado dos filtros seja mostrado **e analisado**. É isso que este
 slide faz: cada painel tem um motivo de estar ali, e dá para ver o efeito."
 
-## Slide 10 · Para fechar — 40 s
+# Isabel Da Silva — slide 10
 
-"Para fechar, três coisas."
+## Slide 10 · O programa aplicando os filtros — 1:00
 
-"A primeira: os filtros são nossos. O enunciado exige que o grupo escreva os filtros, e a gente
-escreveu. Dentro do núcleo do programa a única biblioteca que entra é a de contas com números.
-Não tem OpenCV, não tem nada pronto."
+"Para fechar, o programa fazendo isso tudo."
 
-"A segunda é por que isso foi bom para nós, além da exigência: se a gente chamasse uma função
-pronta, não saberia responder o que acontece na borda da imagem, nem por que o resultado é
-aquele. Com o código sendo nosso, cada pergunta dessas tem resposta."
+"À esquerda, os passos 1 e 2: em cima as duas datas lado a lado, embaixo o índice de vegetação
+das duas. O verde é mata e o amarelo é terra exposta — já dá para ver a diferença entre as
+datas."
 
-"E a terceira é o que vem na próxima entrega: separar as áreas, medir em hectares, recortar e
-rotular os pedaços, treinar o modelo e discutir os resultados."
+"À direita, o passo 3, que é o conteúdo de hoje. São os três painéis da filtragem: o índice sem
+tratamento, com aquele granulado que é o ruído; o mesmo depois do gaussiano, com o granulado
+limpo e o quadrado ainda no lugar; e o Sobel, que acende só no contorno do quadrado."
 
-"O capítulo 1 disse qual é o problema. O capítulo 2 explicou como se filtra uma imagem. O
-capítulo 3 escolheu os filtros. O que falta é executar."
+"Repara na legenda que o próprio programa escreve ali: filtros implementados pelo grupo, com
+NumPy puro. É exigência do enunciado e a gente cumpriu — dentro do núcleo do programa não entra
+OpenCV nem nada pronto."
+
+"E por que isso foi bom para nós, além da exigência: chamando uma função pronta a gente não
+saberia responder o que acontece na borda da imagem, nem por que o resultado é aquele. Com o
+código sendo nosso, cada pergunta dessas tem resposta."
 
 "Obrigado. Qualquer um de nós responde perguntas sobre qualquer parte."
 
----
-
-# Slide 11 · Reserva — Isabel Da Silva
-
-> **Não apresentar.** Só abrir se perguntarem se já existe código.
-
-"O programa já existe e já aplica esses filtros. Essa é a tela dele."
-
-"À esquerda o índice sem tratamento, no meio depois do gaussiano, à direita o Sobel. É a mesma
-sequência que a gente acabou de descrever, rodando."
-
-"Os painéis de baixo já são a etapa seguinte, que é conteúdo da próxima entrega — estou
-mostrando só para dar o contexto."
+> **Atenção:** a cena desses painéis é **sintética** — construída por nós para demonstrar o
+> programa, e o próprio programa avisa isso na tela. As imagens de satélite reais aparecem no
+> slide 9. Não diga que essa é uma imagem de satélite.
 
 ---
 
@@ -573,9 +581,9 @@ mostrando só para dar o contexto."
 - [ ] `entrega/apresentacao-qualificacao.pptx` aberto no **modo apresentador**, com as notas
       visíveis (*Exibir → Modo de Exibição do Apresentador*)
 - [ ] Cada um leu a sua seção "Antes de apresentar" e consegue explicar sem ler
-- [ ] Um ensaio cronometrado, do slide 1 ao 10 — sem o slide de reserva
-- [ ] Se for usar o slide 11: navegador **já aberto** em `localhost:8501`, na aba *Etapas do
-      processamento*. Não subir o programa ao vivo
+- [ ] Um ensaio cronometrado, do slide 1 ao 10
+- [ ] Se alguém pedir para ver o programa rodando de verdade: navegador **já aberto** em
+      `localhost:8501`, na aba *Etapas do processamento*. Não subir o programa ao vivo
 
 # Perguntas prováveis
 

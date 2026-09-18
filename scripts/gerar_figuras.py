@@ -46,7 +46,12 @@ TELAS = RAIZ / "docs" / "resultados" / "telas"
 # num slide 16:9 elas ficariam ilegíveis. Coordenadas em pixels: (esquerda, topo, direita,
 # base), conferidas contra as capturas de `scripts/capturar_telas.mjs`.
 RECORTES_DE_TELA = {
-    "tela-filtragem.png": ("01-etapas", (360, 1810, 1345, 2775)),
+    # Qualificação: só o que é aquisição, índice e filtragem.
+    "tela-parametros.png": ("01-etapas", (10, 80, 300, 720)),
+    "tela-aquisicao.png": ("01-etapas", (360, 640, 1345, 1800)),
+    "tela-filtragem.png": ("01-etapas", (360, 1805, 1345, 2270)),
+    # Defesa: a filtragem junto da segmentação, e as telas de resultado.
+    "tela-etapas-3-4.png": ("01-etapas", (360, 1810, 1345, 2775)),
     "tela-deteccao.png": ("02-deteccao", (360, 440, 1345, 1240)),
     "tela-modelo.png": ("03-modelo", (360, 690, 1345, 1400)),
     "tela-recusa.png": ("04-recusa", (360, 370, 1345, 700)),
@@ -106,7 +111,7 @@ def efeito_dos_filtros(destino: Path) -> Path:
         (carregar(BRUTO / arquivos["cor_real"])[recorte, recorte], "cor real (recorte 200×200)", None),
         (bruto, "NBR bruto", "viridis"),
         (suave, "gaussiano 5×5 — separável", "viridis"),
-        (mediana(bruto, tamanho=3), "mediana 3×3 — remove sal-e-pimenta", "viridis"),
+        (mediana(bruto, tamanho=3), "mediana 3×3 — tira pontos isolados", "viridis"),
         (magnitude_gradiente(suave), "Sobel — magnitude do gradiente", "magma"),
         (desvio_padrao_local(bruto, tamanho=5), "desvio-padrão local — textura", "magma"),
     ]

@@ -355,68 +355,69 @@ function deckQualificacao() {
 }
 
 // --------------------------------------------------------------------------------------
-// 4 — Capítulo 1.c: objetivos
+// 4 — O que o programa faz
 // --------------------------------------------------------------------------------------
 
 {
-  const s = slide({ titulo: "O que queremos construir",
+  const s = slide({ titulo: "O que o programa faz",
+    sub: "Entram duas imagens da mesma área; saem as áreas que perderam vegetação, medidas e prontas para o modelo",
     quem: "Enzo Consani  ·  capítulo 1" });
 
-  cartao(s, { x: MARGEM, y: 1.5, w: LARGURA, h: 1.45, escuro: true });
-  s.addText("Um programa em Python que compara duas imagens de satélite da mesma área, encontra e mede o que perdeu vegetação, e deixa esses dados prontos para treinar um modelo de visão computacional.", {
-    x: MARGEM + 0.45, y: 1.68, w: LARGURA - 0.9, h: 1.1, isTextBox: true, margin: 0,
-    fontFace: TIT, fontSize: 19, italic: true, color: COR.branco, lineSpacingMultiple: 1.15 });
-
-  s.addText("Os passos, em ordem", { x: MARGEM, y: 3.12, w: 8.3, h: 0.4, isTextBox: true,
-    margin: 0, fontFace: TIT, fontSize: 20, bold: true, color: COR.floresta });
+  imagem(s, join(FIG, "telas/tela-parametros.png"), { x: MARGEM, y: 1.86, w: 2.5, h: 4.5 });
+  s.addText("Quem usa escolhe o índice, o tamanho da suavização e a área mínima — nada fica escondido", {
+    x: MARGEM, y: 6.02, w: 2.5, h: 0.8, isTextBox: true, margin: 0, align: "center",
+    fontFace: CORPO, fontSize: 11, italic: true, color: COR.suave, lineSpacingMultiple: 1.1 });
 
   const passos = [
-    "Baixar imagens reais, com a origem registrada",
-    "Escrever nossos próprios filtros, sem usar biblioteca pronta",
-    "Realçar a diferença entre mata e terra exposta",
-    "Separar as áreas que perderam vegetação",
-    "Medir a área em pixels e em hectares",
-    "Recortar e rotular pedaços da imagem para o modelo",
-    "Treinar e avaliar um classificador sem enganar a métrica",
-    "Saber recusar quando a imagem não permite responder",
+    ["Recebe duas datas", "Duas imagens da mesma área, tiradas com anos de diferença.", true],
+    ["Calcula o índice", "Junta as bandas do satélite num valor só, em que mata e terra exposta ficam em extremos opostos.", true],
+    ["Filtra", "Tira o ruído do sensor e realça o contorno, sem apagar a borda entre mata e corte.", true],
+    ["Separa e mede", "Marca o que perdeu vegetação, identifica cada área isolada e converte pixels em hectares.", false],
+    ["Prepara os dados", "Recorta pedaços da imagem já rotulados, no formato que um modelo de visão computacional consome.", false],
   ];
-  passos.forEach((texto, i) => {
-    const x = MARGEM + (i % 2) * 4.15;
-    const y = 3.62 + Math.floor(i / 2) * 0.76;
-    numero(s, i + 1, { x, y: y + 0.04, d: 0.4, cor: COR.musgo });
-    s.addText(texto, { x: x + 0.54, y, w: 3.5, h: 0.7, isTextBox: true, margin: 0,
-      fontFace: CORPO, fontSize: 13.5, color: COR.texto, lineSpacingMultiple: 1.1 });
+  passos.forEach(([titulo, texto, hoje], i) => {
+    const y = 1.86 + i * 0.92;
+    cartao(s, { x: 3.35, y, w: 9.37, h: 0.84, escuro: hoje });
+    numero(s, i + 1, { x: 3.58, y: y + 0.19, d: 0.5, cor: hoje ? COR.musgo : COR.floresta });
+    s.addText(titulo, { x: 4.22, y: y + 0.17, w: 2.2, h: 0.54, isTextBox: true, margin: 0,
+      fontFace: TIT, fontSize: 17, bold: true, valign: "middle",
+      color: hoje ? COR.branco : COR.floresta });
+    s.addText(texto, { x: 6.5, y: y + 0.14, w: 6.0, h: 0.6, isTextBox: true, margin: 0,
+      fontFace: CORPO, fontSize: 13.5, valign: "middle",
+      color: hoje ? COR.musgo : COR.texto, lineSpacingMultiple: 1.1 });
   });
 
-  cartao(s, { x: 9.1, y: 3.12, w: 3.62, h: 3.5 });
-  s.addText("O que não vamos fazer", { x: 9.35, y: 3.28, w: 3.12, h: 0.38, isTextBox: true,
-    margin: 0, fontFace: TIT, fontSize: 17, bold: true, color: COR.alerta });
-  itens(s, [
-    "Processar cenas inteiras em escala de produção",
-    "Substituir o monitoramento oficial do INPE",
-    "Dizer o que veio depois da floresta — se virou pasto ou lavoura",
-    "Funcionar em tempo real, com alerta automático",
-  ], { x: 9.35, y: 3.76, w: 3.12, h: 2.7, fontSize: 13 });
+  s.addText("Os três primeiros passos, em verde escuro, são o conteúdo de hoje. Os dois últimos ficam para a próxima entrega.", {
+    x: 3.35, y: 6.5, w: 9.37, h: 0.32, isTextBox: true, margin: 0, align: "center",
+    fontFace: CORPO, fontSize: 12.5, italic: true, color: COR.suave });
 
   s.addNotes([
     "ENZO — 1 min 15 s",
     "",
-    "\"O objetivo é a frase da caixa, e ela vem do enunciado: um programa que compara duas",
-    "imagens, acha e mede o que perdeu vegetação, e DEIXA OS DADOS PRONTOS para treinar um",
-    "modelo de visão computacional.\"",
+    "\"Antes de entrar na parte técnica, o que o programa faz, em cinco passos.\"",
     "",
-    "\"Essa última parte é importante: o processamento de imagens aqui não é o produto final.",
-    "Ele prepara os dados. O modelo vem depois, e só existe porque essa preparação acontece.\"",
+    "\"Um: ele recebe duas imagens da mesma área, tiradas com anos de diferença.\"",
     "",
-    "\"Os oito passos estão aí em ordem: baixar imagem real, escrever os filtros por conta",
-    "própria, realçar a diferença entre mata e terra, separar as áreas, medir em hectares,",
-    "recortar e rotular pedaços, treinar o classificador, e o oitavo — saber recusar quando",
-    "a imagem não permite responder.\"",
+    "\"Dois: calcula o índice de vegetação. Isso junta as várias bandas do satélite num",
+    "valor só, escolhido de um jeito que mata e terra exposta ficam bem separadas.\"",
     "",
-    "\"Esse oitavo a gente acrescentou depois de começar, e explica o motivo na defesa.\"",
+    "\"Três: filtra. Tira o ruído do sensor e realça o contorno — sem apagar a borda entre a",
+    "mata e o corte, que é justamente o que a gente quer achar.\"",
     "",
-    "\"E à direita está o que a gente NÃO se propõe a fazer. Isso é tão importante quanto,",
-    "porque é o que deixa o objetivo possível de conferir.\"",
+    "\"Quatro: separa e mede. Marca o que perdeu vegetação, identifica cada área isolada e",
+    "converte de pixel para hectare.\"",
+    "",
+    "\"Cinco: prepara os dados. Recorta pedaços da imagem já marcados como desmatado ou",
+    "intacto, no formato que um modelo de visão computacional consegue usar para aprender.\"",
+    "",
+    "\"E é por isso que o enunciado fala em PREPARAÇÃO DE DADOS: o processamento de imagens",
+    "não é o produto final aqui. Ele é a fábrica dos exemplos que treinam o modelo.\"",
+    "",
+    "\"Os três primeiros passos, em verde escuro, são o que a gente detalha hoje. Os dois",
+    "últimos são o conteúdo da próxima entrega.\"",
+    "",
+    "\"À esquerda é a tela do programa: quem usa escolhe o índice, o tamanho da suavização e",
+    "a área mínima de uma região. A gente deixou tudo à mostra de propósito.\"",
     "",
     "PASSA PARA A ISABEL.",
   ].join("\n"));
@@ -745,109 +746,61 @@ function deckQualificacao() {
 }
 
 // --------------------------------------------------------------------------------------
-// 10 — Fecho
+// 10 — O programa aplicando os filtros
 // --------------------------------------------------------------------------------------
 
 {
-  const s = slide({ titulo: "Para fechar", escuro: true,
-    quem: "Jonathan Aparecido X Martins  ·  encerramento" });
+  const s = slide({ titulo: "O programa aplicando os filtros",
+    sub: "A mesma sequência dos slides anteriores, rodando sobre as duas datas",
+    quem: "Isabel Da Silva  ·  encerramento" });
 
-  const blocos = [
-    ["Os filtros são nossos", "O enunciado exige que o grupo escreva os filtros, e a gente escreveu: dentro do núcleo do programa a única biblioteca é a de contas com números. Sem OpenCV, sem nada pronto."],
-    ["Por que isso é bom para nós", "Chamando uma função pronta a gente não saberia responder o que acontece na borda nem por que o resultado é aquele. Com o código nosso, cada pergunta tem resposta."],
-    ["O que vem na próxima entrega", "Separar as áreas, medir em hectares, recortar e rotular os pedaços, treinar o modelo e discutir os resultados."],
-  ];
-  const w = (LARGURA - 2 * 0.24) / 3;
-  blocos.forEach(([titulo, texto], i) => {
-    const x = MARGEM + i * (w + 0.24);
-    cartao(s, { x, y: 1.75, w, h: 3.0, escuro: true });
-    numero(s, i + 1, { x: x + w / 2 - 0.27, y: 2.0, d: 0.54, cor: COR.musgo });
-    s.addText(titulo, { x: x + 0.15, y: 2.72, w: w - 0.3, h: 0.44, isTextBox: true, margin: 0,
-      align: "center", fontFace: TIT, fontSize: 18, bold: true, color: COR.branco });
-    s.addText(texto, { x: x + 0.3, y: 3.24, w: w - 0.6, h: 1.4, isTextBox: true, margin: 0,
-      align: "center", fontFace: CORPO, fontSize: 13.5, color: COR.musgo, lineSpacingMultiple: 1.15 });
-  });
+  imagem(s, join(FIG, "telas/tela-aquisicao.png"), { x: MARGEM, y: 1.85, w: 4.25, h: 4.5 });
+  s.addText("Passos 1 e 2: as duas datas e o índice de vegetação", {
+    x: MARGEM, y: 6.42, w: 4.25, h: 0.34, isTextBox: true, margin: 0, align: "center",
+    fontFace: CORPO, fontSize: 11.5, italic: true, color: COR.suave });
 
-  s.addText("O capítulo 1 disse qual é o problema. O capítulo 2 explicou como se filtra uma imagem. O capítulo 3 escolheu os filtros. O que falta é executar.", {
-    x: 1.6, y: 5.05, w: L - 3.2, h: 0.8, isTextBox: true, margin: 0, align: "center",
-    fontFace: CORPO, fontSize: 15, italic: true, color: COR.musgo, lineSpacingMultiple: 1.15 });
+  imagem(s, join(FIG, "telas/tela-filtragem.png"), { x: 5.1, y: 1.85, w: 7.62, h: 3.62 });
 
-  s.addText("Obrigado. Perguntas?", {
-    x: MARGEM, y: 5.95, w: LARGURA, h: 0.6, isTextBox: true, margin: 0, align: "center",
-    fontFace: TIT, fontSize: 28, bold: true, color: COR.branco });
+  cartao(s, { x: 5.1, y: 5.62, w: 7.62, h: 1.18, escuro: true });
+  s.addText("Os filtros são nossos", { x: 5.35, y: 5.74, w: 4.7, h: 0.34, isTextBox: true,
+    margin: 0, fontFace: TIT, fontSize: 17, bold: true, color: COR.branco });
+  s.addText("O enunciado exige que o grupo escreva os filtros. Dentro do núcleo do programa a única biblioteca que entra é a de contas com números.", {
+    x: 5.35, y: 6.1, w: 4.7, h: 0.6, isTextBox: true, margin: 0,
+    fontFace: CORPO, fontSize: 12.5, color: COR.musgo, lineSpacingMultiple: 1.12 });
+  s.addText("Obrigado.\nPerguntas?", { x: 10.2, y: 5.78, w: 2.3, h: 0.9, isTextBox: true,
+    margin: 0, align: "right", fontFace: TIT, fontSize: 21, bold: true, color: COR.musgo,
+    lineSpacingMultiple: 1.05 });
 
   s.addNotes([
-    "JONATHAN — 40 s",
+    "ISABEL — 1 min",
     "",
-    "\"Para fechar, três coisas.\"",
+    "\"Para fechar, o programa fazendo isso tudo.\"",
     "",
-    "\"A primeira: os filtros são nossos. O enunciado exige que o grupo escreva os filtros, e",
-    "a gente escreveu. Dentro do núcleo do programa a única biblioteca que entra é a de",
-    "contas com números. Não tem OpenCV, não tem nada pronto.\"",
+    "\"À esquerda, os passos 1 e 2: em cima as duas datas lado a lado, embaixo o índice de",
+    "vegetação das duas. O verde é mata e o amarelo é terra exposta — já dá para ver a",
+    "diferença entre as datas.\"",
     "",
-    "\"A segunda é por que isso foi bom para nós, além da exigência: se a gente chamasse uma",
-    "função pronta, não saberia responder o que acontece na borda da imagem, nem por que o",
-    "resultado é aquele. Com o código sendo nosso, cada pergunta dessas tem resposta.\"",
+    "\"À direita, o passo 3, que é o conteúdo de hoje. São os três painéis da filtragem: o",
+    "índice sem tratamento, com aquele granulado que é o ruído; o mesmo depois do gaussiano,",
+    "com o granulado limpo e o quadrado ainda no lugar; e o Sobel, que acende só no contorno",
+    "do quadrado.\"",
     "",
-    "\"E a terceira é o que vem na próxima entrega: separar as áreas, medir em hectares,",
-    "recortar e rotular os pedaços, treinar o modelo e discutir os resultados.\"",
+    "\"Repara na legenda que o próprio programa escreve ali: filtros implementados pelo",
+    "grupo, com NumPy puro. É exigência do enunciado e a gente cumpriu — dentro do núcleo do",
+    "programa não entra OpenCV nem nada pronto.\"",
     "",
-    "\"O capítulo 1 disse qual é o problema. O capítulo 2 explicou como se filtra uma imagem.",
-    "O capítulo 3 escolheu os filtros. O que falta é executar.\"",
+    "\"E por que isso foi bom para nós, além da exigência: chamando uma função pronta a gente",
+    "não saberia responder o que acontece na borda da imagem, nem por que o resultado é",
+    "aquele. Com o código sendo nosso, cada pergunta dessas tem resposta.\"",
     "",
     "\"Obrigado. Qualquer um de nós responde perguntas sobre qualquer parte.\"",
-  ].join("\n"));
-}
-
-// --------------------------------------------------------------------------------------
-// 11 — Reserva
-// --------------------------------------------------------------------------------------
-
-{
-  const s = slide({ titulo: "Reserva · os filtros rodando no programa",
-    sub: "Não faz parte da apresentação — só abrir se perguntarem se já existe código",
-    quem: "Isabel Da Silva  ·  slide de reserva" });
-
-  imagem(s, join(FIG, "telas/tela-filtragem.png"), { x: MARGEM, y: 1.88, w: 5.25, h: 4.9 });
-
-  s.addText("O programa já aplica esses filtros sobre as duas datas e mostra o efeito de cada passo separado.", {
-    x: 6.3, y: 2.0, w: 6.42, h: 0.7, isTextBox: true, margin: 0,
-    fontFace: CORPO, fontSize: 15, color: COR.texto, lineSpacingMultiple: 1.15 });
-  itens(s, [
-    "À esquerda o índice bruto, no meio o gaussiano, à direita o Sobel.",
-    "Os painéis de baixo já são a etapa seguinte — conteúdo da próxima entrega.",
-    "Roda no computador, sem internet.",
-  ], { x: 6.3, y: 2.85, w: 6.42, h: 1.8, fontSize: 14.5 });
-
-  cartao(s, { x: 6.3, y: 4.85, w: 6.42, h: 1.55 });
-  s.addText("Como abrir", { x: 6.55, y: 4.98, w: 5.92, h: 0.34, isTextBox: true,
-    margin: 0, fontFace: TIT, fontSize: 16, bold: true, color: COR.floresta });
-  s.addText("sentinela app   →   aba “Etapas do processamento”", {
-    x: 6.55, y: 5.36, w: 5.92, h: 0.34, isTextBox: true, margin: 0,
-    fontFace: "Courier New", fontSize: 12.5, color: COR.texto });
-  s.addText("Deixar o navegador já aberto antes de começar — não subir o programa ao vivo.", {
-    x: 6.55, y: 5.78, w: 5.92, h: 0.5, isTextBox: true, margin: 0,
-    fontFace: CORPO, fontSize: 12.5, italic: true, color: COR.suave, lineSpacingMultiple: 1.1 });
-
-  s.addNotes([
-    "ISABEL — slide de reserva, só se pedirem (1 min)",
     "",
-    "NÃO apresentar por padrão.",
-    "",
-    "\"O programa já existe e já aplica esses filtros. Essa é a tela dele.\"",
-    "",
-    "\"À esquerda o índice sem tratamento, no meio depois do gaussiano, à direita o Sobel. É",
-    "a mesma sequência que a gente acabou de descrever, rodando.\"",
-    "",
-    "\"Os painéis de baixo já são a etapa seguinte, que é conteúdo da próxima entrega — estou",
-    "mostrando só para dar o contexto.\"",
-    "",
-    "ANTES: deixar o navegador já aberto em localhost:8501. Não subir o programa ao vivo.",
+    "OBS: esta cena é sintética, construída por nós para demonstrar o programa — o próprio",
+    "programa avisa isso na tela. As imagens de satélite reais estão no slide 9.",
   ].join("\n"));
 }
 
 }
-
 
 // ======================================================================================
 // Fase Intermediária II — Defesa: protótipo e resultados
@@ -1414,7 +1367,7 @@ function deckDefesa() {
     sub: "Aba “Etapas do processamento” — a mesma tela que aparece na demonstração ao vivo",
     quem: "Isabel Da Silva  ·  demonstração" });
 
-  imagem(s, join(FIG, "telas/tela-filtragem.png"), { x: MARGEM, y: 1.88, w: 5.25, h: 4.92 });
+  imagem(s, join(FIG, "telas/tela-etapas-3-4.png"), { x: MARGEM, y: 1.88, w: 5.25, h: 4.92 });
 
   const notas = [
     ["3 · Filtragem", "O índice bruto, o mesmo índice depois do gaussiano 5 × 5 e a magnitude do gradiente de Sobel, que realça a borda do corte."],
