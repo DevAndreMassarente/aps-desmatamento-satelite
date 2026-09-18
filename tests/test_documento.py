@@ -270,7 +270,8 @@ class TestDocumentoAvulso:
     @pytest.fixture(scope="class")
     def falas(tmp_path_factory):
         destino = tmp_path_factory.mktemp("avulso") / "falas.docx"
-        origem = Path(__file__).resolve().parents[1] / "docs" / "apresentacao" / "ROTEIRO.md"
+        origem = (Path(__file__).resolve().parents[1] / "docs" / "apresentacao"
+                  / "FALAS-QUALIFICACAO.md")
         gerador.montar_avulso(destino, origem)
         with zipfile.ZipFile(destino) as z:
             return {n: z.read(n).decode("utf-8") for n in z.namelist()}
@@ -292,4 +293,12 @@ class TestDocumentoAvulso:
 
     def test_traz_o_que_nao_dizer(self, falas):
         """Regressão de integridade: a lista do que não afirmar na banca é parte da entrega."""
-        assert "ele se recusou" in falas["word/document.xml"]
+        texto = falas["word/document.xml"]
+        assert "O que" in texto and "não" in texto
+        assert "não foi medido" in texto
+
+    def test_escopo_da_qualificacao_esta_declarado(self, falas):
+        """A Fase I cobre o cap. 1 e a filtragem dos caps. 2 e 3 — nada de resultados."""
+        texto = falas["word/document.xml"]
+        assert "Fase Intermediária I" in texto
+        assert "conteúdo da Fase II" in texto or "da Fase II" in texto

@@ -1,11 +1,15 @@
-# Falas da apresentação
+# Falas — Fase Intermediária II (Defesa)
 
 Enunciado, seção III: sessão de **10 a 15 minutos**, com **explicação do problema e
 contexto**, **demonstração da aplicação** e **discussão dos resultados**. O grupo deve
 estar preparado para **perguntas da turma e dos professores**.
 
+> **Esta é a apresentação da Fase Intermediária II — a defesa**, entregue junto com o
+> protótipo. A apresentação da Fase Intermediária I (qualificação) está em
+> `FALAS-QUALIFICACAO.md`.
+
 Este é o texto impresso das falas. As mesmas falas estão nas **notas do apresentador** de
-cada slide de `entrega/apresentacao.pptx` — no PowerPoint, *Exibir → Modo de Exibição do
+cada slide de `entrega/apresentacao-defesa.pptx` — no PowerPoint, *Exibir → Modo de Exibição do
 Apresentador*.
 
 > As falas abaixo são um guia, não um texto para ler em voz alta. A regra do projeto vale
@@ -372,7 +376,7 @@ qualquer parte."
       navegador antes de começar — não subir ao vivo. Um servidor antigo mostra código antigo:
       o Streamlit não recarrega os módulos do pacote sozinho
 - [ ] Cena sintética carregada, área desmatada em 20, tamanho da cena em 80
-- [ ] `entrega/apresentacao.pptx` aberto no modo apresentador, com as notas visíveis
+- [ ] `entrega/apresentacao-defesa.pptx` aberto no modo apresentador, com as notas visíveis
 - [ ] Plano B testado: `sentinela demo --modelo` roda
 - [ ] Cronometrar um ensaio completo; cortar a otimização do gaussiano no slide 6 se passar
       de 13 minutos

@@ -81,10 +81,12 @@ src/sentinela/
 
 tests/                340 testes contra casos analíticos
 
-entrega/              O QUE SE ENTREGA — três arquivos, todos gerados por comando
-├── trabalho-escrito.docx         capítulos 1 a 8, formatados como o enunciado exige
-├── apresentacao.pptx             16 slides, com as falas nas notas do apresentador
-└── falas-da-apresentacao.docx    as mesmas falas, para imprimir
+entrega/              O QUE SE ENTREGA — tudo gerado por comando
+├── trabalho-escrito.docx            capítulos 1 a 8, formatados como o enunciado exige
+├── apresentacao-qualificacao.pptx   Fase Intermediária I — cap. 1 e a filtragem dos caps. 2 e 3
+├── falas-qualificacao.docx          as falas dessa apresentação, para imprimir
+├── apresentacao-defesa.pptx         Fase Intermediária II — protótipo e resultados
+└── falas-defesa.docx                as falas da defesa, para imprimir
 
 docs/
 ├── enunciado/        documento oficial em PDF e a transcrição
@@ -159,12 +161,15 @@ sentinela apendice
 # 3. o trabalho escrito — Arial 12, espaçamento 1,5, A4, margens de 2,5 cm
 python scripts/montar_documento.py
 
-# 4. as falas impressas
-python scripts/montar_documento.py --avulso docs/apresentacao/ROTEIRO.md \
-                                   --saida entrega/falas-da-apresentacao.docx
+# 4. as falas impressas das duas apresentações
+python scripts/montar_documento.py --avulso docs/apresentacao/FALAS-QUALIFICACAO.md \
+                                   --saida entrega/falas-qualificacao.docx
+python scripts/montar_documento.py --avulso docs/apresentacao/FALAS-DEFESA.md \
+                                   --saida entrega/falas-defesa.docx
 
 # 5. os slides (precisa do pptxgenjs: npm install pptxgenjs)
-node scripts/montar_apresentacao.mjs
+node scripts/montar_apresentacao.mjs              # as duas fases
+node scripts/montar_apresentacao.mjs qualificacao # só a de hoje
 ```
 
 Ao abrir o `.docx` no Word, aceitar a atualização do sumário (ou apertar F9 sobre ele). O
@@ -236,10 +241,12 @@ região.
 | Documento | Conteúdo |
 |-----------|----------|
 | [`entrega/trabalho-escrito.docx`](entrega/trabalho-escrito.docx) | **O trabalho escrito.** Arial 12, espaçamento 1,5, A4, margens de 2,5 cm, capítulos 1 a 8 |
-| [`entrega/apresentacao.pptx`](entrega/apresentacao.pptx) | **Os slides do seminário.** 16 slides; as falas estão nas notas do apresentador |
-| [`entrega/falas-da-apresentacao.docx`](entrega/falas-da-apresentacao.docx) | **As falas impressas**, divididas por integrante, com checklist e perguntas prováveis |
+| [`entrega/apresentacao-qualificacao.pptx`](entrega/apresentacao-qualificacao.pptx) | **Slides da Fase Intermediária I.** 16 slides; as falas estão nas notas do apresentador |
+| [`entrega/falas-qualificacao.docx`](entrega/falas-qualificacao.docx) | **As falas da qualificação**, divididas por integrante, com checklist e perguntas prováveis |
+| [`entrega/apresentacao-defesa.pptx`](entrega/apresentacao-defesa.pptx) | **Slides da Fase Intermediária II** — protótipo, demonstração e resultados |
+| [`entrega/falas-defesa.docx`](entrega/falas-defesa.docx) | **As falas da defesa**, no mesmo formato |
 | [`docs/trabalho-escrito/`](docs/trabalho-escrito/) | Os capítulos em Markdown que geram o DOCX, e a bibliografia conferida |
-| [`docs/apresentacao/ROTEIRO.md`](docs/apresentacao/ROTEIRO.md) | A fonte das falas, e o que **não** dizer na banca |
+| [`docs/apresentacao/`](docs/apresentacao/) | A fonte das falas das duas fases, e o que **não** dizer na banca |
 | [`docs/resultados/`](docs/resultados/) | Saídas reais do programa, com o comando que as reproduz |
 | [`docs/enunciado/`](docs/enunciado/) | Documento oficial e transcrição |
 
