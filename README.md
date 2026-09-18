@@ -11,8 +11,8 @@ perda de cobertura vegetal e prepara os dados resultantes para alimentar um mode
 computacional.
 
 **Todos os filtros são implementados pelo grupo**, com NumPy puro — nenhuma chamada a
-`cv2`, `skimage` ou equivalente. É uma exigência explícita do enunciado
-([decisão 001](docs/decisions/001-filtros-proprios.md)).
+`cv2`, `skimage` ou equivalente. É uma exigência explícita do enunciado (p. 3, item 3.a),
+e o raciocínio está no capítulo 3.a do trabalho escrito.
 
 ## Contexto acadêmico
 
@@ -79,13 +79,29 @@ src/sentinela/
 ├── app/principal.py  interface Streamlit
 └── cli.py            linha de comando (app, detectar, demo, apendice)
 
-tests/                329 testes contra casos analíticos
-docs/                 enunciado, especificação, requisitos, arquitetura, decisões, evidências
-data/                 imagens (não versionadas — ver docs/decisions/002)
+tests/                340 testes contra casos analíticos
+
+entrega/              O QUE SE ENTREGA — três arquivos, todos gerados por comando
+├── trabalho-escrito.docx         capítulos 1 a 8, formatados como o enunciado exige
+├── apresentacao.pptx             16 slides, com as falas nas notas do apresentador
+└── falas-da-apresentacao.docx    as mesmas falas, para imprimir
+
+docs/
+├── enunciado/        documento oficial em PDF e a transcrição
+├── trabalho-escrito/ os capítulos em Markdown que geram o DOCX
+├── apresentacao/     o roteiro das falas e as figuras usadas nos slides
+└── resultados/       evidências: saídas do programa sobre imagem real e sintética
+
+data/                 imagens de satélite — não versionadas, ver `data/raw/FONTES.md`
+scripts/              aquisição de imagens, figuras, capturas de tela e os geradores da entrega
 ```
 
 Regra de dependência: `pdi/` não importa de nenhuma camada acima dele e trabalha só com
-arrays NumPy. Detalhes em [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+arrays NumPy.
+
+> O repositório guarda só o que é entregue e o que produz o que é entregue. A documentação
+> de processo — matriz de requisitos, registros de decisão, memória de trabalho — fica na
+> máquina de quem desenvolve e está no `.gitignore`.
 
 ## Pré-requisitos
 
@@ -128,21 +144,38 @@ por qualquer integrante do grupo. O script mede ausência de dado, nuvem e bruma
 quando a cena não presta. Procedência registrada em
 [`data/raw/FONTES.md`](data/raw/FONTES.md).
 
-### Gerar o trabalho escrito
+### Regerar os três arquivos da entrega
+
+Os arquivos em `entrega/` estão versionados, mas nenhum deles é editado à mão: todos saem
+de comando, a partir do texto e das imagens do repositório.
 
 ```bash
+# 1. as figuras, a partir das imagens de satélite em data/raw/
+python scripts/gerar_figuras.py
+
+# 2. o apêndice de código-fonte do trabalho escrito
+sentinela apendice
+
+# 3. o trabalho escrito — Arial 12, espaçamento 1,5, A4, margens de 2,5 cm
 python scripts/montar_documento.py
+
+# 4. as falas impressas
+python scripts/montar_documento.py --avulso docs/apresentacao/ROTEIRO.md \
+                                   --saida entrega/falas-da-apresentacao.docx
+
+# 5. os slides (precisa do pptxgenjs: npm install pptxgenjs)
+node scripts/montar_apresentacao.mjs
 ```
 
-Gera `saidas/trabalho-escrito.docx` a partir de `docs/trabalho-escrito/`, com a formatação do
-enunciado. Detalhes e o que continua provisório em
-[`docs/trabalho-escrito/README.md`](docs/trabalho-escrito/README.md).
+Ao abrir o `.docx` no Word, aceitar a atualização do sumário (ou apertar F9 sobre ele). O
+gerador imprime o que ainda é provisório no documento — hoje, as margens superior e inferior,
+que o enunciado não especifica, e a página reservada para a ficha de APS.
 
 ### Linha de comando
 
 ```bash
 # demonstração com cena sintética, gravando as imagens de cada etapa
-sentinela demo --saida docs/evidence/demo-sintetica
+sentinela demo --saida docs/resultados/cena-sintetica
 
 # incluindo o treino e a avaliação do classificador
 sentinela demo --tamanho 200 --area 80 --modelo
@@ -150,7 +183,7 @@ sentinela demo --tamanho 200 --area 80 --modelo
 # par de imagens reais
 sentinela detectar --antes data/raw/2020.png --depois data/raw/2024.png \
                    --nir-antes data/raw/2020_nir.png --nir-depois data/raw/2024_nir.png \
-                   --metros-por-pixel 10 --saida docs/evidence/results
+                   --metros-por-pixel 10 --saida docs/resultados/imagem-real
 ```
 
 A linha de comando existe porque evidência para o trabalho escrito precisa ser
@@ -165,8 +198,7 @@ funciona; o próprio programa emite esse aviso junto da métrica.
 
 A divisão entre treino e teste é feita **por blocos da imagem**, nunca sorteando
 recortes: como a varredura usa passo menor que o lado, recortes vizinhos compartilham
-pixels, e um sorteio individual mediria memorização
-([decisão 004](docs/decisions/004-divisao-espacial.md)).
+pixels, e um sorteio individual mediria memorização.
 
 ### Pela biblioteca
 
@@ -203,15 +235,13 @@ região.
 
 | Documento | Conteúdo |
 |-----------|----------|
-| [`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md) | Requisitos extraídos do enunciado, decisões técnicas, perguntas em aberto |
-| [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) | Matriz de rastreabilidade — 50 requisitos |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Componentes, fluxo, decisões arquiteturais |
-| [`docs/PROJECT_STATE.md`](docs/PROJECT_STATE.md) | Estado atual, próximos passos, bloqueios |
-| [`docs/decisions/`](docs/decisions/) | Registros de decisão arquitetural |
-| [`docs/trabalho-escrito/`](docs/trabalho-escrito/) | Rascunhos dos capítulos e pendências de bibliografia |
-| [`docs/apresentacao/`](docs/apresentacao/) | Roteiro da apresentação, figuras e perguntas prováveis |
+| [`entrega/trabalho-escrito.docx`](entrega/trabalho-escrito.docx) | **O trabalho escrito.** Arial 12, espaçamento 1,5, A4, margens de 2,5 cm, capítulos 1 a 8 |
+| [`entrega/apresentacao.pptx`](entrega/apresentacao.pptx) | **Os slides do seminário.** 16 slides; as falas estão nas notas do apresentador |
+| [`entrega/falas-da-apresentacao.docx`](entrega/falas-da-apresentacao.docx) | **As falas impressas**, divididas por integrante, com checklist e perguntas prováveis |
+| [`docs/trabalho-escrito/`](docs/trabalho-escrito/) | Os capítulos em Markdown que geram o DOCX, e a bibliografia conferida |
+| [`docs/apresentacao/ROTEIRO.md`](docs/apresentacao/ROTEIRO.md) | A fonte das falas, e o que **não** dizer na banca |
+| [`docs/resultados/`](docs/resultados/) | Saídas reais do programa, com o comando que as reproduz |
 | [`docs/enunciado/`](docs/enunciado/) | Documento oficial e transcrição |
-| [`AGENTS.md`](AGENTS.md) | Regras do projeto para agentes de IA |
 
 ## Status
 
@@ -221,7 +251,7 @@ imagens reais.
 | Etapa | Situação |
 |-------|----------|
 | Estrutura e documentação | Concluído |
-| Núcleo de PDI (filtros próprios) | Implementado, 329 testes passando |
+| Núcleo de PDI (filtros próprios) | Implementado, 340 testes passando |
 | Aquisição e I/O de imagem | Implementado |
 | Pipeline de orquestração | Implementado |
 | Interface Streamlit e linha de comando | Implementado |
@@ -229,24 +259,27 @@ imagens reais.
 | Modelo de visão computacional | Implementado — floresta aleatória, 25 testes |
 | Aplicação em imagens reais de satélite | Executado — MODIS/Terra, São Félix do Xingu (PA), 2002 e 2024 |
 | **Quantificação validada em imagem real** | **Bloqueada pela resolução — exige 10 a 30 m/pixel** |
-| Trabalho escrito | Caps. 1, 3.a, 4 e 5 em rascunho; filtragem do cap. 2 completa; apêndice gerado |
+| Trabalho escrito | Caps. 1 a 7 escritos e montados em `entrega/trabalho-escrito.docx`, com figuras |
+| Apresentação do seminário | 16 slides e as falas de cada integrante em `entrega/` |
+| Ficha de APS e postagem no site da UNIP | **Pendentes — dependem do grupo, não do código** |
 
 ### O resultado em imagem real foi uma recusa
 
-O pipeline já rodou sobre um par bi-temporal real ([`docs/evidence/results/`](docs/evidence/results/)),
+O pipeline já rodou sobre um par bi-temporal real ([`docs/resultados/imagem-real/`](docs/resultados/imagem-real/)),
 e **o sistema recusou-se a quantificar**: a 253 m/pixel quase todo pixel da frente de
 desmatamento é mistura de floresta, pastagem e regeneração, as distribuições das duas
 datas se sobrepõem demais — o vale entre as classes é raso — e não existe limiar global
 defensável. A recusa é o comportamento
 correto — o diagnóstico completo, com as três hipóteses testadas, está na
-[decisão 005](docs/decisions/005-resolucao-espacial.md).
+o capítulo 3.a do trabalho escrito.
 
 Para quantificação validada é preciso Sentinel-2 (10 m) ou Landsat (30 m), que exigem
 cadastro gratuito no Copernicus Data Space ou no USGS EarthExplorer.
 
-A evidência de cena sintética ([`docs/evidence/demo-sintetica/`](docs/evidence/demo-sintetica/))
+A evidência de cena sintética ([`docs/resultados/cena-sintetica/`](docs/resultados/cena-sintetica/))
 serve para demonstrar o programa e conferir a quantificação contra uma verdade de terreno
 conhecida, mas **não sustenta requisito acadêmico**.
 
-Oito perguntas aguardam confirmação do professor — ver
-[`docs/PROJECT_SPEC.md`](docs/PROJECT_SPEC.md), seção *Open Questions*.
+Duas dúvidas de formatação seguem em aberto com o professor e estão marcadas nos avisos do
+gerador do documento: as margens superior e inferior, que o enunciado não especifica (foi
+adotado o padrão da NBR 14724), e a numeração dos títulos.

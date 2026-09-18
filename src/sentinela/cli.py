@@ -5,7 +5,7 @@ Três usos:
 ```bash
 sentinela app                                     # abre a interface no navegador
 sentinela detectar --antes t1.png --depois t2.png # processa um par e grava as saídas
-sentinela demo --saida docs/evidence/results      # roda a cena sintética de demonstração
+sentinela demo --saida docs/resultados/imagem-real      # roda a cena sintética de demonstração
 ```
 
 Existe porque a demonstração ao vivo depende do Streamlit, mas a geração de evidência

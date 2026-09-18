@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Captura screenshots da interface em execução, para docs/evidence/screenshots/.
+// Captura screenshots da interface em execução, para docs/resultados/telas/.
 //
 // Por que existe: o AGENTS.md exige que os screenshots venham da versão ENTREGUE. Um
 // print tirado à mão numa versão anterior é evidência falsa por omissão. Este script
@@ -18,7 +18,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 
 const CHROME = process.env.CHROME;
 const URL_APP = process.env.URL_APP ?? "http://localhost:8501";
-const DESTINO = process.argv[2] ?? "docs/evidence/screenshots";
+const DESTINO = process.argv[2] ?? "docs/resultados/telas";
 const PORTA = 9333;
 const LARGURA = 1400;
 

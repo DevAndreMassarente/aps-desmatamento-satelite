@@ -24,7 +24,7 @@ dependência nova: nem `python-docx`, nem `pandoc`.
 ## Uso
 
 ```bash
-python scripts/montar_documento.py                       # saidas/trabalho-escrito.docx
+python scripts/montar_documento.py                       # entrega/trabalho-escrito.docx
 python scripts/montar_documento.py --sem-apendice        # sem o código-fonte (rascunho leve)
 python scripts/montar_documento.py --margem-superior 3 --margem-inferior 2
 ```
@@ -73,11 +73,19 @@ RECUO_PRIMEIRA_LINHA_CM = 1.25
 A4_LARGURA_TWIPS = 11906             # 210 mm
 A4_ALTURA_TWIPS = 16838              # 297 mm
 TAMANHO_CODIGO_PT = 8                # código do apêndice: cabe mais por página
+TAMANHO_LEGENDA_PT = 10              # legenda de figura, menor que o corpo (NBR 14724)
+EMU_POR_CM = 360000                  # unidade interna do Office
+LARGURA_UTIL_CM = 21.0 - MARGEM_ESQUERDA_CM - MARGEM_DIREITA_CM
+ALTURA_MAXIMA_CM = 12.0              # uma figura não pode empurrar a página inteira
 
 # Frases de controle do rascunho que não pertencem ao documento entregue.
 FRASES_DE_RASCUNHO = (
     "Esta seção está completa — é parte da Fase Intermediária I.",
 )
+
+# Figuras encontradas na travessia dos capítulos, na ordem em que aparecem: a numeração
+# da legenda e o identificador da relação no pacote saem daqui.
+FIGURAS: list[Path] = []
 
 NS_W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS_R = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
@@ -131,6 +139,13 @@ def ler_blocos(markdown: str, *, pular_destaques: bool = False) -> list[Bloco]:
                 codigo.append(linhas[i].rstrip("\n"))
                 i += 1
             blocos.append(Bloco("codigo", linhas=codigo))
+            i += 1
+            continue
+
+        figura = re.match(r"^!\[([^\]]*)\]\(([^)]+)\)$", despida)
+        if figura:
+            fechar_paragrafo()
+            blocos.append(Bloco("figura", figura.group(1).strip(), linhas=[figura.group(2).strip()]))
             i += 1
             continue
 
@@ -263,6 +278,59 @@ def tabela(linhas: list[list[str]]) -> str:
     return "".join(xml) + paragrafo("", "Tabela")
 
 
+NS_WP = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main"
+NS_PIC = "http://schemas.openxmlformats.org/drawingml/2006/picture"
+
+
+def dimensoes_png(caminho: Path) -> tuple[int, int]:
+    """Largura e altura em pixels, lidas do bloco IHDR — sem depender de Pillow.
+
+    O gerador é de biblioteca padrão por decisão de projeto; um PNG começa com a
+    assinatura de 8 bytes seguida do IHDR, cujos dois primeiros campos são a largura e a
+    altura em big-endian.
+    """
+    dados = caminho.read_bytes()[:24]
+    if dados[:8] != b"\x89PNG\r\n\x1a\n" or dados[12:16] != b"IHDR":
+        raise SystemExit(f"{caminho} não é um PNG válido")
+    return int.from_bytes(dados[16:20], "big"), int.from_bytes(dados[20:24], "big")
+
+
+def figura(indice: int, caminho: Path, legenda: str) -> str:
+    """Imagem centralizada, dimensionada para a largura útil, com legenda numerada.
+
+    A ABNT põe a legenda **abaixo** da ilustração, e a fonte logo em seguida; aqui a
+    legenda já traz a origem, porque toda figura deste trabalho vem do próprio programa
+    ou de imagem pública identificada no capítulo.
+    """
+    largura_px, altura_px = dimensoes_png(caminho)
+    largura_cm = LARGURA_UTIL_CM
+    altura_cm = largura_cm * altura_px / largura_px
+    if altura_cm > ALTURA_MAXIMA_CM:
+        largura_cm *= ALTURA_MAXIMA_CM / altura_cm
+        altura_cm = ALTURA_MAXIMA_CM
+    cx, cy = round(largura_cm * EMU_POR_CM), round(altura_cm * EMU_POR_CM)
+    id_rel = f"rIdFigura{indice}"
+    nome = escape(caminho.name)
+
+    desenho = (
+        f'<w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0" xmlns:wp="{NS_WP}">'
+        f'<wp:extent cx="{cx}" cy="{cy}"/><wp:docPr id="{indice}" name="Figura {indice}" '
+        f'descr="{escape(legenda)}"/>'
+        f'<a:graphic xmlns:a="{NS_A}"><a:graphicData '
+        f'uri="http://schemas.openxmlformats.org/drawingml/2006/picture">'
+        f'<pic:pic xmlns:pic="{NS_PIC}"><pic:nvPicPr>'
+        f'<pic:cNvPr id="{indice}" name="{nome}" descr="{escape(legenda)}"/><pic:cNvPicPr/>'
+        f'</pic:nvPicPr><pic:blipFill><a:blip r:embed="{id_rel}"/>'
+        f'<a:stretch><a:fillRect/></a:stretch></pic:blipFill>'
+        f'<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="{cx}" cy="{cy}"/></a:xfrm>'
+        f'<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>'
+        f'</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>'
+    )
+    return (paragrafo(f"<w:r>{desenho}</w:r>", alinhamento="center")
+            + paragrafo(runs(f"Figura {indice} — {legenda}"), "Legenda", alinhamento="center"))
+
+
 def blocos_para_xml(blocos: list[Bloco], *, capitulo_em_nova_pagina: bool = True) -> str:
     xml = []
     for b in blocos:
@@ -278,6 +346,10 @@ def blocos_para_xml(blocos: list[Bloco], *, capitulo_em_nova_pagina: bool = True
             xml.append(paragrafo(runs(b.texto), "Destaque"))
         elif b.tipo == "tabela":
             xml.append(tabela(b.linhas))
+        elif b.tipo == "figura":
+            caminho = (PASTA / b.linhas[0]).resolve()
+            FIGURAS.append(caminho)
+            xml.append(figura(len(FIGURAS), caminho, b.texto))
         elif b.tipo == "codigo":
             xml.extend(paragrafo(f'<w:r><w:t xml:space="preserve">{escape(l)}</w:t></w:r>', "Codigo")
                        for l in (b.linhas or [""]))
@@ -364,6 +436,9 @@ def estilos() -> str:
             f'<w:style w:type="paragraph" w:styleId="Tabela"><w:name w:val="Tabela"/><w:basedOn w:val="Normal"/>'
             f'<w:pPr><w:spacing w:line="240" w:lineRule="auto"/><w:jc w:val="left"/></w:pPr>'
             f'<w:rPr><w:sz w:val="{(TAMANHO_PT - 2) * 2}"/></w:rPr></w:style>'
+            f'<w:style w:type="paragraph" w:styleId="Legenda"><w:name w:val="Legenda"/><w:basedOn w:val="Normal"/>'
+            f'<w:pPr><w:spacing w:before="120" w:after="240" w:line="240" w:lineRule="auto"/>'
+            f'<w:jc w:val="center"/></w:pPr><w:rPr><w:sz w:val="{TAMANHO_LEGENDA_PT * 2}"/></w:rPr></w:style>'
             f'<w:style w:type="paragraph" w:styleId="Codigo"><w:name w:val="Codigo"/><w:basedOn w:val="Normal"/>'
             f'<w:pPr><w:spacing w:line="240" w:lineRule="auto"/><w:jc w:val="left"/></w:pPr>'
             f'<w:rPr><w:rFonts w:ascii="Courier New" w:hAnsi="Courier New" w:cs="Courier New"/>'
@@ -423,6 +498,23 @@ PARTES_FIXAS = {
 }
 
 
+def tipos_de_conteudo(com_figuras: bool) -> str:
+    """``[Content_Types].xml`` — o PNG entra como extensão padrão só quando há figura."""
+    png = ('<Default Extension="png" ContentType="image/png"/>' if com_figuras else "")
+    return PARTES_FIXAS["[Content_Types].xml"].replace(
+        '<Default Extension="xml" ContentType="application/xml"/>',
+        '<Default Extension="xml" ContentType="application/xml"/>' + png, 1)
+
+
+def relacoes_do_documento(figuras: list[Path]) -> str:
+    """Relações fixas mais uma por figura, no mesmo índice usado pela legenda."""
+    extra = "".join(
+        f'<Relationship Id="rIdFigura{n}" Type="http://schemas.openxmlformats.org/officeDocument/2006/'
+        f'relationships/image" Target="media/figura{n}.png"/>'
+        for n, _ in enumerate(figuras, start=1))
+    return PARTES_FIXAS["word/_rels/document.xml.rels"].replace("</Relationships>", extra + "</Relationships>", 1)
+
+
 # --------------------------------------------------------------------------------------
 # Montagem
 # --------------------------------------------------------------------------------------
@@ -450,6 +542,7 @@ def montar(saida: Path, *, apendice: bool = True,
            margem_superior_cm: float = MARGEM_SUPERIOR_CM,
            margem_inferior_cm: float = MARGEM_INFERIOR_CM) -> list[str]:
     dados = json.loads((PASTA / "capa.json").read_text(encoding="utf-8"))
+    FIGURAS.clear()
     corpo = [capa_e_rosto(dados), sumario(), "{{FIM_DO_SUMARIO}}"]
 
     for indice, nome in enumerate(CAPITULOS):
@@ -474,8 +567,14 @@ def montar(saida: Path, *, apendice: bool = True,
 
     saida.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(saida, "w", zipfile.ZIP_DEFLATED) as pacote:
+        reescritas = {"[Content_Types].xml", "word/_rels/document.xml.rels"}
         for nome, conteudo in PARTES_FIXAS.items():
-            pacote.writestr(nome, conteudo)
+            if nome not in reescritas:            # essas duas dependem das figuras
+                pacote.writestr(nome, conteudo)
+        pacote.writestr("[Content_Types].xml", tipos_de_conteudo(bool(FIGURAS)))
+        pacote.writestr("word/_rels/document.xml.rels", relacoes_do_documento(FIGURAS))
+        for numero, origem in enumerate(FIGURAS, start=1):
+            pacote.writestr(f"word/media/figura{numero}.png", origem.read_bytes())
         pacote.writestr("word/styles.xml", estilos())
         pacote.writestr("word/header1.xml", cabecalho_com_pagina())
         pacote.writestr("word/document.xml", documento("".join(corpo), margem_superior_cm, margem_inferior_cm))
@@ -491,13 +590,47 @@ def montar(saida: Path, *, apendice: bool = True,
     return avisos
 
 
+def montar_avulso(saida: Path, origem: Path, *, paisagem: bool = False) -> Path:
+    """Gera um DOCX simples a partir de um Markdown, sem capa, sumário nem apêndice.
+
+    Serve para os documentos de apoio da entrega — hoje, as falas da apresentação. Reaproveita
+    o mesmo conversor de Markdown e os mesmos estilos do trabalho escrito, para que o grupo
+    entregue um conjunto com a mesma cara.
+    """
+    FIGURAS.clear()
+    corpo = blocos_para_xml(ler_blocos(origem.read_text(encoding="utf-8")),
+                            capitulo_em_nova_pagina=False)
+    secao = propriedades_de_secao(2.5, 2.0, cabecalho=True)
+    xml = (f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+           f'<w:document xmlns:w="{NS_W}" xmlns:r="{NS_R}"><w:body>{corpo}{secao}</w:body></w:document>')
+
+    saida.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(saida, "w", zipfile.ZIP_DEFLATED) as pacote:
+        for nome, conteudo in PARTES_FIXAS.items():
+            if nome not in {"[Content_Types].xml", "word/_rels/document.xml.rels"}:
+                pacote.writestr(nome, conteudo)
+        pacote.writestr("[Content_Types].xml", tipos_de_conteudo(bool(FIGURAS)))
+        pacote.writestr("word/_rels/document.xml.rels", relacoes_do_documento(FIGURAS))
+        pacote.writestr("word/styles.xml", estilos())
+        pacote.writestr("word/header1.xml", cabecalho_com_pagina())
+        pacote.writestr("word/document.xml", xml)
+    return saida
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Monta o trabalho escrito em DOCX.")
     parser.add_argument("--saida", type=Path, default=SAIDA_PADRAO)
     parser.add_argument("--sem-apendice", action="store_true")
+    parser.add_argument("--avulso", type=Path,
+                        help="gera um DOCX simples a partir deste Markdown, sem capa nem sumário")
     parser.add_argument("--margem-superior", type=float, default=MARGEM_SUPERIOR_CM)
     parser.add_argument("--margem-inferior", type=float, default=MARGEM_INFERIOR_CM)
     args = parser.parse_args(argv)
+
+    if args.avulso:
+        caminho = montar_avulso(args.saida, args.avulso)
+        print(f"Documento gerado: {caminho} ({caminho.stat().st_size // 1024} KB)")
+        return 0
 
     avisos = montar(args.saida, apendice=not args.sem_apendice,
                     margem_superior_cm=args.margem_superior, margem_inferior_cm=args.margem_inferior)

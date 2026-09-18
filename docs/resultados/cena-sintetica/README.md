@@ -16,7 +16,7 @@ desmatada foi construída com tamanho exato, então o erro da detecção é mens
 ## Como foram geradas
 
 ```bash
-sentinela demo --saida docs/evidence/demo-sintetica --tamanho 200 --area 80 --modelo
+sentinela demo --saida docs/resultados/cena-sintetica --tamanho 200 --area 80 --modelo
 ```
 
 Reproduzível: a cena é determinística por semente.

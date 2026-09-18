@@ -1,6 +1,6 @@
 # Resultados — imagens REAIS de satélite
 
-Diferente de `docs/evidence/demo-sintetica/`, **estas imagens são reais** e podem ser
+Diferente de `docs/resultados/cena-sintetica/`, **estas imagens são reais** e podem ser
 usadas no trabalho escrito, com as ressalvas abaixo.
 
 ## Origem
@@ -25,7 +25,7 @@ sentinela detectar \
   --nir-depois  data/raw/sao-felix_2024-07-05_nir.png \
   --swir-antes  data/raw/sao-felix_2002-07-01_swir.png \
   --swir-depois data/raw/sao-felix_2024-07-05_swir.png \
-  --metodo nbr --metros-por-pixel 253 --area-minima 4 --saida docs/evidence/results
+  --metodo nbr --metros-por-pixel 253 --area-minima 4 --saida docs/resultados/imagem-real
 ```
 
 As imagens desta pasta foram geradas com `--metodo nbr`, a melhor leitura disponível para

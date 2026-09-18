@@ -209,6 +209,8 @@ espacial não positiva, treino com uma classe só. Em todos, o critério é a me
 
 ### Teste de fumaça da interface
 
+![Interface da aplicação exibindo a recusa de quantificação: quando a separação entre as classes fica abaixo do critério, o programa informa o motivo em vez de apresentar um número de área.](../resultados/telas/04-recusa.png)
+
 A interface é executada por teste automatizado que verifica que ela não levanta exceção,
 que exibe a área correta quando há desmatamento, e que **exibe a recusa** — e não um número
 — quando a cena é homogênea.
@@ -234,8 +236,8 @@ interseção é conferida.
 | `test_integracao.py` | 10 | cadeia completa contra verdade de terreno |
 | `test_app.py` | 11 | interface |
 | `test_cli.py` | 9 | linha de comando e apêndice |
-| `test_documento.py` | 28 | geração do trabalho escrito em DOCX |
-| **Total** | **329** | |
+| `test_documento.py` | 39 | geração do trabalho escrito e das falas em DOCX |
+| **Total** | **340** | |
 
 Reprodução:
 
@@ -248,6 +250,8 @@ pytest
 ## 4.d. Resultados obtidos
 
 ### Verificação da cadeia em cena sintética
+
+![Cena sintética construída com área desmatada de tamanho conhecido: à esquerda a data anterior, ao centro a posterior, à direita a perda detectada pelo sistema sobreposta em vermelho. A cena é sintética e está rotulada como tal no código e na interface.](../resultados/cena-sintetica/09-sobreposicao.png)
 
 | Verdade de terreno | Detectado | Erro |
 |--------------------|-----------|------|
@@ -301,6 +305,8 @@ comportamento, justamente para impedir que sejam apresentados como validados.
 
 ### Resultado em imagens reais
 
+![Mapa de mudança do par MODIS 2002 × 2024 sobre São Félix do Xingu (PA). O vermelho marca perda de vegetação segundo o limiar conjunto; o sistema calcula o mapa, mede a separação entre as classes e se recusa a converter a área em hectares.](../resultados/imagem-real/07-mapa-mudanca.png)
+
 | | |
 |---|---|
 | Área | São Félix do Xingu (PA) |
@@ -352,11 +358,11 @@ detecção do erro veio de medição, não de inspeção visual.
 
 | O que foi demonstrado | Como |
 |-----------------------|------|
-| Os filtros são do grupo e estão corretos | 329 testes contra propriedades analíticas |
+| Os filtros são do grupo e estão corretos | 340 testes contra propriedades analíticas |
 | A cadeia quantifica corretamente | erro de 0,0% contra verdade de terreno construída |
 | O sistema reconhece quando não sabe | recusa acionada em cena homogênea e em imagem real |
 | A preparação de dados alimenta um modelo | conjunto rotulado, divisão espacial, classificador treinado |
-| Os filtros rodam em imagem real de satélite | evidência em `docs/evidence/results/` |
+| Os filtros rodam em imagem real de satélite | evidência em `docs/resultados/imagem-real/` |
 
 | O que **não** foi demonstrado | Por quê |
 |-------------------------------|---------|

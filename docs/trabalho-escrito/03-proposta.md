@@ -19,6 +19,8 @@ que aparece na cadeia, e sai um passo antes de onde ele atrapalharia.
 | Realce de borda | Sobel — magnitude do gradiente | Torna visível a fronteira floresta/corte na apresentação |
 | Textura | Desvio padrão local 5×5 | Descritor para a etapa de modelo |
 
+
+![Efeito de cada filtro implementado pelo grupo sobre a cena real de 2024: índice bruto, suavização gaussiana, mediana, magnitude do gradiente de Sobel e desvio-padrão local. Nenhum painel usa biblioteca de processamento de imagens — todos saem de `sentinela.pdi`, escrito com NumPy.](../apresentacao/figuras/efeito-dos-filtros.png)
 ### As três decisões que determinam o resultado
 
 #### 1. Suavizar antes de limiarizar, não depois
@@ -106,6 +108,8 @@ floresta contínua; a de 2024 apresenta clareiras extensas.
 | *Piso de uma distribuição sem duas classes* | *2,650* | — |
 
 ### Análise do resultado
+
+![Distribuição do NDVI e do NBR nas duas datas, com o limiar de Otsu conjunto. Há perda de vegetação e há vale entre os montes, mas o vale é raso: nenhum corte separa as classes com o tamanho de efeito exigido, e por isso o sistema recusa a quantificação.](../apresentacao/figuras/histogramas-ndvi-nbr.png)
 
 O resultado negativo tem causa identificada, e ela não está no código.
 

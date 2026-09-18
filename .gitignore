@@ -37,7 +37,8 @@ data/processed/*
 *.pkl
 modelos/*.pth
 
-# Saídas da aplicação
+# Saídas descartáveis da aplicação. Os três arquivos entregues ficam em entrega/ e são
+# versionados de propósito: é o que vai para o professor e para o site da UNIP.
 saidas/
 *.log
 
@@ -57,3 +58,22 @@ Thumbs.db
 /.handoff/
 .graphify_analysis.json
 .graphify_labels.json
+
+# --------------------------------------------------------------------------------------
+# Ferramental do agente de IA e documentação de processo. Fica no disco de quem
+# desenvolve, não no GitHub: não é entregável e polui a leitura do repositório.
+# --------------------------------------------------------------------------------------
+/AGENTS.md
+/CLAUDE.md
+/.graphifyignore
+/docs/agent-memory.md
+/docs/PROJECT_SPEC.md
+/docs/PROJECT_STATE.md
+/docs/REQUIREMENTS.md
+/docs/ARCHITECTURE.md
+/docs/decisions/
+/docs/trabalho-escrito/README.md
+
+# Apêndice de código: é gerado por `sentinela apendice` a partir de src/. Versioná-lo
+# duplicaria o código-fonte inteiro dentro de docs/ e sairia do ar a cada alteração.
+/docs/trabalho-escrito/07-apendice.md

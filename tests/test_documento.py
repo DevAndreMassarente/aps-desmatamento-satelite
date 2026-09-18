@@ -34,7 +34,9 @@ def pacote(tmp_path_factory):
     destino = tmp_path_factory.mktemp("doc") / "trabalho.docx"
     avisos = gerador.montar(destino, apendice=False)
     with zipfile.ZipFile(destino) as z:
-        partes = {nome: z.read(nome).decode("utf-8") for nome in z.namelist()}
+        # As imagens entram no pacote como bytes; só as partes de texto são decodificadas.
+        partes = {nome: (z.read(nome) if nome.startswith("word/media/") else
+                         z.read(nome).decode("utf-8")) for nome in z.namelist()}
     return partes, avisos
 
 
@@ -48,7 +50,8 @@ class TestPacote:
     def test_todo_xml_e_bem_formado(self, pacote):
         partes, _ = pacote
         for nome, conteudo in partes.items():
-            ET.fromstring(conteudo.encode("utf-8"))  # levanta se estiver malformado
+            if isinstance(conteudo, str):
+                ET.fromstring(conteudo.encode("utf-8"))  # levanta se estiver malformado
 
     def test_relacoes_apontam_para_partes_existentes(self, pacote):
         partes, _ = pacote
@@ -132,10 +135,15 @@ class TestConteudo:
         xml = gerador.runs("a < b & c > d")
         ET.fromstring(f'<w:p xmlns:w="{W[1:-1]}">{xml}</w:p>')
 
-    def test_marcadores_de_integrantes_sao_avisados(self, pacote):
-        _, avisos = pacote
-        assert any("Q7" in a for a in avisos)
-        assert any("Q4" in a for a in avisos)
+    def test_capa_traz_os_integrantes_e_nenhum_marcador(self, pacote):
+        """Q7 foi respondida: capa e folha de rosto saem com nomes e RAs reais."""
+        texto = pacote[0]["word/document.xml"]
+        assert "André Massarente" in texto and "G280BI1" in texto
+        assert "[NOME DO INTEGRANTE" not in texto and "Q7" not in texto
+        assert not any("Q7" in a for a in pacote[1])
+
+    def test_margens_sem_fonte_no_enunciado_continuam_avisadas(self, pacote):
+        assert any("Q4" in a for a in pacote[1])
 
 
 class TestNormaABNT:
@@ -206,3 +214,82 @@ class TestParserDeReferencias:
             if (s := p.find(f"{W}pPr/{W}pStyle")) is not None and s.get(f"{W}val") == "Destaque"
         ]
         assert not any("Gerado automaticamente" in d for d in destaques)
+
+
+class TestFiguras:
+    """O enunciado pede que o resultado dos filtros seja apresentado (p.3, item 3.a):
+    sem imagem no documento, o texto descreve um efeito que o leitor não vê."""
+
+    def test_o_documento_traz_imagens(self, pacote):
+        partes, _ = pacote
+        midia = [n for n in partes if n.startswith("word/media/")]
+        assert len(midia) >= 5, midia
+
+    def test_cada_imagem_tem_relacao_e_legenda(self, pacote):
+        partes, _ = pacote
+        corpo = ET.fromstring(partes["word/document.xml"])
+        A = "{http://schemas.openxmlformats.org/drawingml/2006/main}"
+        R = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
+        alvos = {r.get("Id") for r in ET.fromstring(partes["word/_rels/document.xml.rels"])}
+        embutidas = [b.get(f"{R}embed") for b in corpo.iter(f"{A}blip")]
+        assert embutidas and set(embutidas) <= alvos
+        legendas = [
+            "".join(t.text or "" for t in p.iter(f"{W}t"))
+            for p in corpo.iter(f"{W}p")
+            if (e := p.find(f"{W}pPr/{W}pStyle")) is not None and e.get(f"{W}val") == "Legenda"
+        ]
+        assert len(legendas) == len(embutidas)
+        assert all(l.startswith(f"Figura {n} — ") for n, l in enumerate(legendas, start=1))
+
+    def test_png_declarado_no_content_types(self, pacote):
+        assert 'Extension="png"' in pacote[0]["[Content_Types].xml"]
+
+    def test_figura_cabe_na_largura_util(self):
+        largura = gerador.LARGURA_UTIL_CM * gerador.EMU_POR_CM
+        caminho = (gerador.PASTA / ".." / "apresentacao" / "figuras" / "efeito-dos-filtros.png").resolve()
+        xml = gerador.figura(1, caminho, "teste")
+        cx = int(re.search(r'<wp:extent cx="(\d+)"', xml).group(1))
+        assert cx <= largura + 1
+
+    def test_markdown_de_imagem_vira_bloco_de_figura(self):
+        blocos = gerador.ler_blocos("![uma legenda](../x/y.png)\n")
+        assert [b.tipo for b in blocos] == ["figura"]
+        assert blocos[0].texto == "uma legenda" and blocos[0].linhas == ["../x/y.png"]
+
+    def test_png_invalido_e_recusado(self, tmp_path):
+        falso = tmp_path / "falso.png"
+        falso.write_bytes(b"nao sou um png")
+        with pytest.raises(SystemExit):
+            gerador.dimensoes_png(falso)
+
+
+class TestDocumentoAvulso:
+    """As falas da apresentação saem do mesmo conversor, sem capa nem sumário."""
+
+    @staticmethod
+    @pytest.fixture(scope="class")
+    def falas(tmp_path_factory):
+        destino = tmp_path_factory.mktemp("avulso") / "falas.docx"
+        origem = Path(__file__).resolve().parents[1] / "docs" / "apresentacao" / "ROTEIRO.md"
+        gerador.montar_avulso(destino, origem)
+        with zipfile.ZipFile(destino) as z:
+            return {n: z.read(n).decode("utf-8") for n in z.namelist()}
+
+    def test_xml_bem_formado_e_partes_obrigatorias(self, falas):
+        for nome in ("[Content_Types].xml", "word/document.xml", "word/styles.xml"):
+            assert nome in falas
+            ET.fromstring(falas[nome].encode("utf-8"))
+
+    def test_nao_tem_capa_nem_sumario(self, falas):
+        assert "TOC" not in falas["word/document.xml"]
+        assert "UNIVERSIDADE PAULISTA" not in falas["word/document.xml"]
+
+    def test_cada_integrante_tem_bloco_de_falas(self, falas):
+        texto = falas["word/document.xml"]
+        for nome in ("André Massarente", "Enzo Consani", "Isabel Da Silva",
+                     "Jonathan Aparecido X Martins"):
+            assert nome in texto, nome
+
+    def test_traz_o_que_nao_dizer(self, falas):
+        """Regressão de integridade: a lista do que não afirmar na banca é parte da entrega."""
+        assert "ele se recusou" in falas["word/document.xml"]

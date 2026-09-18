@@ -21,6 +21,8 @@ o que foi perdido: uma área de pastagem consolidada há trinta anos é indistin
 
 ### Relevância em termos de sustentabilidade ambiental
 
+![O mesmo recorte de São Félix do Xingu (PA) em 2002 e em 2024, em cor natural e no índice NBR em falsa cor. A perda de cobertura é visível a olho nu; quantificá-la é o problema deste trabalho. Imagens MODIS/Terra obtidas do NASA GIBS, domínio público.](../apresentacao/figuras/comparativo-real.png)
+
 A supressão de vegetação nativa atua sobre a sustentabilidade por vários caminhos
 simultâneos:
 
