@@ -149,13 +149,16 @@ julho de 2024. Cada arquivo traz a cor e o infravermelho, que separa floresta de
 etapa enquanto roda.**
 "O programa roda agora as cinco etapas sobre 2,25 milhões de pixels."
 
-**Arrastar a linha da comparação de um lado para o outro (40 s).**
-"Dá para ver a floresta virar pasto. E o programa se recusou a dar um número: floresta e área
-aberta não se separam o bastante nesta imagem. O Jonathan explica esse resultado."
+**Arrastar a linha da comparação de um lado para o outro (30 s).**
+"Dá para ver a floresta virar pasto."
 
 **Em Etapas do processamento, abrir 3 Filtragem e 4 Segmentação (50 s).**
 "Aqui está cada etapa. Na filtragem, o gaussiano tirando o ruído e o Sobel marcando a borda.
 Na segmentação, o mesmo limiar nas duas datas e o mapa de mudança."
+
+**Apontar a tabela Decisão do limiar, na aba 4.**
+"E aqui a decisão: a separação ficou em 3,88, abaixo do mínimo de 4,0. Por isso o programa
+não calculou a área. O Jonathan explica esse resultado."
 
 **Se sobrar tempo: Cena sintética no painel da esquerda (30 s).**
 "Para conferir a conta, uma cena em que nós desenhamos o corte: 400 pixels construídos e 400

@@ -29,12 +29,14 @@ TEMA = {
     "theme.dark.primaryColor": "#2F7D5A",
 }
 
-# Marca: uma grade de pixels de floresta com um bloco perdido, que é o que o programa mede.
+# Marca: a Terra com a órbita de um satélite, e a floresta vista de cima ocupando o globo.
 MARCA_SVG = (
-    '<svg width="34" height="34" viewBox="0 0 4 4" aria-hidden="true" shape-rendering="crispEdges">'
-    f'<rect width="4" height="4" fill="{FLORESTA}"/>'
-    f'<rect x="2" y="1" width="2" height="2" fill="{PERDA}"/>'
-    '<path d="M1 0V4M2 0V4M3 0V4M0 1H4M0 2H4M0 3H4" stroke="#fff" stroke-width="0.08"/>'
+    '<svg width="34" height="34" viewBox="0 0 32 32" fill="none" aria-hidden="true">'
+    f'<circle cx="16" cy="16" r="9" fill="{FLORESTA}"/>'
+    f'<path d="M12 10.5c2.5 1 3 3.5 6 3.5s3.5 2.5 2 5" stroke="{PERDA}" stroke-width="2.2" stroke-linecap="round"/>'
+    '<ellipse cx="16" cy="16" rx="14.5" ry="5.2" transform="rotate(-28 16 16)" '
+    'stroke="currentColor" stroke-width="1.4" opacity="0.75"/>'
+    '<rect x="26.2" y="6.3" width="3.6" height="3.6" rx="0.6" transform="rotate(-28 28 8.1)" fill="currentColor"/>'
     "</svg>"
 )
 
@@ -88,7 +90,7 @@ header[data-testid="stHeader"] {{ background: transparent; height: 3.4rem; }}
   margin: 0 calc(50% - 50vw) 1.6rem; padding: 0 calc(50vw - 50% + 0.1rem);
   border-bottom: 1px solid var(--linha);
 }}
-.topo svg {{ width: 22px; height: 22px; }}
+.topo svg {{ width: 28px; height: 28px; }}
 .topo b {{ font-size: var(--t-4); font-weight: 600; }}
 .topo span {{ font-size: var(--t-2); color: var(--apagado); padding-left: 0.7rem; border-left: 1px solid var(--linha); }}
 
