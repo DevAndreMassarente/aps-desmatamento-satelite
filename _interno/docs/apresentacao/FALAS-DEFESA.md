@@ -91,10 +91,10 @@ mostrar etapa por etapa na tela."
 
 ## Slide 4 · Os filtros são nossos — 50 s
 
-"Aqui estão os filtros rodando sobre a cena real de 2024. Em cima: a cor natural, o índice
-NBR bruto e o mesmo índice depois do gaussiano 5 por 5 — repara que o ruído sumiu e a
-estrutura ficou. Embaixo: a mediana, o Sobel realçando as bordas, e o desvio-padrão local,
-que é a nossa medida de textura."
+"Esta é a aba de filtragem do nosso programa, sobre a imagem Sentinel-2 de 2024. À esquerda,
+o índice de vegetação sem filtro. No meio, o mesmo índice depois do gaussiano 5 por 5: o ruído
+some e a estrutura fica. À direita, o Sobel, que acende onde o valor muda de repente, isto é,
+na borda entre mata e corte."
 
 "Tudo isso é código nosso. A base é uma função de convolução genérica com tratamento de
 borda; todo filtro linear é só um núcleo diferente passado para ela."

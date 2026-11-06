@@ -108,6 +108,25 @@ if (!(await avaliar(`!!document.querySelector('[data-testid="stTab"]')`))) {
 console.log("Capturando:");
 await abrirPaginaInteira();
 await gravar(join(TELAS, "01-etapas.png"));
+// Visão geral para o slide da demonstração: do topo da página ao fim da comparação.
+await gravar(join(FIGURAS, "tela-demo.png"), await avaliar(`(() => {
+  const fim = [...document.querySelectorAll('iframe')].find((f) => !f.title.includes('quadros') && f.getBoundingClientRect().height > 0);
+  const legenda = fim.closest('[data-testid="stVerticalBlock"]');
+  return { x: 0, y: 0, width: ${LARGURA}, height: Math.ceil(fim.getBoundingClientRect().bottom + 6) };
+})()`));
+
+await clicarAba(3);
+await abrirPaginaInteira();
+await gravar(join(FIGURAS, "tela-filtragem-app.png"), await avaliar(`(() => {
+  const visivel = (e) => e.getBoundingClientRect().height > 0;
+  const etapa = [...document.querySelectorAll('.etapa')].find((e) => visivel(e) && e.innerText.includes('Filtragem'));
+  const painel = etapa.closest('[role="tabpanel"]');
+  const partes = [etapa, ...painel.querySelectorAll('[data-testid="stImage"]'),
+    ...painel.querySelectorAll('[data-testid="stCaptionContainer"]')].filter(visivel);
+  const r = partes.map((e) => e.getBoundingClientRect());
+  const x = Math.min(...r.map((q) => q.left)) - 16, y = Math.min(...r.map((q) => q.top)) - 16;
+  return { x, y, width: Math.max(...r.map((q) => q.right)) - x + 16, height: Math.max(...r.map((q) => q.bottom)) - y + 16 };
+})()`));
 
 await clicarAba(4);
 await abrirPaginaInteira();

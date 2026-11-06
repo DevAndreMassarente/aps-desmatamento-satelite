@@ -983,10 +983,10 @@ semRodape = true;
 
 {
   const s = slide({ titulo: "Os filtros foram implementados pelo grupo",
-    sub: "Filtros escritos com NumPy, aplicados à cena real de 2024",
+    sub: "Aba 3 Filtragem do programa, sobre a imagem Sentinel-2 de 2024",
     quem: "Enzo Consani  ·  como o sistema funciona" });
 
-  imagem(s, join(FIG, "efeito-dos-filtros.png"), { x: MARGEM, y: 1.88, w: 8.6, h: 4.95 });
+  imagem(s, join(FIG, "telas/tela-filtragem-app.png"), { x: MARGEM, y: 1.88, w: 8.6, h: 4.95 });
 
   const notas = [
     ["Convolução", "Uma função genérica com tratamento de borda; todo filtro linear é um núcleo passado para ela."],
@@ -1009,10 +1009,10 @@ semRodape = true;
   s.addNotes([
     "ENZO — os filtros (50 s)",
     "",
-    "\"Aqui estão os filtros rodando sobre a cena real de 2024. Em cima: a cor natural, o",
-    "índice NBR bruto e o mesmo índice depois do gaussiano 5 por 5 — repara que o ruído",
-    "sumiu e a estrutura ficou. Embaixo: a mediana, o Sobel realçando as bordas, e o",
-    "desvio-padrão local, que é a nossa medida de textura.\"",
+    "\"Esta é a aba de filtragem do nosso programa, sobre a imagem Sentinel-2 de 2024. À",
+    "esquerda, o índice de vegetação sem filtro. No meio, o mesmo índice depois do gaussiano",
+    "5 por 5: o ruído some e a estrutura fica. À direita, o Sobel, que acende onde o valor",
+    "muda de repente, isto é, na borda entre mata e corte.\"",
     "",
     "\"Tudo isso é código nosso. A base é uma função de convolução genérica com tratamento",
     "de borda; todo filtro linear é só um núcleo diferente passado para ela.\"",
@@ -1090,24 +1090,23 @@ semRodape = true;
   const s = slide({ titulo: "Demonstração da aplicação", escuro: true,
     quem: "André Massarente  ·  demonstração" });
 
-  const passos = [
-    ["Envio das imagens", "A imagem de 2018 e a de 2024 da mesma área, enviadas na hora."],
-    ["As cinco etapas", "Índice, filtragem e mapa de mudança calculados na hora."],
-    ["A recusa", "Na imagem real, as classes não se separam o bastante, e o programa não dá número."],
-    ["A conferência", "Na cena sintética, 400 pixels construídos e 400 detectados."],
-    ["O modelo", "Na cena sintética, os recortes rotulados treinam o classificador."],
-  ];
-  const w = (LARGURA - 4 * 0.2) / 5;
-  passos.forEach(([titulo, texto], i) => {
-    const x = MARGEM + i * (w + 0.2);
-    cartao(s, { x, y: 2.3, w, h: 3.3, escuro: true });
-    numero(s, i + 1, { x: x + w / 2 - 0.27, y: 2.55, d: 0.54, cor: COR.musgo });
-    s.addText(titulo, { x: x + 0.1, y: 3.25, w: w - 0.2, h: 0.4, isTextBox: true, margin: 0,
-      align: "center", fontFace: TIT, fontSize: 16, bold: true, color: COR.branco });
-    s.addText(texto, { x: x + 0.16, y: 3.72, w: w - 0.32, h: 1.6, isTextBox: true, margin: 0,
-      align: "center", fontFace: CORPO, fontSize: 12.5, color: COR.musgo, lineSpacingMultiple: 1.12 });
-  });
+  imagem(s, join(FIG, "telas/tela-demo.png"), { x: MARGEM, y: 1.75, w: 7.6, h: 5.05 });
 
+  const passos = [
+    ["Envio das imagens", "2018 e 2024 da mesma área, enviadas na hora."],
+    ["As cinco etapas", "Registro do processamento, filtragem e mapa de mudança."],
+    ["A recusa", "Separação 3,88 contra o mínimo de 4,0: a área não é calculada."],
+    ["A conferência", "Na cena sintética, 400 pixels construídos e 400 detectados."],
+    ["O modelo", "Os recortes rotulados treinam o classificador."],
+  ];
+  passos.forEach(([titulo, texto], i) => {
+    const y = 1.8 + i * 1.0;
+    numero(s, i + 1, { x: 8.55, y: y + 0.04, d: 0.46, cor: COR.musgo });
+    s.addText(titulo, { x: 9.2, y, w: 3.5, h: 0.36, isTextBox: true, margin: 0,
+      fontFace: TIT, fontSize: 15, bold: true, color: COR.branco });
+    s.addText(texto, { x: 9.2, y: y + 0.36, w: 3.5, h: 0.56, isTextBox: true, margin: 0,
+      fontFace: CORPO, fontSize: 12, color: COR.musgo, lineSpacingMultiple: 1.08 });
+  });
 
   s.addNotes([
     "ANDRÉ — demonstração ao vivo (3 min)",
