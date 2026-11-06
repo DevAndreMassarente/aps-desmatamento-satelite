@@ -106,3 +106,10 @@ Baixado em 2026-11-04 por `_interno/scripts/validar_prodes.py`, sem cadastro, de
 https://terrabrasilis.dpi.inpe.br/geoserver/ows. Camadas `yearly_deforestation`,
 `accumulated_deforestation_2007`, `no_forest` e `hydrography`, em `prodes/`.
 Licença: CC BY-SA 4.0, conforme https://terrabrasilis.dpi.inpe.br/citacoes-e-licenca-de-uso/. Citação: Assis et al. (2019), DOI 10.3390/ijgi8110513.
+
+### Exceção: imagens de exemplo versionadas
+
+Os dois arquivos `*_cor-e-infravermelho.png` do par Sentinel-2 acima também estão em
+`exemplos/`, no Git (8,9 MB). É uma exceção à decisão 002: sem eles, a demonstração não roda
+depois de um `git clone`, e regerá-los exige internet e o `rasterio`. Procedência e licença
+são as mesmas do registro acima.

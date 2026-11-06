@@ -17,16 +17,26 @@ NumPy.
 | `src/` | Código do programa |
 | `tests/` | Testes automatizados |
 | `pyproject.toml`, `requirements.txt` | Dependências |
+| `exemplos/` | Par de imagens Sentinel-2 para testar o programa |
+| `instalar.sh` | Instala tudo depois do `git clone` |
 | `_interno/` | Enunciado, fontes do trabalho, dados, resultados, scripts e registros do projeto |
 | `AGENTS.md`, `CLAUDE.md` | Instruções do assistente de IA, não versionadas no Git |
 
 ## Como executar
 
+Depois do `git clone`, na pasta do projeto:
+
 ```bash
-python -m venv .venv
-.venv/bin/pip install -e ".[app]"
+./instalar.sh
 .venv/bin/sentinela app
 ```
+
+O `instalar.sh` cria o ambiente `.venv`, instala as dependências e roda os testes. Usa o `uv`
+se estiver instalado; sem ele, precisa de Python 3.10 a 3.13. A interface abre em
+`http://localhost:8501` e só aceita conexões desta máquina.
+
+Para testar, envie as imagens da pasta `exemplos/`: a de 2018 em **Imagem antes** e a de 2024
+em **Imagem depois**.
 
 Sem interface: `.venv/bin/sentinela demo`. Testes: `.venv/bin/python -m pytest`.
 

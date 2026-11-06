@@ -199,6 +199,13 @@ class TestParserDeReferencias:
         assert [b.tipo for b in blocos] == ["paragrafo", "lista", "lista"]
 
     def test_apendice_entra_como_codigo(self, tmp_path):
+        # O apêndice é gerado a partir de src/ e não vai para o Git: num clone novo ele
+        # ainda não existe, então o teste o gera antes de montar o documento.
+        apendice = gerador.PASTA / "07-apendice.md"
+        if not apendice.exists():
+            from sentinela.cli import main
+
+            assert main(["apendice", "--saida", str(apendice)]) == 0
         destino = tmp_path / "completo.docx"
         gerador.montar(destino, apendice=True)
         with zipfile.ZipFile(destino) as z:

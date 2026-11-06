@@ -156,8 +156,10 @@ def comando_app(args: argparse.Namespace) -> int:
         )
         return 1
 
+    # Só nesta máquina: sem isso o Streamlit escuta em todas as interfaces, e na rede
+    # da sala de aula qualquer um conseguiria abrir o app.
     comando = [sys.executable, "-m", "streamlit", "run", CAMINHO_APP,
-               "--server.port", str(args.porta)]
+               "--server.port", str(args.porta), "--server.address", "127.0.0.1"]
     for opcao, valor in estilo.TEMA.items():
         comando += [f"--{opcao}", valor]
     return subprocess.call(comando)
