@@ -1133,7 +1133,7 @@ semRodape = true;
     "\"A separação ficou em 3,88, abaixo do mínimo de 4,0. Por isso o programa não calculou",
     "a área. O Jonathan explica esse resultado.\"",
     "",
-    "[Cena sintética no painel da esquerda, depois a aba 5 Modelo]",
+    "[Cena sintética no painel da esquerda; tamanho 200, área 60; aba 5 Modelo]",
     "\"Para conferir a conta, uma cena em que nós desenhamos o corte: 400 pixels construídos",
     "e 400 detectados. E aqui o modelo: a máscara vira rótulo dos recortes, e os recortes",
     "treinam o classificador. O programa avisa que, em cena sintética, a métrica não valida.\"",

@@ -161,7 +161,8 @@ Na segmentação, o mesmo limiar nas duas datas e o mapa de mudança."
 "E aqui a decisão: a separação ficou em 3,88, abaixo do mínimo de 4,0. Por isso o programa
 não calculou a área. O Jonathan explica esse resultado."
 
-**Cena sintética no painel da esquerda, depois a aba 5 Modelo (40 s).**
+**Cena sintética no painel da esquerda. Tamanho da cena em 200, lado da área desmatada em 60,
+depois a aba 5 Modelo (40 s).**
 "Para conferir a conta, uma cena em que nós desenhamos o corte: 400 pixels construídos e 400
 detectados. E aqui está o modelo: a máscara vira rótulo dos recortes, e os recortes treinam o
 classificador. O próprio programa avisa que, numa cena sintética, essa métrica não valida o
