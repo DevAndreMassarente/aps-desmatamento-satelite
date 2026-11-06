@@ -169,7 +169,7 @@ def _memoria() -> dict:
     notebook de quem apresenta, uma pessoa por vez, guardar no processo mantém as imagens
     e o resultado depois de recarregar.
     """
-    return {"envio": {}, "resultado": None}
+    return {"envio": {}, "resultado": None, "registro": None}
 
 
 _QUADROS = components.declare_component(
@@ -668,17 +668,74 @@ def _assinatura(imagens: dict, opcoes: dict) -> tuple:
     return bandas, parametros
 
 
+NOMES_DAS_ETAPAS = (
+    "Validação das imagens",
+    "Índice de vegetação e filtro gaussiano",
+    "Limiar de Otsu e separação das classes",
+    "Limpeza das máscaras (abertura e fechamento)",
+    "Comparação das datas e regiões de perda",
+)
+
+
+def _detalhes(imagens: dict, resultado) -> list[str]:
+    """O que cada etapa produziu, lido dos intermediários que o resultado guarda."""
+    altura, largura = imagens["rgb_antes"].shape[:2]
+    bandas = "cor e infravermelho" if imagens.get("nir_antes") is not None else "só cor"
+    metodo = resultado.metodo_indice.upper()
+    # O índice é guardado na faixa [0, 1]; NDVI, NDMI e NBR vivem em [-1, 1].
+    nativo = resultado.metodo_indice in ("ndvi", "ndmi", "nbr")
+    media = lambda indice: float(indice.mean()) * 2 - 1 if nativo else float(indice.mean())
+    escala = "de -1 a 1" if nativo else "de 0 a 1"
+    separacao = resultado.metricas["distinguibilidade"]
+    decisao = "aceito" if resultado.confiavel else "recusado"
+    vegetacao = lambda mascara: _br(float(mascara.mean()) * 100, 1)
+    return [
+        f"{_inteiro(largura)} × {_inteiro(altura)} pixels por data, {bandas}",
+        f"{metodo} médio ({escala}): {_br(media(resultado.indice_antes), 2)} antes, "
+        f"{_br(media(resultado.indice_depois), 2)} depois. Gaussiano "
+        f"{resultado.parametros.get('suavizacao', 5)}×{resultado.parametros.get('suavizacao', 5)}",
+        f"limiar {_br(resultado.valor_limiar, 3)}; separação {_br(separacao, 2)} contra o mínimo "
+        f"de {_br(limiar.DISTINGUIBILIDADE_MINIMA, 1)}: {decisao}",
+        f"vegetação: {vegetacao(resultado.vegetacao_antes)}% da cena antes, "
+        f"{vegetacao(resultado.vegetacao_depois)}% depois",
+        f"{_inteiro(len(resultado.regioes))} regiões acima de {resultado.parametros.get('area_minima', 25)} px",
+    ]
+
+
+def _registro_html(etapas: list[dict], atual: int | None = None) -> str:
+    """Lista das etapas: feitas com tempo e detalhe, a atual girando, as próximas apagadas."""
+    linhas = []
+    for indice, nome in enumerate(NOMES_DAS_ETAPAS):
+        if indice < len(etapas) and (atual is None or indice < atual):
+            etapa = etapas[indice]
+            detalhe = f"<small>{etapa['detalhe']}</small>" if etapa.get("detalhe") else ""
+            linhas.append(
+                f'<li class="feita"><span class="marca" aria-hidden="true">✓</span>'
+                f"<div><b>{nome}</b><em>{_br(etapa['segundos'], 1)} s</em>{detalhe}</div></li>"
+            )
+        elif indice == atual:
+            linhas.append(
+                '<li class="atual"><span class="giro" aria-hidden="true"></span>'
+                f"<div><b>{nome}</b></div></li>"
+            )
+        else:
+            linhas.append(f'<li class="proxima"><span class="marca">·</span><div><b>{nome}</b></div></li>')
+    return f'<ol class="registro" role="status">{"".join(linhas)}</ol>'
+
+
 def _detectar(imagens: dict, opcoes: dict):
+    """Roda o pipeline mostrando cada etapa ao vivo e devolve o resultado e o registro."""
+    import time
+
     indicador = st.empty()
-    feitas = []
+    marcos = []
 
     def avisar(etapa: str) -> None:
-        feitas.append(etapa)
-        indicador.markdown(
-            f'<div class="progresso" role="status"><span class="giro" aria-hidden="true"></span>'
-            f"<span>Etapa {len(feitas)} de 5: {etapa}</span></div>",
-            unsafe_allow_html=True,
-        )
+        marcos.append(time.perf_counter())
+        feitas = [
+            {"segundos": marcos[i + 1] - marcos[i]} for i in range(len(marcos) - 1)
+        ]
+        indicador.markdown(_registro_html(feitas, atual=len(marcos) - 1), unsafe_allow_html=True)
 
     try:
         resultado = detectar_desmatamento(
@@ -696,7 +753,18 @@ def _detectar(imagens: dict, opcoes: dict):
         )
     finally:
         indicador.empty()
-    return resultado
+    marcos.append(time.perf_counter())
+    registro = [
+        {"segundos": marcos[i + 1] - marcos[i], "detalhe": detalhe}
+        for i, detalhe in enumerate(_detalhes(imagens, resultado))
+    ]
+    return resultado, registro
+
+
+def mostrar_registro(registro: list[dict]) -> None:
+    total = sum(etapa["segundos"] for etapa in registro)
+    _subtitulo(f"Registro do processamento, {_br(total, 1)} s")
+    st.markdown(_registro_html(registro), unsafe_allow_html=True)
 
 
 def _resultado(imagens: dict | None, opcoes: dict):
@@ -707,7 +775,10 @@ def _resultado(imagens: dict | None, opcoes: dict):
     """
     try:
         if not opcoes["fonte"].startswith("Enviar"):
-            return _detectar(imagens, opcoes) if imagens is not None else None
+            if imagens is None:
+                return None
+            resultado, st.session_state["registro"] = _detectar(imagens, opcoes)
+            return resultado
 
         clicou = st.button(
             "Processar imagens", type="primary", icon=":material/play_arrow:",
@@ -718,7 +789,9 @@ def _resultado(imagens: dict | None, opcoes: dict):
             return None
         assinatura = _assinatura(imagens, opcoes)
         if clicou:
-            _memoria()["resultado"] = (assinatura, _detectar(imagens, opcoes))
+            resultado, registro = _detectar(imagens, opcoes)
+            _memoria()["resultado"] = (assinatura, resultado)
+            _memoria()["registro"] = registro
             # Recarrega para recolher os quadros de envio e abrir espaço para o resultado.
             st.rerun()
     except ErroImagem as erro:
@@ -776,6 +849,12 @@ def principal() -> None:
 
     with painel:
         resultado = _resultado(imagens, opcoes)
+        if resultado is not None:
+            registro = (
+                _memoria()["registro"] if enviar else st.session_state.get("registro")
+            )
+            if registro:
+                mostrar_registro(registro)
 
     if resultado is not None:
         with analise:

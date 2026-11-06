@@ -13,7 +13,7 @@ Prewitt e Laplaciano, realce de nitidez, textura por desvio padrão local, limia
 Otsu, morfologia binária e rotulagem de componentes conexos por união-busca.
 
 O sistema é operável por três caminhos — biblioteca, linha de comando e interface web — e é
-verificado por 363 testes automatizados. Os filtros são testados contra propriedades
+verificado por 364 testes automatizados. Os filtros são testados contra propriedades
 matemáticas conhecidas, e não contra a saída de outra biblioteca.
 
 ## O resultado principal não foi o esperado, e é o mais importante

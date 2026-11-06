@@ -79,6 +79,14 @@ header[data-testid="stHeader"] {{ background: transparent; height: 3.4rem; }}
 }}
 @keyframes girar {{ to {{ transform: rotate(360deg); }} }}
 @media (prefers-reduced-motion: reduce) {{ .giro {{ animation-duration: 2.4s; }} }}
+.registro {{ list-style: none; margin: 0.2rem 0 0; padding: 0; display: grid; gap: 0.55rem; }}
+.registro li {{ display: grid; grid-template-columns: 1.1rem 1fr; gap: 0.5rem; align-items: start; font-size: var(--t-2); }}
+.registro li b {{ font-weight: 600; }}
+.registro li em {{ font-style: normal; color: var(--apagado); margin-left: 0.4rem; font-variant-numeric: tabular-nums; }}
+.registro li small {{ display: block; color: var(--apagado); line-height: 1.35; margin-top: 0.1rem; }}
+.registro .marca {{ font-weight: 600; text-align: center; }}
+.registro .proxima {{ opacity: 0.45; }}
+.registro .giro {{ margin-top: 0.15rem; }}
 .nota {{
   padding: 0.9rem 1rem; border-radius: var(--r-2); background: var(--superficie-2);
   border: 1px solid var(--linha); font-size: var(--t-3); line-height: 1.5; max-width: 52rem;

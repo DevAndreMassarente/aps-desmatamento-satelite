@@ -247,11 +247,11 @@ interseção é conferida.
 | `test_modelo.py` | 26 | descritores, divisão espacial, classificador |
 | `test_aquisicao.py` | 12 | qualidade de cena, composição, resolução |
 | `test_integracao.py` | 10 | cadeia completa contra verdade de terreno |
-| `test_app.py` | 13 | interface, inclusive a recusa sem rótulo para o modelo |
+| `test_app.py` | 14 | interface, inclusive a recusa sem rótulo para o modelo |
 | `test_cli.py` | 9 | linha de comando e apêndice |
 | `test_documento.py` | 40 | geração do trabalho escrito e das falas em DOCX |
 | `test_restricao_pdi.py` | 15 | importações permitidas no núcleo de PDI |
-| **Total** | **363** | |
+| **Total** | **364** | |
 
 Reprodução:
 
@@ -431,7 +431,7 @@ detecção do erro veio de medição, não de inspeção visual.
 
 | O que foi demonstrado | Como |
 |-----------------------|------|
-| Os filtros são do grupo e estão corretos | 363 testes na suíte, com casos analíticos dos filtros e verificação das importações |
+| Os filtros são do grupo e estão corretos | 364 testes na suíte, com casos analíticos dos filtros e verificação das importações |
 | A cadeia quantifica corretamente | erro de 0,0% contra verdade de terreno construída |
 | O sistema reconhece quando não sabe | recusa acionada em cena homogênea e em imagem real |
 | A preparação de dados alimenta um modelo | conjunto rotulado, divisão espacial, classificador treinado |

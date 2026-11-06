@@ -1002,7 +1002,7 @@ semRodape = true;
   });
 
   cartao(s, { x: 9.42, y: 5.98, w: 3.3, h: 0.82 });
-  s.addText("363 testes automatizados conferem os filtros contra resultados conhecidos.", {
+  s.addText("364 testes automatizados conferem os filtros contra resultados conhecidos.", {
     x: 9.58, y: 6.08, w: 3.0, h: 0.64, isTextBox: true, margin: 0,
     fontFace: CORPO, fontSize: 11.5, color: COR.texto });
 
@@ -1023,7 +1023,7 @@ semRodape = true;
     "diferença entre os dois caminhos é da ordem de 10 elevado a menos 6, que é",
     "arredondamento de ponto flutuante.\"",
     "",
-    "\"E os testes: 363 no total. Eles não comparam com OpenCV — comparam com casos",
+    "\"E os testes: 364 no total. Eles não comparam com OpenCV — comparam com casos",
     "analíticos. Convolução com núcleo identidade devolve a imagem original; Sobel numa",
     "rampa linear devolve gradiente constante; Otsu numa imagem bimodal cai entre os dois",
     "modos.\"",
@@ -1095,7 +1095,7 @@ semRodape = true;
     ["As cinco etapas", "Índice, filtragem e mapa de mudança calculados na hora."],
     ["A recusa", "Na imagem real, as classes não se separam o bastante, e o programa não dá número."],
     ["A conferência", "Na cena sintética, 400 pixels construídos e 400 detectados."],
-    ["O passo a passo", "Índice, filtragem e mapa de mudança das duas imagens enviadas."],
+    ["O modelo", "Na cena sintética, os recortes rotulados treinam o classificador."],
   ];
   const w = (LARGURA - 4 * 0.2) / 5;
   passos.forEach(([titulo, texto], i) => {
@@ -1119,7 +1119,8 @@ semRodape = true;
     "e julho de 2024. Cada arquivo traz a cor e o infravermelho, que separa floresta de solo.\"",
     "",
     "[Clicar em Processar imagens, no painel da esquerda. Cerca de 15 s, mostrando cada etapa]",
-    "\"O programa roda agora as cinco etapas sobre 2,25 milhões de pixels.\"",
+    "\"O programa roda agora as cinco etapas sobre 2,25 milhões de pixels. O painel mostra",
+    "cada uma terminando e o que ela mediu: o NDVI médio caiu de 0,77 para 0,63.\"",
     "",
     "[Arrastar a linha da comparação de um lado para o outro]",
     "\"Dá para ver a floresta virar pasto.\"",
@@ -1132,9 +1133,10 @@ semRodape = true;
     "\"A separação ficou em 3,88, abaixo do mínimo de 4,0. Por isso o programa não calculou",
     "a área. O Jonathan explica esse resultado.\"",
     "",
-    "[Se sobrar tempo: Cena sintética no painel da esquerda]",
+    "[Cena sintética no painel da esquerda, depois a aba 5 Modelo]",
     "\"Para conferir a conta, uma cena em que nós desenhamos o corte: 400 pixels construídos",
-    "e 400 detectados.\"",
+    "e 400 detectados. E aqui o modelo: a máscara vira rótulo dos recortes, e os recortes",
+    "treinam o classificador. O programa avisa que, em cena sintética, a métrica não valida.\"",
     "",
     "[Alt+Tab para o PowerPoint e avançar o slide]",
     "PASSA PARA O JONATHAN.",
@@ -1291,7 +1293,7 @@ semRodape = true;
       "Cinco etapas de PDI implementadas pelo grupo, só com NumPy",
       "Quantificação exata em cena de verdade de terreno conhecida",
       "Preparação de dados que alimenta um classificador de fato",
-      "363 testes automatizados, incluindo casos analíticos dos filtros",
+      "364 testes automatizados, incluindo casos analíticos dos filtros",
     ]],
     ["O que aprendemos", [
       "A primeira cena real estava tomada por fumaça de queimada e passou no controle de nuvem: o infravermelho de ondas curtas atravessa fumaça",
@@ -1323,7 +1325,7 @@ semRodape = true;
     "",
     "\"Fechando: o que funciona são as cinco etapas de processamento, todas escritas por",
     "nós com NumPy; a quantificação exata quando existe verdade de terreno; a preparação de",
-    "dados alimentando um classificador de verdade; e 363 testes automatizados.\"",
+    "dados alimentando um classificador de verdade; e 364 testes automatizados.\"",
     "",
     "\"O que a gente aprendeu foi na marra. A primeira cena real que baixamos estava tomada",
     "de fumaça de queimada, e passou no nosso controle de nuvem — porque o infravermelho de",

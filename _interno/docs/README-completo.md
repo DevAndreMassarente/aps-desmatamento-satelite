@@ -79,7 +79,7 @@ src/sentinela/
 ├── app/principal.py  interface Streamlit
 └── cli.py            linha de comando (app, detectar, demo, apendice)
 
-tests/                363 testes automatizados
+tests/                364 testes automatizados
 
 entrega/              O QUE SE ENTREGA — tudo gerado por comando
 ├── trabalho-escrito.docx            capítulos 1 a 8, formatados como o enunciado exige
@@ -258,7 +258,7 @@ imagens reais.
 | Etapa | Situação |
 |-------|----------|
 | Estrutura e documentação | Concluído |
-| Núcleo de PDI (filtros próprios) | Implementado, 363 testes passando |
+| Núcleo de PDI (filtros próprios) | Implementado, 364 testes passando |
 | Aquisição e I/O de imagem | Implementado |
 | Pipeline de orquestração | Implementado |
 | Interface Streamlit e linha de comando | Implementado |

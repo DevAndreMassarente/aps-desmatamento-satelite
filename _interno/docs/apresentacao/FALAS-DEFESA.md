@@ -104,7 +104,7 @@ roda dois passes 1D — porque *e* elevado a menos *x*² menos *y*² é igual ao
 dois. Numa janela 21 por 21 isso deu 9,4 vezes mais rápido, e a diferença entre os dois
 caminhos é da ordem de 10⁻⁶, que é arredondamento de ponto flutuante."
 
-"E os testes: 363 no total. Eles não comparam com OpenCV — comparam com casos analíticos.
+"E os testes: 364 no total. Eles não comparam com OpenCV — comparam com casos analíticos.
 Convolução com núcleo identidade devolve a imagem original; Sobel numa rampa linear devolve
 gradiente constante; Otsu numa imagem bimodal cai entre os dois modos."
 
@@ -145,9 +145,10 @@ cada quadro.
 "Estas são imagens reais do satélite Sentinel-2, da mesma área do Pará em julho de 2018 e
 julho de 2024. Cada arquivo traz a cor e o infravermelho, que separa floresta de solo."
 
-**Clicar em Processar imagens, no painel da esquerda. Leva cerca de 15 s, e a tela mostra cada
-etapa enquanto roda.**
-"O programa roda agora as cinco etapas sobre 2,25 milhões de pixels."
+**Clicar em Processar imagens, no painel da esquerda. Leva cerca de 15 s.**
+"O programa roda agora as cinco etapas sobre 2,25 milhões de pixels. O painel mostra cada uma
+terminando e o que ela mediu: o NDVI médio caiu de 0,77 para 0,63, e a vegetação passou de 76%
+para 42% da cena."
 
 **Arrastar a linha da comparação de um lado para o outro (30 s).**
 "Dá para ver a floresta virar pasto."
@@ -160,9 +161,11 @@ Na segmentação, o mesmo limiar nas duas datas e o mapa de mudança."
 "E aqui a decisão: a separação ficou em 3,88, abaixo do mínimo de 4,0. Por isso o programa
 não calculou a área. O Jonathan explica esse resultado."
 
-**Se sobrar tempo: Cena sintética no painel da esquerda (30 s).**
+**Cena sintética no painel da esquerda, depois a aba 5 Modelo (40 s).**
 "Para conferir a conta, uma cena em que nós desenhamos o corte: 400 pixels construídos e 400
-detectados."
+detectados. E aqui está o modelo: a máscara vira rótulo dos recortes, e os recortes treinam o
+classificador. O próprio programa avisa que, numa cena sintética, essa métrica não valida o
+modelo."
 
 **Alt+Tab para o PowerPoint e avançar o slide. → passa para o Jonathan.**
 
@@ -225,7 +228,7 @@ não como resultado."
 
 "Fechando: o que funciona são as cinco etapas de processamento, todas escritas por nós com
 NumPy; a quantificação exata quando existe verdade de terreno; a preparação de dados
-alimentando um classificador de verdade; e 363 testes automatizados."
+alimentando um classificador de verdade; e 364 testes automatizados."
 
 "O que a gente aprendeu foi na marra. A primeira cena real que baixamos estava tomada de
 fumaça de queimada, e passou no nosso controle de nuvem — porque o infravermelho de ondas

@@ -111,6 +111,11 @@ class TestInterface:
         assert "," in metricas["Em hectares"]
         assert "." not in metricas["Em hectares"]
 
+    def test_registro_mostra_o_que_cada_etapa_mediu(self, app):
+        textos = " ".join(m.value for m in app.markdown)
+        assert "Registro do processamento" in textos
+        assert "limiar" in textos and "separação" in textos and "regiões" in textos
+
     def test_abre_no_envio_de_imagens(self):
         teste = AppTest.from_file(CAMINHO, default_timeout=120)
         teste.run()
