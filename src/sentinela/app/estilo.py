@@ -47,7 +47,7 @@ _CSS = f"""
   --linha-forte: color-mix(in srgb, currentColor 26%, transparent);
   --superficie: color-mix(in srgb, currentColor 4%, transparent);
   --superficie-2: color-mix(in srgb, currentColor 7%, transparent);
-  --apagado: color-mix(in srgb, currentColor 64%, transparent);
+  --apagado: color-mix(in srgb, currentColor 74%, transparent);
   --perda: {PERDA};
   --r-1: 4px; --r-2: 8px; --r-3: 12px;
   --t-1: 0.82rem; --t-2: 0.92rem; --t-3: 1rem; --t-4: 1.2rem; --t-5: 1.55rem; --t-6: 2.2rem;
@@ -61,6 +61,26 @@ html, body, .stApp, .stApp p, .stApp li, .stApp label, .stApp input, .stApp h1, 
 [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], [data-testid="stAppDeployButton"],
 footer, [data-testid="stStatusWidget"], [data-testid="stHeaderActionElements"] {{ display: none; }}
 header[data-testid="stHeader"] {{ background: transparent; height: 3.4rem; }}
+
+/* Sem seleção de texto na interface; campos de digitação continuam selecionáveis. */
+.stApp, .stApp * {{ -webkit-user-select: none; user-select: none; }}
+.stApp input, .stApp textarea {{ -webkit-user-select: text; user-select: text; }}
+
+/* Indicador de progresso e notas */
+.progresso {{
+  display: flex; align-items: center; gap: 0.7rem; padding: 0.75rem 0.9rem;
+  border: 1px solid var(--linha); border-radius: var(--r-2); font-size: var(--t-2);
+}}
+.giro {{
+  flex: none; width: 1rem; height: 1rem; border-radius: 50%;
+  border: 2px solid var(--linha-forte); border-top-color: currentColor; animation: girar 0.8s linear infinite;
+}}
+@keyframes girar {{ to {{ transform: rotate(360deg); }} }}
+@media (prefers-reduced-motion: reduce) {{ .giro {{ animation-duration: 2.4s; }} }}
+.nota {{
+  padding: 0.9rem 1rem; border-radius: var(--r-2); background: var(--superficie-2);
+  border: 1px solid var(--linha); font-size: var(--t-3); line-height: 1.5; max-width: 52rem;
+}}
 
 /* Barra superior */
 .topo {{
@@ -115,12 +135,8 @@ header[data-testid="stHeader"] {{ background: transparent; height: 3.4rem; }}
 
 /* Cartão de resultado */
 .veredito {{ margin: 0 0 0.9rem; }}
-.veredito h2 {{ font-size: var(--t-5) !important; line-height: 1.25; margin: 0.35rem 0 0.4rem !important; }}
+.veredito h2 {{ font-size: var(--t-5) !important; line-height: 1.25; margin: 0 0 0.4rem !important; color: var(--perda); }}
 .veredito p {{ font-size: var(--t-3); line-height: 1.5; margin: 0; max-width: 52rem; }}
-.selo {{ display: inline-block; font-size: var(--t-2) !important; font-weight: 600; padding: 0.15rem 0.6rem;
-  border-radius: 999px; border: 1px solid currentColor; }}
-.selo.recusado {{ color: var(--perda); }}
-.selo.aceito {{ color: inherit; opacity: 0.8; }}
 [data-testid="stElementToolbar"], [data-testid="stImage"] button {{ display: none !important; }}
 
 /* Trilho das etapas */
@@ -139,7 +155,13 @@ header[data-testid="stHeader"] {{ background: transparent; height: 3.4rem; }}
 
 /* Imagens, legendas e tabelas */
 [data-testid="stImage"] img {{ border-radius: var(--r-1); max-height: 380px; object-fit: contain; }}
-[data-testid="stImageCaption"], [data-testid="stCaptionContainer"] p {{ font-size: var(--t-2); color: var(--apagado); }}
+[data-testid="stImageCaption"], [data-testid="stCaptionContainer"] p {{
+  font-size: var(--t-2); color: var(--apagado) !important;
+}}
+[data-testid="stAlert"]:has([data-testid="stAlertContentInfo"]) > div {{
+  background: var(--superficie-2); border: 1px solid var(--linha);
+}}
+[data-testid="stAlertContentInfo"], [data-testid="stAlertContentInfo"] p {{ color: inherit !important; }}
 [data-testid="stDataFrame"] {{ border-radius: var(--r-2); }}
 [data-testid="stExpander"] details {{ border-radius: var(--r-2); border-color: var(--linha); }}
 code {{ font-size: 0.9em; }}

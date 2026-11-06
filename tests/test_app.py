@@ -68,8 +68,8 @@ class TestInterface:
         alvo = next(s for s in app.slider if "desmatada" in s.label)
         alvo.set_value(0).run()
 
-        avisos = " ".join(w.value for w in app.warning)
-        assert "Sem rótulo confiável" in avisos
+        textos = " ".join(m.value for m in app.markdown)
+        assert "Sem rótulo confiável" in textos
         assert "F1" not in {m.label for m in app.metric}
 
     def test_o_modelo_e_treinado_ou_explica_por_que_nao(self, app):
@@ -122,5 +122,6 @@ class TestInterface:
         app.button_group[0].set_value("Enviar imagens").run()
 
         assert not app.exception, [str(e.value) for e in app.exception]
-        avisos = " ".join(w.value for w in app.warning)
-        assert "mesma área" in avisos
+        dicas = " ".join(c.value for c in app.caption)
+        assert "mesma área" in dicas
+        assert next(b for b in app.button if "Processar" in b.label).disabled

@@ -16,6 +16,7 @@ streamlit run src/sentinela/app/principal.py
 
 from __future__ import annotations
 
+import base64
 import sys
 from pathlib import Path
 
@@ -157,27 +158,56 @@ def obter_imagens(opcoes: dict) -> dict | None:
         st.session_state["area_esperada"] = par["area_esperada"]
         return par
 
+    return None
+
+
+_QUADROS = components.declare_component(
+    "quadros_de_envio", path=str(Path(__file__).resolve().parent / "quadros")
+)
+
+
+def quadros_de_envio() -> dict | None:
+    """Os dois quadros de envio, antes e depois, com a prévia dentro de cada um.
+
+    As imagens ficam guardadas na sessão: trocar para a cena sintética e voltar não as
+    perde. O componente devolve o último evento (arquivo enviado ou removido); o ``id``
+    evita aplicar o mesmo evento duas vezes.
+    """
     st.session_state.pop("area_esperada", None)
     guardadas = st.session_state.setdefault("envio", {})
-    for chave, rotulo in (("antes", "Imagem antes"), ("depois", "Imagem depois")):
-        arquivo = st.file_uploader(
-            rotulo, type=["png", "jpg", "jpeg", "tif"], key=f"arquivo_{chave}",
-            help="Cor, ou cor mais infravermelho próximo num PNG de quatro bandas.",
-        )
-        if arquivo is not None:
-            guardadas[chave] = (arquivo.name, *carregar_com_infravermelho(_gravar_upload(arquivo)))
-        elif chave in guardadas and st.session_state.get(f"arquivo_{chave}") is None:
-            st.caption(f"Em uso: {guardadas[chave][0]}. Envie outra imagem para trocar.")
+    previas = {chave: {"nome": nome, "uri": uri} for chave, (nome, _, _, uri) in guardadas.items()}
+    evento = _QUADROS(previas=previas, fontes=estilo.fontes_css(), key="quadros", default=None)
+
+    if evento and evento.get("id") != st.session_state.get("_ultimo_evento"):
+        st.session_state["_ultimo_evento"] = evento["id"]
+        chave = evento["chave"]
+        if evento.get("remover"):
+            guardadas.pop(chave, None)
+        else:
+            destino = Path(st.session_state["_temporarios"]) / f"{chave}-{evento['nome']}"
+            destino.write_bytes(base64.b64decode(evento["dados"]))
+            try:
+                cor, nir = carregar_com_infravermelho(destino)
+            except ErroArquivo as erro:
+                st.session_state["_erro_envio"] = str(erro)
+            else:
+                st.session_state.pop("_erro_envio", None)
+                previa, _ = realcar_par(cor, cor)
+                guardadas[chave] = (evento["nome"], cor, nir, em_data_uri(previa, lado_maximo=720))
+        st.rerun()
+
+    if st.session_state.get("_erro_envio"):
+        st.error(st.session_state["_erro_envio"], icon=":material/block:")
 
     if "antes" not in guardadas or "depois" not in guardadas:
-        st.warning(
-            "Envie duas imagens da **mesma área**, em datas diferentes e com o mesmo recorte.",
-            icon=":material/folder_open:",
+        st.caption(
+            "Use duas imagens da **mesma área**, em datas diferentes e com o mesmo recorte. "
+            "Com o infravermelho na quarta banda do PNG, o programa usa NDVI."
         )
         return None
 
-    _, cor_antes, nir_antes = guardadas["antes"]
-    _, cor_depois, nir_depois = guardadas["depois"]
+    _, cor_antes, nir_antes, _ = guardadas["antes"]
+    _, cor_depois, nir_depois, _ = guardadas["depois"]
     return {
         "rgb_antes": cor_antes,
         "nir_antes": nir_antes,
@@ -192,8 +222,7 @@ def veredito(resultado) -> None:
 
     if not resultado.confiavel:
         st.markdown(
-            '<section class="veredito"><p class="selo recusado">Área não calculada</p>'
-            "<h2>Detecção não confiável: nenhuma área é reportada.</h2>"
+            '<section class="veredito"><h2>Detecção não confiável: nenhuma área é reportada.</h2>'
             "<p>Vegetação e área aberta não se separam o bastante nestas imagens. A separação "
             f"medida foi <b>{_br(resumo['distinguibilidade'], 2)}</b>, e o mínimo exigido é "
             f"<b>{_br(limiar.DISTINGUIBILIDADE_MINIMA, 1)}</b>. Abaixo disso, a área em "
@@ -201,10 +230,6 @@ def veredito(resultado) -> None:
             unsafe_allow_html=True,
         )
     else:
-        st.markdown(
-            '<section class="veredito"><p class="selo aceito">Área calculada</p></section>',
-            unsafe_allow_html=True,
-        )
         colunas = st.columns(4)
         colunas[0].metric("Área desmatada", f"{_inteiro(resumo['area_pixels'])} px")
         colunas[1].metric(
@@ -254,9 +279,9 @@ def etapa_aquisicao(imagens: dict, resultado, opcoes: dict) -> None:
     if imagens.get("nir_depois") is not None:
         _subtitulo("Como cada imagem é montada")
         st.caption(
-            "Cada arquivo traz quatro bandas do mesmo instante. As três primeiras formam a "
-            "cor; a quarta é o infravermelho próximo, invisível ao olho. Abaixo, as bandas da "
-            "imagem depois, uma por vez, em tons de cinza: claro é muito reflexo."
+            "Cada imagem traz quatro bandas do mesmo instante. As três primeiras formam a cor; "
+            "a quarta é o infravermelho próximo, invisível ao olho. Abaixo, as bandas da imagem "
+            "depois, uma por vez, em tons de cinza: claro é muito reflexo."
         )
         rgb, nir = imagens["rgb_depois"], imagens["nir_depois"]
         bandas_vistas = (
@@ -267,8 +292,8 @@ def etapa_aquisicao(imagens: dict, resultado, opcoes: dict) -> None:
         )
         for coluna, (banda, nome) in zip(st.columns(4), bandas_vistas):
             with coluna:
-                escala = max(float(np.percentile(banda, 99)), 1e-6)
-                mostrar(np.clip(banda / escala, 0, 1), nome)
+                teto = max(float(np.percentile(banda, 99)), 1e-6)
+                mostrar(np.clip(banda / teto, 0, 1), nome)
         st.caption(
             "A floresta aparece escura no vermelho, porque a clorofila absorve essa luz, e "
             "clara no infravermelho, que a folha reflete. Essa diferença é o que o NDVI mede."
@@ -302,25 +327,25 @@ def etapa_filtragem(imagens: dict, resultado, opcoes: dict) -> None:
     _apresentacao(
         "Filtragem",
         "Filtros escritos pelo grupo com NumPy (enunciado, p. 3, item 3.a). Os três painéis "
-        "são o mesmo trecho da imagem depois: o índice sem filtro, o mesmo índice depois do "
+        "são o mesmo trecho da data escolhida: o índice sem filtro, o mesmo índice depois do "
         "gaussiano, que tira o ruído, e o Sobel, que acende onde o valor muda de repente, "
         "isto é, na borda entre mata e corte.",
     )
-    bruto, _ = _indice_sem_suavizar(imagens, opcoes)
-    recorte, nota = _recorte_central(bruto.shape)
+    data = st.segmented_control(
+        "Data", ("Antes", "Depois"), default="Depois", key="data_filtragem",
+        label_visibility="collapsed",
+    ) or "Depois"
+    sufixo = "antes" if data == "Antes" else "depois"
+    bruto, _ = _indice_sem_suavizar(imagens, opcoes, sufixo)
+    suavizado = getattr(resultado, f"indice_{sufixo}")
+    recorte, nota = _recorte_central(bruto.shape, data=data.lower())
     col1, col2, col3 = st.columns(3)
     with col1:
         mostrar(bruto[recorte], "Índice bruto")
     with col2:
-        mostrar(
-            resultado.indice_depois[recorte],
-            f"Gaussiano {opcoes['suavizacao']}×{opcoes['suavizacao']}",
-        )
+        mostrar(suavizado[recorte], f"Gaussiano {opcoes['suavizacao']}×{opcoes['suavizacao']}")
     with col3:
-        mostrar(
-            filtros.magnitude_gradiente(resultado.indice_depois)[recorte],
-            "Sobel: magnitude do gradiente",
-        )
+        mostrar(filtros.magnitude_gradiente(suavizado)[recorte], "Sobel: magnitude do gradiente")
     if nota:
         st.caption(nota)
 
@@ -351,10 +376,12 @@ def etapa_modelo(imagens: dict, resultado, opcoes: dict) -> None:
         "É o objetivo do enunciado (p. 2): o processamento prepara os dados do modelo.",
     )
     if not resultado.confiavel:
-        st.warning(
-            "**Sem rótulo confiável.** A detecção foi recusada, então a máscara não serve "
-            "para rotular recortes nem para treinar o modelo.",
-            icon=":material/block:",
+        st.markdown(
+            '<div class="nota"><b>Sem rótulo confiável, o modelo não foi treinado.</b> '
+            "A detecção destas imagens foi recusada, e uma máscara recusada não pode virar "
+            "rótulo: o modelo aprenderia com um erro. Para ver o modelo treinando, use a "
+            "<b>Cena sintética</b>.</div>",
+            unsafe_allow_html=True,
         )
         return
     _subtitulo("Amostras rotuladas")
@@ -363,7 +390,7 @@ def etapa_modelo(imagens: dict, resultado, opcoes: dict) -> None:
     classificador(imagens, resultado)
 
 
-def _recorte_central(forma: tuple, lado: int = 240) -> tuple:
+def _recorte_central(forma: tuple, lado: int = 240, data: str = "depois") -> tuple:
     """Recorte do centro, para o efeito de cada filtro aparecer em imagens grandes."""
     altura, largura = forma[:2]
     if max(altura, largura) <= 2 * lado:
@@ -371,7 +398,7 @@ def _recorte_central(forma: tuple, lado: int = 240) -> tuple:
     topo, esquerda = (altura - lado) // 2, (largura - lado) // 2
     return (
         (slice(topo, topo + lado), slice(esquerda, esquerda + lado)),
-        f"Recorte ampliado de {lado} × {lado} pixels do centro da imagem depois.",
+        f"Recorte ampliado de {lado} × {lado} pixels do centro da imagem {data}.",
     )
 
 
@@ -401,16 +428,16 @@ def _legenda_mudanca() -> str:
     return f"<small>{amostras}</small>"
 
 
-def _indice_sem_suavizar(imagens: dict, opcoes: dict):
-    """Índice cru da segunda data, para a comparação lado a lado da filtragem."""
+def _indice_sem_suavizar(imagens: dict, opcoes: dict, data: str = "depois"):
+    """Índice cru de uma das datas, para a comparação lado a lado da filtragem."""
     from sentinela.pipeline import preparar_indice
 
     return preparar_indice(
-        imagens["rgb_depois"],
-        imagens.get("nir_depois"),
+        imagens[f"rgb_{data}"],
+        imagens.get(f"nir_{data}"),
         metodo=opcoes["metodo"],
         suavizacao=1,
-        swir=imagens.get("swir_depois"),
+        swir=imagens.get(f"swir_{data}"),
     )
 
 
@@ -624,7 +651,7 @@ def classificador(imagens: dict, resultado) -> None:
         _subtitulo("O que pesou na decisão")
         importancias = modelo.importancia_das_features()
         st.dataframe(
-            [{"Feature": nome, "Peso": round(peso, 4)} for nome, peso in importancias[:8]],
+            [{"Descritor": nome, "Peso": _br(peso, 3)} for nome, peso in importancias[:8]],
             width="stretch",
             hide_index=True,
         )
@@ -645,7 +672,18 @@ def _assinatura(imagens: dict, opcoes: dict) -> tuple:
 
 
 def _detectar(imagens: dict, opcoes: dict):
-    with st.status("Processando as imagens", expanded=True) as caixa:
+    indicador = st.empty()
+    feitas = []
+
+    def avisar(etapa: str) -> None:
+        feitas.append(etapa)
+        indicador.markdown(
+            f'<div class="progresso" role="status"><span class="giro" aria-hidden="true"></span>'
+            f"<span>Etapa {len(feitas)} de 5: {etapa}</span></div>",
+            unsafe_allow_html=True,
+        )
+
+    try:
         resultado = detectar_desmatamento(
             imagens["rgb_antes"],
             imagens["rgb_depois"],
@@ -657,13 +695,14 @@ def _detectar(imagens: dict, opcoes: dict):
             suavizacao=opcoes["suavizacao"],
             area_minima=opcoes["area_minima"],
             metros_por_pixel=opcoes["metros_por_pixel"],
-            progresso=caixa.write,
+            progresso=avisar,
         )
-        caixa.update(label="Processamento concluído", state="complete", expanded=False)
+    finally:
+        indicador.empty()
     return resultado
 
 
-def _resultado(imagens: dict, opcoes: dict):
+def _resultado(imagens: dict | None, opcoes: dict):
     """Detecta na hora para a cena sintética; para imagens enviadas, só ao clicar em Processar.
 
     O resultado das imagens enviadas fica guardado na sessão: trocar de aba ou mexer num
@@ -671,13 +710,20 @@ def _resultado(imagens: dict, opcoes: dict):
     """
     try:
         if not opcoes["fonte"].startswith("Enviar"):
-            return _detectar(imagens, opcoes)
+            return _detectar(imagens, opcoes) if imagens is not None else None
 
+        clicou = st.button(
+            "Processar imagens", type="primary", icon=":material/play_arrow:",
+            width="stretch", disabled=imagens is None,
+        )
+        if imagens is None:
+            st.caption("Envie as duas imagens para liberar o processamento.")
+            return None
         assinatura = _assinatura(imagens, opcoes)
-        if st.button(
-            "Processar imagens", type="primary", icon=":material/play_arrow:", width="stretch"
-        ):
+        if clicou:
             st.session_state["resultado_enviado"] = (assinatura, _detectar(imagens, opcoes))
+            # Recarrega para recolher os quadros de envio e abrir espaço para o resultado.
+            st.rerun()
     except ErroImagem as erro:
         st.error(f"**Não foi possível processar:** {erro}", icon=":material/block:")
         return None
@@ -686,22 +732,6 @@ def _resultado(imagens: dict, opcoes: dict):
     if guardado is None or guardado[0] != assinatura:
         return None
     return guardado[1]
-
-
-def estado_vazio(fonte: str) -> None:
-    """O que aparece na área de análise antes de haver resultado."""
-    if fonte.startswith("Enviar"):
-        texto = (
-            "Envie a imagem antes e a imagem depois no painel ao lado e clique em "
-            "<b>Processar imagens</b>. O resultado e a comparação aparecem aqui."
-        )
-    else:
-        texto = "Ajuste a cena no painel ao lado."
-    st.markdown(
-        '<div class="vazio"><div class="quadros"><span>Antes</span><span>Depois</span></div>'
-        f"<p>{texto}</p></div>",
-        unsafe_allow_html=True,
-    )
 
 
 ETAPAS = (
@@ -726,24 +756,32 @@ def principal() -> None:
         st.session_state["_temporarios"] = tempfile.mkdtemp(prefix="sentinela-")
 
     entrada, analise = st.columns([1, 2.5], gap="large")
-    resultado = imagens = None
+    painel = entrada.container(key="entrada")
+    with painel:
+        _subtitulo("Imagens")
+        opcoes = controles(st)
 
-    with entrada:
-        painel = st.container(key="entrada")
-        with painel:
-            _subtitulo("Imagens")
-            opcoes = controles(st)
-            try:
-                imagens = obter_imagens(opcoes)
-            except (ErroArquivo, ErroImagem) as erro:
-                st.error(str(erro), icon=":material/block:")
-            if imagens is not None:
-                resultado = _resultado(imagens, opcoes)
-
-    with analise:
-        if resultado is None:
-            estado_vazio(opcoes["fonte"])
+    imagens = None
+    enviar = opcoes["fonte"].startswith("Enviar")
+    try:
+        if enviar:
+            ja_processado = st.session_state.get("resultado_enviado") is not None
+            with analise:
+                local = st.expander("Imagens enviadas") if ja_processado else st.container()
+                with local:
+                    imagens = quadros_de_envio()
         else:
+            with painel:
+                imagens = obter_imagens(opcoes)
+    except (ErroArquivo, ErroImagem) as erro:
+        with painel:
+            st.error(str(erro), icon=":material/block:")
+
+    with painel:
+        resultado = _resultado(imagens, opcoes)
+
+    if resultado is not None:
+        with analise:
             veredito(resultado)
             panorama(imagens, resultado)
 

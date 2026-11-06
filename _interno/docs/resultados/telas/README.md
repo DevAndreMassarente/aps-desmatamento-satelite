@@ -51,3 +51,15 @@ pegava:
 4. **O aviso de "desempenho perfeito" disparava com o teste de uma classe só**, ao lado de
    precisão, revocação e F1 iguais a zero. Corrigido no classificador, com teste de
    regressão.
+
+## Capturas da interface reconstruída (2026-11-06)
+
+As quatro capturas acima foram substituídas pelas da interface nova, feitas com navegador
+automatizado sobre o app real: envio das duas imagens Sentinel-2, processamento, as cinco
+etapas e a cena sintética. `01-etapas.png` mostra o resultado e a etapa 1 do par real,
+`02-deteccao.png` a cena sintética (400 px de 400), `03-modelo.png` o modelo na cena
+sintética e `04-recusa.png` a segmentação e a decisão do limiar no par real.
+
+`_interno/scripts/capturar_telas.mjs` e os recortes de `_interno/scripts/gerar_figuras.py`
+ainda seguem o layout antigo. Os recortes dos slides de reserva da defesa
+(`tela-etapas-3-4.png` e `tela-deteccao.png`) foram feitos a partir destas capturas.

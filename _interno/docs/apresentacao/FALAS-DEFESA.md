@@ -139,12 +139,14 @@ não foram mexidos depois. O Jonathan volta nisso no final."
 
 **Alt+Tab para o navegador.** O app já abre em **Enviar imagens**.
 
-**No painel da esquerda, enviar `2018-07-03_cor-e-infravermelho.png` em Imagem antes e
-`2024-07-16_cor-e-infravermelho.png` em Imagem depois (30 s).**
+**Arrastar `2018-07-03_cor-e-infravermelho.png` para o quadro Imagem antes e
+`2024-07-16_cor-e-infravermelho.png` para o quadro Imagem depois (30 s).** A prévia aparece em
+cada quadro.
 "Estas são imagens reais do satélite Sentinel-2, da mesma área do Pará em julho de 2018 e
 julho de 2024. Cada arquivo traz a cor e o infravermelho, que separa floresta de solo."
 
-**Clicar em Processar imagens. Leva cerca de 15 s.**
+**Clicar em Processar imagens, no painel da esquerda. Leva cerca de 15 s, e a tela mostra cada
+etapa enquanto roda.**
 "O programa roda agora as cinco etapas sobre 2,25 milhões de pixels."
 
 **Arrastar a linha da comparação de um lado para o outro (40 s).**

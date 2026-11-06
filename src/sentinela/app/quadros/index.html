@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<!--
+  Quadros de envio das duas datas. Componente do Streamlit escrito à mão, sem build:
+  conversa com a página pelo protocolo de mensagens dos componentes (componentReady,
+  render, setComponentValue, setFrameHeight). Só apresentação e leitura do arquivo; o
+  processamento continua todo no Python.
+-->
+<style id="fontes"></style>
+<style>
+  :root { --texto: #17211c; --fundo: #f3f5f4; --destaque: #2b6b4f; }
+  * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+  html, body { margin: 0; background: transparent; color: var(--texto);
+    font: 400 15px/1.4 "Barlow", "Segoe UI", system-ui, sans-serif; }
+  .quadros { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 560px) { .quadros { grid-template-columns: 1fr; } }
+
+  .quadro {
+    position: relative; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden;
+    border: 1.5px dashed color-mix(in srgb, var(--texto) 28%, transparent);
+    background: color-mix(in srgb, var(--texto) 4%, transparent);
+    cursor: pointer; outline: none; transition: border-color .15s, background .15s;
+  }
+  .quadro:hover, .quadro:focus-visible { border-color: color-mix(in srgb, var(--texto) 60%, transparent); }
+  .quadro:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--destaque) 45%, transparent); }
+  .quadro.arrastando { border-color: var(--destaque); border-style: solid;
+    background: color-mix(in srgb, var(--destaque) 10%, transparent); }
+  .quadro.cheio { border-style: solid; border-color: color-mix(in srgb, var(--texto) 14%, transparent); }
+
+  .vazio { position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 6px; padding: 20px; text-align: center; }
+  .vazio svg { width: 34px; height: 34px; margin-bottom: 6px; opacity: .7; }
+  .vazio b { font-size: 19px; font-weight: 600; }
+  .vazio span { color: color-mix(in srgb, var(--texto) 64%, transparent); }
+  .vazio small { color: color-mix(in srgb, var(--texto) 50%, transparent); font-size: 13px; margin-top: 4px; }
+
+  canvas, img.previa { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+  .cheio img.previa[src] { display: block; }
+  .cheio .vazio { display: none; }
+
+  .rotulo { z-index: 2; position: absolute; top: 10px; left: 10px; padding: 3px 9px; border-radius: 6px;
+    background: rgba(0, 0, 0, .62); color: #fff; font-weight: 600; font-size: 14px; display: none; }
+  .barra { z-index: 2; position: absolute; left: 0; right: 0; bottom: 0; display: none; align-items: center; gap: 8px;
+    padding: 10px 12px; background: linear-gradient(transparent, rgba(0, 0, 0, .72)); color: #fff; }
+  .cheio .rotulo { display: block; }
+  .cheio .barra { display: flex; }
+  .barra .nome { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+  .barra button { border: 1px solid rgba(255, 255, 255, .55); background: rgba(0, 0, 0, .25); color: #fff;
+    border-radius: 6px; padding: 4px 10px; font: inherit; font-size: 13px; cursor: pointer; }
+  .barra button:hover { background: rgba(255, 255, 255, .15); }
+  .barra button:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+
+  .lendo::after { content: "Lendo o arquivo…"; position: absolute; inset: 0; display: flex;
+    align-items: center; justify-content: center; background: color-mix(in srgb, var(--fundo) 80%, transparent);
+    font-weight: 600; }
+  .erro { color: #d2453a; font-size: 13px; margin-top: 6px; min-height: 1em; }
+  input[type=file] { display: none; }
+</style>
+</head>
+<body>
+<div class="quadros">
+  <div>
+    <div class="quadro" data-chave="antes" role="button" tabindex="0" aria-label="Enviar a imagem antes">
+      <img class="previa" alt="">
+      <canvas></canvas>
+      <div class="vazio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4m0 0-4 4m4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+        <b>Imagem antes</b>
+        <span>Clique ou arraste o arquivo para cá</span>
+        <small>PNG, JPG ou TIF</small>
+      </div>
+      <div class="rotulo">Antes</div>
+      <div class="barra"><span class="nome"></span>
+        <button type="button" data-acao="trocar">Trocar</button>
+        <button type="button" data-acao="remover">Remover</button></div>
+      <input type="file" accept=".png,.jpg,.jpeg,.tif,.tiff">
+    </div>
+    <div class="erro" aria-live="polite"></div>
+  </div>
+  <div>
+    <div class="quadro" data-chave="depois" role="button" tabindex="0" aria-label="Enviar a imagem depois">
+      <img class="previa" alt="">
+      <canvas></canvas>
+      <div class="vazio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4m0 0-4 4m4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+        <b>Imagem depois</b>
+        <span>Clique ou arraste o arquivo para cá</span>
+        <small>PNG, JPG ou TIF</small>
+      </div>
+      <div class="rotulo">Depois</div>
+      <div class="barra"><span class="nome"></span>
+        <button type="button" data-acao="trocar">Trocar</button>
+        <button type="button" data-acao="remover">Remover</button></div>
+      <input type="file" accept=".png,.jpg,.jpeg,.tif,.tiff">
+    </div>
+    <div class="erro" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+const enviar = (tipo, dados = {}) =>
+  window.parent.postMessage({ isStreamlitMessage: true, apiVersion: 1, type: tipo, ...dados }, "*");
+const ajustarAltura = () => enviar("streamlit:setFrameHeight", { height: document.body.scrollHeight });
+new ResizeObserver(ajustarAltura).observe(document.body);
+
+let fontesCarregadas = false;
+window.addEventListener("message", (evento) => {
+  const msg = evento.data;
+  if (!msg || msg.type !== "streamlit:render") return;
+  const tema = msg.theme || {};
+  const raiz = document.documentElement.style;
+  if (tema.textColor) raiz.setProperty("--texto", tema.textColor);
+  if (tema.backgroundColor) raiz.setProperty("--fundo", tema.backgroundColor);
+  if (tema.primaryColor) raiz.setProperty("--destaque", tema.primaryColor);
+  const args = msg.args || {};
+  if (!fontesCarregadas && args.fontes) { document.getElementById("fontes").textContent = args.fontes; fontesCarregadas = true; }
+  const previas = args.previas || {};
+  document.querySelectorAll(".quadro").forEach((quadro) => {
+    const previa = previas[quadro.dataset.chave];
+    if (quadro.classList.contains("lendo")) return;
+    if (previa) {
+      const img = quadro.querySelector("img.previa");
+      if (img.dataset.uri !== previa.uri) { img.src = previa.uri; img.dataset.uri = previa.uri; }
+      quadro.querySelector("canvas").style.display = "none";
+      quadro.querySelector(".nome").textContent = previa.nome;
+      quadro.classList.add("cheio");
+    } else {
+      quadro.classList.remove("cheio");
+      quadro.querySelector("img.previa").removeAttribute("src");
+      delete quadro.querySelector("img.previa").dataset.uri;
+    }
+  });
+  ajustarAltura();
+});
+
+// Prévia imediata, desenhada antes do Python responder. A quarta banda dos PNGs do
+// projeto é o infravermelho; o navegador a trataria como transparência, então ela é
+// ignorada aqui e a prévia mostra só a cor.
+function desenharPrevia(quadro, arquivo) {
+  const leitor = new FileReader();
+  leitor.onload = () => {
+    const imagem = new Image();
+    imagem.onload = () => {
+      const tela = quadro.querySelector("canvas");
+      const escala = Math.min(1, 900 / Math.max(imagem.width, imagem.height));
+      tela.width = Math.round(imagem.width * escala); tela.height = Math.round(imagem.height * escala);
+      const ctx = tela.getContext("2d");
+      ctx.drawImage(imagem, 0, 0, tela.width, tela.height);
+      const pixels = ctx.getImageData(0, 0, tela.width, tela.height);
+      for (let i = 3; i < pixels.data.length; i += 4) pixels.data[i] = 255;
+      ctx.putImageData(pixels, 0, 0);
+      tela.style.display = "block";
+      tela.style.zIndex = "1";
+      quadro.classList.add("cheio");
+    };
+    imagem.src = leitor.result;
+  };
+  leitor.readAsDataURL(arquivo);
+}
+
+function receber(quadro, arquivo) {
+  const erro = quadro.parentElement.querySelector(".erro");
+  erro.textContent = "";
+  if (!/\.(png|jpe?g|tiff?)$/i.test(arquivo.name)) {
+    erro.textContent = "Formato não aceito. Use PNG, JPG ou TIF.";
+    return;
+  }
+  quadro.classList.add("lendo");
+  quadro.querySelector(".nome").textContent = arquivo.name;
+  desenharPrevia(quadro, arquivo);
+  const leitor = new FileReader();
+  leitor.onload = () => {
+    const dados = String(leitor.result).split(",")[1];
+    enviar("streamlit:setComponentValue", {
+      dataType: "json",
+      value: { id: Date.now() + "-" + quadro.dataset.chave, chave: quadro.dataset.chave, nome: arquivo.name, dados },
+    });
+    quadro.classList.remove("lendo");
+  };
+  leitor.readAsDataURL(arquivo);
+}
+
+document.querySelectorAll(".quadro").forEach((quadro) => {
+  const entrada = quadro.querySelector("input");
+  const abrir = () => entrada.click();
+  quadro.addEventListener("click", (e) => { if (!e.target.closest("button")) abrir(); });
+  quadro.addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && e.target === quadro) { e.preventDefault(); abrir(); } });
+  entrada.addEventListener("change", () => { if (entrada.files[0]) receber(quadro, entrada.files[0]); entrada.value = ""; });
+  quadro.addEventListener("dragover", (e) => { e.preventDefault(); quadro.classList.add("arrastando"); });
+  quadro.addEventListener("dragleave", () => quadro.classList.remove("arrastando"));
+  quadro.addEventListener("drop", (e) => {
+    e.preventDefault(); quadro.classList.remove("arrastando");
+    if (e.dataTransfer.files[0]) receber(quadro, e.dataTransfer.files[0]);
+  });
+  quadro.querySelector('[data-acao="trocar"]').addEventListener("click", abrir);
+  quadro.querySelector('[data-acao="remover"]').addEventListener("click", () => {
+    quadro.classList.remove("cheio");
+    quadro.querySelector("canvas").style.display = "none";
+    enviar("streamlit:setComponentValue", {
+      dataType: "json", value: { id: Date.now() + "-" + quadro.dataset.chave, chave: quadro.dataset.chave, remover: true },
+    });
+  });
+});
+
+enviar("streamlit:componentReady");
+ajustarAltura();
+</script>
+</body>
+</html>
