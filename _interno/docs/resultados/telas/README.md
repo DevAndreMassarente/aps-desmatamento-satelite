@@ -63,3 +63,10 @@ sintética e `04-recusa.png` a segmentação e a decisão do limiar no par real.
 `_interno/scripts/capturar_telas.mjs` e os recortes de `_interno/scripts/gerar_figuras.py`
 ainda seguem o layout antigo. Os recortes dos slides de reserva da defesa
 (`tela-etapas-3-4.png` e `tela-deteccao.png`) foram feitos a partir destas capturas.
+
+## Atualização da mesma data
+
+As capturas desta pasta e os recortes `tela-recusa.png`, `tela-etapas-3-4.png` e
+`tela-deteccao.png` passaram a ser gerados por `_interno/scripts/capturar_interface.mjs`, que
+envia as imagens de `exemplos/`, processa e recorta cada print pela posição real dos elementos.
+`capturar_telas.mjs` ficou obsoleto.

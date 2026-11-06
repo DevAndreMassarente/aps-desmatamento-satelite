@@ -1048,14 +1048,14 @@ semRodape = true;
 
   destaque(s, { x: MARGEM, y: 3.85, w: 2.3, valor: br(2.65, 2), rotulo: "piso: o valor que uma\nimagem sem classes produz", cor: COR.suave, tamanho: 34 });
   destaque(s, { x: MARGEM + 2.55, y: 3.85, w: 2.3, valor: br(4.0, 2), rotulo: "mínimo exigido para\nreportar área", cor: COR.floresta, tamanho: 34 });
-  destaque(s, { x: MARGEM + 5.1, y: 3.85, w: 2.3, valor: br(real.distinguibilidade, 2), rotulo: "medido na cena real:\nrecusado", cor: COR.alerta, tamanho: 34 });
+  destaque(s, { x: MARGEM + 5.1, y: 3.85, w: 2.3, valor: br(real.distinguibilidade, 2), rotulo: "medido no par MODIS:\nrecusado", cor: COR.alerta, tamanho: 34 });
 
   s.addText("Os dois limites foram fixados antes de rodar a cena real — e não foram alterados depois.", {
     x: MARGEM, y: 5.65, w: 7.4, h: 0.4, isTextBox: true, margin: 0,
     fontFace: CORPO, fontSize: 13, italic: true, color: COR.texto });
 
   imagem(s, join(FIG, "telas/tela-recusa.png"), { x: 8.25, y: 2.55, w: 4.45, h: 1.5 });
-  s.addText("A mensagem que o programa mostra na tela", {
+  s.addText("A decisão na tela, para o par Sentinel-2 da demonstração (NDVI)", {
     x: 8.25, y: 4.12, w: 4.45, h: 0.3, isTextBox: true, margin: 0,
     fontFace: CORPO, fontSize: 11.5, italic: true, color: COR.suave, align: "center" });
 
