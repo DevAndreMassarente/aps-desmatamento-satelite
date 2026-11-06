@@ -5,7 +5,7 @@ Três usos:
 ```bash
 sentinela app                                     # abre a interface no navegador
 sentinela detectar --antes t1.png --depois t2.png # processa um par e grava as saídas
-sentinela demo --saida docs/resultados/imagem-real      # roda a cena sintética de demonstração
+sentinela demo --saida _interno/docs/resultados/imagem-real      # roda a cena sintética de demonstração
 ```
 
 Existe porque a demonstração ao vivo depende do Streamlit, mas a geração de evidência
@@ -144,7 +144,7 @@ def _treinar_e_relatar(conjunto, *, proporcao_teste: float, semente: int) -> int
 
 def comando_app(args: argparse.Namespace) -> int:
     """Sobe a interface Streamlit no navegador."""
-    from .app import CAMINHO_APP
+    from .app import CAMINHO_APP, estilo
 
     try:
         import streamlit  # noqa: F401
@@ -158,6 +158,8 @@ def comando_app(args: argparse.Namespace) -> int:
 
     comando = [sys.executable, "-m", "streamlit", "run", CAMINHO_APP,
                "--server.port", str(args.porta)]
+    for opcao, valor in estilo.TEMA.items():
+        comando += [f"--{opcao}", valor]
     return subprocess.call(comando)
 
 
@@ -270,7 +272,7 @@ def comando_apendice(args: argparse.Namespace) -> int:
         "dataio/imagem.py", "dataio/geo.py", "dataio/visual.py", "dataio/sintetico.py",
         "pipeline/deteccao.py", "pipeline/amostras.py",
         "modelo/caracteristicas.py", "modelo/classificador.py",
-        "app/principal.py", "cli.py",
+        "app/principal.py", "app/estilo.py", "app/comparador.py", "cli.py",
     ]
 
     encontrados = [caminho for caminho in ordem if (origem / caminho).is_file()]
@@ -378,7 +380,7 @@ def construir_parser() -> argparse.ArgumentParser:
     apendice = subcomandos.add_parser(
         "apendice", help="gera o apêndice de código-fonte do trabalho escrito"
     )
-    apendice.add_argument("--saida", default="docs/trabalho-escrito/07-apendice.md")
+    apendice.add_argument("--saida", default="_interno/docs/trabalho-escrito/07-apendice.md")
     apendice.set_defaults(funcao=comando_apendice)
 
     return parser

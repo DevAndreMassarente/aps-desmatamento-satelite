@@ -1,6 +1,6 @@
 """Orquestração das etapas — encadeia ``pdi/`` sem implementar algoritmo próprio.
 
-Ver `docs/ARCHITECTURE.md` para o fluxo completo.
+Ver `_interno/docs/ARCHITECTURE.md` para o fluxo completo.
 """
 
 from .amostras import (

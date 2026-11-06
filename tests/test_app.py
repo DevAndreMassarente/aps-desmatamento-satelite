@@ -27,6 +27,8 @@ CAMINHO = str(
 def app():
     teste = AppTest.from_file(CAMINHO, default_timeout=120)
     teste.run()
+    # O app abre no envio de imagens; os testes de conta usam a cena sintética.
+    teste.button_group[0].set_value("Cena sintética").run()
     return teste
 
 
@@ -34,8 +36,9 @@ class TestInterface:
     def test_executa_sem_excecao(self, app):
         assert not app.exception, [str(e.value) for e in app.exception]
 
-    def test_apresenta_as_quatro_secoes(self, app):
-        assert len(app.tabs) == 4
+    def test_apresenta_as_cinco_etapas(self, app):
+        """As abas espelham as cinco etapas nomeadas pelo enunciado (p. 3, item 2.e)."""
+        assert len(app.tabs) == 5
 
     def test_mostra_a_area_detectada(self, app):
         metricas = {m.label: m.value for m in app.metric}
@@ -53,12 +56,21 @@ class TestInterface:
 
         assert not app.exception, [str(e.value) for e in app.exception]
 
-        mensagens = " ".join(e.value for e in app.error)
+        mensagens = " ".join(m.value for m in app.markdown)
         assert "não confiável" in mensagens.lower()
 
         rotulos = {m.label for m in app.metric}
         assert "Área desmatada" not in rotulos
         assert "Em hectares" not in rotulos
+
+    def test_recusa_impede_treinar_com_rotulo_invalido(self, app):
+        """Máscara recusada não vira rótulo: o modelo não pode ser treinado sobre ela."""
+        alvo = next(s for s in app.slider if "desmatada" in s.label)
+        alvo.set_value(0).run()
+
+        avisos = " ".join(w.value for w in app.warning)
+        assert "Sem rótulo confiável" in avisos
+        assert "F1" not in {m.label for m in app.metric}
 
     def test_o_modelo_e_treinado_ou_explica_por_que_nao(self, app):
         """Na cena padrão o classificador roda; se a cena for pequena, avisa."""
@@ -76,7 +88,7 @@ class TestInterface:
 
     def test_ndmi_funciona_na_cena_sintetica(self, app):
         """A cena sintética traz banda SWIR, então o NDMI é demonstrável na tela."""
-        seletor = next(s for s in app.sidebar.selectbox if "Índice" in s.label)
+        seletor = next(s for s in app.selectbox if "Índice" in s.label)
         assert "ndmi" in seletor.options
         assert "nbr" in seletor.options
 
@@ -100,8 +112,14 @@ class TestInterface:
         assert "," in metricas["Em hectares"]
         assert "." not in metricas["Em hectares"]
 
+    def test_abre_no_envio_de_imagens(self):
+        teste = AppTest.from_file(CAMINHO, default_timeout=120)
+        teste.run()
+        assert not teste.exception, [str(e.value) for e in teste.exception]
+        assert teste.button_group[0].value == "Enviar imagens"
+
     def test_upload_sem_arquivo_orienta_em_vez_de_quebrar(self, app):
-        app.sidebar.radio[0].set_value("Enviar imagens").run()
+        app.button_group[0].set_value("Enviar imagens").run()
 
         assert not app.exception, [str(e.value) for e in app.exception]
         avisos = " ".join(w.value for w in app.warning)

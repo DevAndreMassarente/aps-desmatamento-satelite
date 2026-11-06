@@ -5,7 +5,7 @@ que os filtros sejam desenvolvidos pelo próprio grupo (p.3, item 3.a).
 
 Nenhuma função aqui chama filtro pronto de biblioteca. Todos os kernels são construídos
 neste módulo e aplicados pela convolução de ``nucleo.py``. Ver
-``docs/decisions/001-filtros-proprios.md``.
+``_interno/docs/decisions/001-filtros-proprios.md``.
 
 Papel de cada filtro na detecção de desmatamento:
 

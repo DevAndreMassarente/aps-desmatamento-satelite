@@ -238,7 +238,7 @@ def mudanca_entre_mascaras(
 ) -> dict[str, np.ndarray]:
     """Compara duas máscaras de vegetação e classifica a mudança pixel a pixel.
 
-    Coração da abordagem bi-temporal (``docs/ARCHITECTURE.md``): ``perda`` é a máscara de
+    Coração da abordagem bi-temporal (``_interno/docs/ARCHITECTURE.md``): ``perda`` é a máscara de
     desmatamento — onde havia vegetação em T1 e não há mais em T2.
 
     ``ganho`` (regeneração ou erro de registro) e ``estavel`` acompanham porque servem

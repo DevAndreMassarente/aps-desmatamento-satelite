@@ -56,6 +56,25 @@ class TestCarregar:
             io.carregar(tmp_path)
 
 
+class TestCarregarComInfravermelho:
+    def test_quarta_banda_vira_infravermelho(self, tmp_path):
+        from PIL import Image
+
+        rgba = np.zeros((6, 5, 4), dtype=np.uint8)
+        rgba[..., 0], rgba[..., 3] = 51, 204
+        caminho = tmp_path / "data.png"
+        Image.fromarray(rgba, "RGBA").save(caminho)
+
+        rgb, nir = io.carregar_com_infravermelho(caminho)
+        assert rgb.shape == (6, 5, 3) and nir.shape == (6, 5)
+        assert np.allclose(rgb[..., 0], 0.2) and np.allclose(nir, 0.8)
+
+    def test_tres_bandas_nao_tem_infravermelho(self, cena):
+        caminho, _ = cena
+        rgb, nir = io.carregar_com_infravermelho(caminho)
+        assert rgb.ndim == 3 and nir is None
+
+
 class TestCarregarPar:
     def test_recortes_diferentes_sao_recusados(self, tmp_path):
         io.salvar(tmp_path / "a.png", cena_sintetica(1, tamanho=(40, 40))[0])
@@ -190,3 +209,16 @@ class TestVisual:
         baixo, alto = colorido[0, 0], colorido[9, 9]
         assert baixo[0] > baixo[1]  # marrom: vermelho acima de verde
         assert alto[1] > alto[0]  # verde: verde acima de vermelho
+
+
+class TestRealcarPar:
+    def test_mesma_regua_para_as_duas_datas(self):
+        antes = np.full((4, 4, 3), 0.1, dtype=np.float32)
+        depois = np.full((4, 4, 3), 0.3, dtype=np.float32)
+        a, b = visual.realcar_par(antes, depois, percentis=(0.0, 100.0))
+        assert np.allclose(a, 0.0) and np.allclose(b, 1.0)
+
+    def test_saida_na_faixa_unitaria(self):
+        rng = np.random.default_rng(0)
+        a, b = visual.realcar_par(rng.random((8, 8, 3)) * 0.4, rng.random((8, 8, 3)) * 0.4)
+        assert a.min() >= 0 and b.max() <= 1

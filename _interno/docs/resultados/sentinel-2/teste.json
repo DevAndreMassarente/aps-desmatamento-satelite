@@ -1,0 +1,15 @@
+{
+ "limite_vigente": 4.0,
+ "confiavel": false,
+ "distinguibilidade": 3.974,
+ "limiar_faixa_0_1": 0.6934,
+ "limiar_nbr_nativo": 0.3867,
+ "area_programa_ha": null,
+ "area_mascara_ha": 7974.6,
+ "area_prodes_ha": 4124.8,
+ "prodes_antigo_fracao": 0.5916,
+ "regioes": 471,
+ "perda_fracao": 0.3544,
+ "precisao": 0.383,
+ "revocacao": 0.74
+}

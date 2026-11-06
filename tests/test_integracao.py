@@ -6,7 +6,7 @@ Nenhuma imagem gerada aqui pode aparecer no trabalho escrito como se fosse real 
 ver `AGENTS.md` §11.
 
 A validação sobre imagens reais é requisito à parte (R032) e depende do download das
-cenas registradas em `data/raw/FONTES.md`.
+cenas registradas em `_interno/data/raw/FONTES.md`.
 """
 
 import numpy as np

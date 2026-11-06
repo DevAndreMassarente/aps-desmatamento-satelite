@@ -18,7 +18,7 @@ from xml.etree import ElementTree as ET
 
 import pytest
 
-_caminho = Path(__file__).resolve().parents[1] / "scripts" / "montar_documento.py"
+_caminho = Path(__file__).resolve().parents[1] / "_interno" / "scripts" / "montar_documento.py"
 _spec = importlib.util.spec_from_file_location("montar_documento", _caminho)
 gerador = importlib.util.module_from_spec(_spec)
 # O gerador usa @dataclass, que procura o próprio módulo em sys.modules durante a definição
@@ -270,7 +270,7 @@ class TestDocumentoAvulso:
     @pytest.fixture(scope="class")
     def falas(tmp_path_factory):
         destino = tmp_path_factory.mktemp("avulso") / "falas.docx"
-        origem = (Path(__file__).resolve().parents[1] / "docs" / "apresentacao"
+        origem = (Path(__file__).resolve().parents[1] / "_interno" / "docs" / "apresentacao"
                   / "FALAS-QUALIFICACAO.md")
         gerador.montar_avulso(destino, origem)
         with zipfile.ZipFile(destino) as z:

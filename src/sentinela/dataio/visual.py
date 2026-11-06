@@ -120,3 +120,17 @@ def indice_em_falsa_cor(indice: np.ndarray) -> np.ndarray:
     segunda_metade = meio + (alto - meio) * ((peso - 0.5) / 0.5)
 
     return np.where(peso < 0.5, primeira_metade, segunda_metade).astype(np.float32)
+
+
+def realcar_par(antes: np.ndarray, depois: np.ndarray, *, percentis=(1.0, 99.0)):
+    """Estica o brilho das duas datas com a mesma régua, só para visualização.
+
+    Imagens de refletância ficam escuras na tela. Os percentis são calculados sobre as duas
+    datas juntas, para que a diferença de brilho entre elas continue visível. O resultado
+    não volta para o processamento.
+    """
+    antes, depois = validar_imagem(antes), validar_imagem(depois)
+    baixo, alto = np.percentile(np.concatenate([antes.ravel(), depois.ravel()]), percentis)
+    escala = max(float(alto - baixo), 1e-6)
+    ajustar = lambda imagem: np.clip((imagem - baixo) / escala, 0.0, 1.0).astype(np.float32)
+    return ajustar(antes), ajustar(depois)

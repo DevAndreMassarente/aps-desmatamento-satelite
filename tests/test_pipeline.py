@@ -294,3 +294,17 @@ class TestAmostras:
                 rgb, np.zeros((80, 80), bool),
                 cobertura_desmatado=0.1, cobertura_intacto=0.9,
             )
+
+
+def test_progresso_informa_cada_etapa():
+    from sentinela.dataio import par_bitemporal
+    from sentinela.pipeline import detectar_desmatamento
+
+    par = par_bitemporal(corte=(slice(30, 50), slice(30, 50)), tamanho=(80, 80))
+    etapas = []
+    detectar_desmatamento(
+        par["rgb_antes"], par["rgb_depois"], par["nir_antes"], par["nir_depois"],
+        progresso=etapas.append,
+    )
+    assert len(etapas) == 5
+    assert any("Otsu" in etapa for etapa in etapas)

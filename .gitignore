@@ -25,13 +25,13 @@ credenciais*.json
 # Imagens de satélite não são versionadas: são grandes, regeneráveis pelo script de
 # aquisição, e a licença de cada uma está registrada em data/raw/FONTES.md. Os diretórios
 # são criados pelo próprio download.
-data/raw/*
-data/interim/
-data/processed/
-!data/raw/FONTES.md
+_interno/data/raw/*
+_interno/data/interim/
+_interno/data/processed/
+!_interno/data/raw/FONTES.md
 # Manifestos de aquisição são metadado de procedência, não dado: pequenos e
 # necessários para reproduzir o download.
-!data/raw/*_manifesto.json
+!_interno/data/raw/*_manifesto.json
 
 # Modelos treinados (regeneráveis a partir do código)
 *.joblib
@@ -67,14 +67,24 @@ Thumbs.db
 /AGENTS.md
 /CLAUDE.md
 /.graphifyignore
-/docs/agent-memory.md
-/docs/PROJECT_SPEC.md
-/docs/PROJECT_STATE.md
-/docs/REQUIREMENTS.md
-/docs/ARCHITECTURE.md
-/docs/decisions/
-/docs/trabalho-escrito/README.md
+/_interno/docs/agent-memory.md
+/_interno/docs/PROJECT_SPEC.md
+/_interno/docs/PROJECT_STATE.md
+/_interno/docs/REQUIREMENTS.md
+/_interno/docs/ARCHITECTURE.md
+/_interno/docs/decisions/
+/_interno/docs/trabalho-escrito/README.md
 
 # Apêndice de código: é gerado por `sentinela apendice` a partir de src/. Versioná-lo
 # duplicaria o código-fonte inteiro dentro de docs/ e sairia do ar a cada alteração.
-/docs/trabalho-escrito/07-apendice.md
+/_interno/docs/trabalho-escrito/07-apendice.md
+
+# Claude Kit: agents, hooks, configuração local e estado do kit ficam só na máquina de
+# quem usa. Não vão para os outros integrantes.
+/.claude/
+/.claude-kit/
+/_interno/docs/DECISIONS.md
+/_interno/docs/HANDOFF.md
+.claude-kit/backup/
+.claude-kit/proposals/
+.claude-kit/hermes-outbox/

@@ -1,0 +1,12 @@
+{
+  "confiavel": false,
+  "metodo_indice": "nbr",
+  "limiar": 0.6934,
+  "distinguibilidade": 3.974,
+  "separabilidade_otsu": 0.7928,
+  "area_pixels": null,
+  "area_hectares": null,
+  "proporcao_da_cena": null,
+  "regioes_detectadas": null,
+  "alerta_de_registro": false
+}

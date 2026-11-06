@@ -166,7 +166,7 @@ def nbr(infravermelho: np.ndarray, swir2: np.ndarray) -> np.ndarray:
 
     Medido sobre MODIS/Terra em São Félix do Xingu (2002 × 2024): elevou a
     distinguibilidade entre as classes de 2,99 (NDVI) para 3,51, abaixo ainda do critério
-    de confiabilidade (`docs/decisions/005-resolucao-espacial.md`). Duas ressalvas: a banda
+    de confiabilidade (`_interno/docs/decisions/005-resolucao-espacial.md`). Duas ressalvas: a banda
     7 do MODIS tem resolução nativa de 500 m, reamostrada na grade de ~253 m do GIBS; e
     numa frente de desmatamento com queimada o NBR responde também à cicatriz de fogo, não
     só à remoção da vegetação.

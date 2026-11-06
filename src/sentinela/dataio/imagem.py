@@ -9,6 +9,8 @@ Convenção de fronteira: tudo que **entra** vira ``float32`` em ``[0, 1]``; tud
 
 from __future__ import annotations
 
+import base64
+import io
 from pathlib import Path
 
 import numpy as np
@@ -61,6 +63,33 @@ def carregar(caminho: str | Path, *, cinza: bool = False) -> np.ndarray:
     return para_float(dados)
 
 
+def carregar_com_infravermelho(caminho: str | Path) -> tuple[np.ndarray, np.ndarray | None]:
+    """Carrega uma imagem que pode trazer o infravermelho próximo como quarta banda.
+
+    Com quatro bandas, as três primeiras são a cor e a quarta é o infravermelho próximo:
+    assim cada data cabe num arquivo só. Com três bandas, devolve ``(rgb, None)``.
+    """
+    caminho = Path(caminho)
+    if not caminho.is_file():
+        raise ErroArquivo(f"arquivo não encontrado: {caminho}")
+
+    try:
+        with Image.open(caminho) as arquivo:
+            quatro_bandas = len(arquivo.getbands()) == 4
+            dados = np.array(arquivo.convert("RGBA")) if quatro_bandas else None
+    except UnidentifiedImageError as erro:
+        raise ErroArquivo(
+            f"'{caminho.name}' não é uma imagem que o Pillow reconheça. "
+            f"Formatos suportados: {', '.join(EXTENSOES_SUPORTADAS)}."
+        ) from erro
+    except OSError as erro:
+        raise ErroArquivo(f"falha ao ler '{caminho}': {erro}") from erro
+
+    if dados is None:
+        return carregar(caminho), None
+    return para_float(np.ascontiguousarray(dados[..., :3])), para_float(dados[..., 3])
+
+
 def carregar_par(
     caminho_antes: str | Path, caminho_depois: str | Path, *, cinza: bool = False
 ) -> tuple[np.ndarray, np.ndarray]:
@@ -82,6 +111,15 @@ def carregar_par(
         )
 
     return antes, depois
+
+
+def em_data_uri(imagem: np.ndarray, *, lado_maximo: int = 900, qualidade: int = 88) -> str:
+    """Converte um array em URI JPEG reduzido, para embutir numa página sem servir arquivos."""
+    figura = Image.fromarray(para_uint8(validar_imagem(imagem)))
+    figura.thumbnail((lado_maximo, lado_maximo), Image.Resampling.LANCZOS)
+    saida = io.BytesIO()
+    figura.convert("RGB").save(saida, format="JPEG", quality=qualidade)
+    return "data:image/jpeg;base64," + base64.b64encode(saida.getvalue()).decode("ascii")
 
 
 def salvar(caminho: str | Path, imagem: np.ndarray) -> Path:

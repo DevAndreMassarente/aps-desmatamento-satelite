@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-_caminho = Path(__file__).resolve().parents[1] / "scripts" / "baixar_imagens.py"
+_caminho = Path(__file__).resolve().parents[1] / "_interno" / "scripts" / "baixar_imagens.py"
 _spec = importlib.util.spec_from_file_location("baixar_imagens", _caminho)
 aquisicao = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(aquisicao)

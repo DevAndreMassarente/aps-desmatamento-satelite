@@ -11,7 +11,7 @@ Este módulo não implementa nenhum algoritmo: ele encadeia os que estão em ``p
 guarda **todos os intermediários**, porque a interface precisa exibir etapa por etapa e
 o trabalho escrito precisa mostrar o efeito de cada filtro (R033).
 
-A decisão que mais importa aqui está em ``docs/decisions/003-limiar-bitemporal.md``: o
+A decisão que mais importa aqui está em ``_interno/docs/decisions/003-limiar-bitemporal.md``: o
 limiar é **único** para as duas datas. Otsu por data daria a cada uma uma régua
 diferente, e a diferença entre as máscaras mediria a diferença entre os limiares, não a
 mudança no terreno.
@@ -157,6 +157,7 @@ def detectar_desmatamento(
     area_minima: int = AREA_MINIMA_PADRAO,
     metros_por_pixel: float | None = None,
     limpar_mascara: bool = True,
+    progresso=None,
 ) -> ResultadoDeteccao:
     """Executa a cadeia completa sobre um par bi-temporal da mesma área.
 
@@ -166,7 +167,12 @@ def detectar_desmatamento(
 
     Levanta ``ErroImagem`` quando as entradas são incompatíveis — checar aqui é o que
     evita um mapa de desmatamento sem sentido lá na frente (R036).
+
+    ``progresso``, se informado, é chamado com o nome de cada etapa ao começar, para a
+    interface mostrar o que está sendo feito.
     """
+    avisar = progresso or (lambda etapa: None)
+    avisar("Validando as duas imagens")
     rgb_antes = validar_imagem(rgb_antes, bandas_aceitas=(3,))
     rgb_depois = validar_imagem(rgb_depois, bandas_aceitas=(3,))
 
@@ -208,6 +214,7 @@ def detectar_desmatamento(
         )
 
     # Etapas 2 e 3 — manipulação e filtragem.
+    avisar("Calculando o índice de vegetação e aplicando o filtro gaussiano")
     indice_antes, nome_metodo = preparar_indice(
         rgb_antes, nir_antes, metodo=metodo, suavizacao=suavizacao, swir=swir_antes
     )
@@ -216,16 +223,19 @@ def detectar_desmatamento(
     )
 
     # Etapa 4 — segmentação, com régua única para as duas datas.
+    avisar("Calculando o limiar de Otsu e medindo a separação entre as classes")
     valor, confiavel, metricas = limiar.limiar_confiavel(indice_antes, indice_depois)
 
     vegetacao_antes = limiar.binarizar(indice_antes, valor)
     vegetacao_depois = limiar.binarizar(indice_depois, valor)
 
+    avisar("Limpando as máscaras com abertura e fechamento")
     if limpar_mascara:
         limpar = lambda m: morfologia.fechamento(morfologia.abertura(m))
         vegetacao_antes = limpar(vegetacao_antes)
         vegetacao_depois = limpar(vegetacao_depois)
 
+    avisar("Comparando as datas e separando as regiões de perda")
     mudanca = segmentacao.mudanca_entre_mascaras(vegetacao_antes, vegetacao_depois)
     perda = segmentacao.filtrar_por_area(mudanca["perda"], area_minima=area_minima)
 
